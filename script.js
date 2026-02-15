@@ -1,17 +1,15 @@
 window.addEventListener("load", () => {
 
-    // Add periodic turbulence
+    console.log("Page loaded. Checking fluid...");
+
+    // Force constant splats every 2 seconds
     setInterval(() => {
         if (window.splatStack) {
-            window.splatStack.push(5);
+            console.log("Injecting splat");
+            window.splatStack.push(15);
+        } else {
+            console.log("splatStack not found");
         }
-    }, 3000);
-
-    // Strong splat on scroll
-    window.addEventListener("scroll", () => {
-        if (window.splatStack) {
-            window.splatStack.push(10);
-        }
-    });
+    }, 2000);
 
 });
