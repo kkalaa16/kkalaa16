@@ -3,404 +3,437 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Krtin Kala | Aerospace Systems Architect</title>
+    <title>KRTIN KALA | AEROSPACE SYSTEMS & CFD</title>
     
-    <link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
-    <link href="[https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Space+Grotesk:wght@300;700&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=Space+Grotesk:wght@300;700&display=swap)" rel="stylesheet">
-    <link rel="stylesheet" href="[https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css)">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Space+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <script type="module" src="[https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js](https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js)"></script>
-
     <style>
         :root {
-            --f1-orange: #ff6a00;
-            --f1-red: #e10600;
-            --bg-dark: #050505;
-            --glass: rgba(15, 15, 15, 0.7);
-            --border: rgba(255, 255, 255, 0.1);
+            --bg: #030303;
+            --surface: #0a0a0a;
+            --accent: #ff4d00;
+            --accent-glow: rgba(255, 77, 0, 0.3);
+            --tech-blue: #00d4ff;
+            --text-main: #ffffff;
+            --text-dim: #888888;
+            --mono: 'Space Mono', monospace;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body, html {
-            background-color: var(--bg-dark);
-            color: #ffffff;
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
             font-family: 'Inter', sans-serif;
-            overflow: hidden; /* Handled by container */
-        }
-
-        /* 100vh Scroll Snap Container */
-       .main-container {
-            height: 100vh;
-            overflow-y: scroll;
+            overflow-x: hidden;
             scroll-snap-type: y mandatory;
-            scroll-behavior: smooth;
+            height: 100vh;
         }
 
+        /* --- BACKGROUND SIMULATION --- */
+        #flow-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        /* --- OVERLAYS & NAV --- */
+        #intro-shutter {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 1.2s cubic-bezier(0.85, 0, 0.15, 1);
+        }
+
+        nav {
+            position: fixed;
+            top: 0; width: 100%;
+            padding: 2rem 5%;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            pointer-events: none;
+        }
+        nav * { pointer-events: auto; }
+
+        .nav-links { display: flex; gap: 2rem; }
+        .nav-links a { color: var(--text-dim); text-decoration: none; transition: 0.3s; }
+        .nav-links a:hover { color: var(--accent); }
+
+        /* --- SECTION ARCHITECTURE --- */
         section {
             height: 100vh;
             width: 100%;
             scroll-snap-align: start;
-            scroll-snap-stop: always;
-            position: relative;
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 5% 10%;
-            overflow: hidden;
+            padding: 0 10%;
+            position: relative;
         }
 
-        /* Matrix Flame Canvas */
-        #intro-flame-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
+        .container {
+            max-width: 1200px;
             width: 100%;
-            height: 100%;
-            z-index: 10000;
-            pointer-events: none;
-            background: transparent;
+            z-index: 10;
         }
 
-        /* Navigation - Sleek F1 Style */
-       .navbar {
-            position: fixed;
-            top: 2rem;
-            right: 3rem;
-            z-index: 1000;
-            display: flex;
-            gap: 1.5rem;
-            background: var(--glass);
-            backdrop-filter: blur(10px);
-            padding: 0.8rem 2rem;
-            border-radius: 50px;
-            border: 1px solid var(--border);
-        }
-
-       .navbar a {
-            color: #888;
-            text-decoration: none;
+        .tag {
+            font-family: var(--mono);
+            color: var(--accent);
+            text-transform: uppercase;
             font-size: 0.75rem;
-            font-weight: 700;
-            letter-spacing: 0.1rem;
-            transition: 0.3s;
-            text-transform: uppercase;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .tag::after { content: ""; height: 1px; background: rgba(255, 77, 0, 0.2); flex-grow: 1; }
+
+        h1 { font-size: clamp(3.5rem, 10vw, 8rem); font-weight: 900; line-height: 0.85; text-transform: uppercase; margin-bottom: 2rem; }
+        h2 { font-size: 3rem; font-weight: 900; line-height: 1; text-transform: uppercase; margin-bottom: 1.5rem; }
+
+        /* --- CONTENT BLOCKS --- */
+        .project-block {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 4rem;
+            background: rgba(10, 10, 10, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 3rem;
+            position: relative;
         }
 
-       .navbar a:hover {
-            color: var(--f1-orange);
-        }
-
-        /* Hero Content */
-       .hero-text h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: clamp(4rem, 10vw, 8rem);
-            font-weight: 800;
-            line-height: 0.9;
-            text-transform: uppercase;
-            background: linear-gradient(to bottom, #fff 50%, #555);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* Project Cards (Full Screen) */
-       .project-grid {
+        .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            width: 100%;
-            height: 100%;
-            align-items: center;
-        }
-
-       .content-panel {
-            padding: 2rem;
-        }
-
-       .visual-panel {
-            width: 100%;
-            height: 70vh;
-            background: rgba(255,255,255,0.02);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            position: relative;
-        }
-
-       .label {
-            color: var(--f1-orange);
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 2px;
-            margin-bottom: 1rem;
-            display: block;
-        }
-
-        h2 {
-            font-size: 3.5rem;
-            margin-bottom: 1.5rem;
-            font-family: 'Space Grotesk', sans-serif;
-        }
-
-       .stats {
-            display: flex;
-            gap: 2rem;
+            gap: 1.5rem;
             margin-top: 2rem;
+            font-family: var(--mono);
         }
 
-       .stat-item {
-            border-left: 2px solid var(--f1-orange);
-            padding-left: 1rem;
-        }
+        .stat-item { border-left: 2px solid var(--accent); padding-left: 1rem; }
+        .stat-label { font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; display: block; }
+        .stat-value { font-size: 0.9rem; font-weight: bold; }
 
-       .stat-value {
-            font-size: 1.5rem;
-            font-weight: 800;
-            display: block;
-        }
-
-       .stat-label {
-            font-size: 0.7rem;
-            color: #666;
-            text-transform: uppercase;
-        }
-
-        /* Model Viewer Fixes */
-        model-viewer {
+        /* --- THE NODES GRID --- */
+        .nodes-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
             width: 100%;
-            height: 100%;
-            --progress-bar-color: var(--f1-orange);
         }
 
-        /* Scroll Progress Bar */
-       .progress-bar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            height: 3px;
-            background: var(--f1-orange);
-            z-index: 1001;
-            transition: width 0.1s;
+        .node {
+            padding: 1.5rem;
+            background: rgba(15, 15, 15, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: 0.3s;
         }
+        .node:hover { border-color: var(--accent); transform: translateY(-5px); }
+        .node-title { font-family: var(--mono); font-size: 0.8rem; color: var(--accent); margin-bottom: 0.5rem; text-transform: uppercase; }
+        .node-desc { font-size: 0.85rem; color: var(--text-dim); }
+
+        /* --- ANIMATIONS --- */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: var(--mono);
+            font-size: 0.6rem;
+            color: var(--text-dim);
+            letter-spacing: 3px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% {transform: translateY(0) translateX(-50%);} 40% {transform: translateY(-10px) translateX(-50%);} 60% {transform: translateY(-5px) translateX(-50%);} }
 
         @media (max-width: 1024px) {
-           .project-grid { grid-template-columns: 1fr; }
-           .visual-panel { height: 40vh; }
-            h2 { font-size: 2rem; }
+            .project-block, .nodes-container { grid-template-columns: 1fr; }
+            section { padding: 0 5%; }
+            nav .nav-links { display: none; }
         }
     </style>
 </head>
 <body>
 
-    <canvas id="intro-flame-canvas"></canvas>
-    <div class="progress-bar" id="pageProgress"></div>
-
-    <nav class="navbar">
-        <a href="#hero">Mission</a>
-        <a href="#drone">Aerodynamics</a>
-        <a href="#combustion">Reacting Flow</a>
-        <a href="#turbine">Optimization</a>
-        <a href="#connect">Forge</a>
-    </nav>
-
-    <div class="main-container">
-        
-        <section id="hero">
-            <div class="hero-text">
-                <span class="label">M.S. Aerospace Engineering @ Georgia Tech</span>
-                <h1>KRTIN<br>KALA</h1>
-                <p style="font-size: 1.2rem; color: #888; margin-top: 2rem; max-width: 600px;">
-                    Bridging the gap between high-fidelity physics and systems architecture. Forged in flame.
-                </p>
-            </div>
-        </section>
-
-        <section id="drone">
-            <div class="project-grid">
-                <div class="content-panel">
-                    <span class="label">Computational Fluid Dynamics</span>
-                    <h2>Drone Downwash Optimization</h2>
-                    <p style="color: #ccc; line-height: 1.6;">
-                        Quantifying flow differences between 2-blade and 3-blade fixed-pitch propellers using OpenFOAM RANS k-ω SST simulations. Validated with a custom Raspberry Pi anemometer rig.
-                    </p>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span class="stat-value">+51.7%</span>
-                            <span class="stat-label">Upthrust Gain</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">< 5%</span>
-                            <span class="stat-label">CFD Error</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="visual-panel">
-                    <model-viewer src="[https://modelviewer.dev/shared-assets/models/Astronaut.glb](https://modelviewer.dev/shared-assets/models/Astronaut.glb)" 
-                        alt="Drone Rotor Model" auto-rotate camera-controls shadow-intensity="1"
-                        environment-image="neutral" exposure="0.8">
-                    </model-viewer>
-                </div>
-            </div>
-        </section>
-
-        <section id="combustion">
-            <div class="project-grid">
-                <div class="visual-panel">
-                    <div style="height: 100%; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #220000, #000);">
-                        <i class="fas fa-fire" style="font-size: 10rem; color: var(--f1-red); filter: blur(2px);"></i>
-                    </div>
-                </div>
-                <div class="content-panel">
-                    <span class="label">Ben T. Zinn Combustion Lab</span>
-                    <h2>NH₃/H₂ Reacting Flow</h2>
-                    <p style="color: #ccc; line-height: 1.6;">
-                        Accelerating LES via Flamelet Generated Manifolds (FGM). Modeled turbulent hydrogen/ammonia flames for carbon-free gas turbine power generation.
-                    </p>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span class="stat-value">86.7%</span>
-                            <span class="stat-label">Runtime Reduction</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">92.6%</span>
-                            <span class="stat-label">F1 Score</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="turbine">
-            <div class="project-grid">
-                <div class="content-panel">
-                    <span class="label">MDAO Framework</span>
-                    <h2>Turbofan Cycle Design</h2>
-                    <p style="color: #ccc; line-height: 1.6;">
-                        High-altitude cruise optimization using MATLAB with temperature-dependent specific heats (NASA 7-coefficient polynomials) to capture gas softening effects.
-                    </p>
-                    <div class="stats">
-                        <div class="stat-item">
-                            <span class="stat-value">34:1</span>
-                            <span class="stat-label">OPR Optimized</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">12%</span>
-                            <span class="stat-label">Efficiency Delta</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="visual-panel">
-                    <model-viewer src="[https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/MaterialsVariantsShoe/glTF-Binary/MaterialsVariantsShoe.glb](https://modelviewer.dev/shared-assets/models/glTF-Sample-Assets/Models/MaterialsVariantsShoe/glTF-Binary/MaterialsVariantsShoe.glb)" 
-                        alt="Engine Component" auto-rotate camera-controls shadow-intensity="2">
-                    </model-viewer>
-                </div>
-            </div>
-        </section>
-
-        <section id="connect">
-            <div style="text-align: center;">
-                <span class="label">Ready for the Next Generation</span>
-                <h2 style="font-size: 5vw;">LET'S FORGE</h2>
-                <div style="display: flex; gap: 2rem; justify-content: center; margin-top: 3rem;">
-                    <a href="mailto:kkala6@gatech.edu" class="label" style="text-decoration: none; border: 1px solid var(--f1-orange); padding: 1rem 2rem; border-radius: 5px;">Email</a>
-                    <a href="#" class="label" style="text-decoration: none; border: 1px solid #fff; padding: 1rem 2rem; border-radius: 5px;">LinkedIn</a>
-                    <a href="#" class="label" style="text-decoration: none; border: 1px solid #fff; padding: 1rem 2rem; border-radius: 5px;">GitHub</a>
-                </div>
-            </div>
-        </section>
+    <div id="intro-shutter">
+        <div style="font-family: var(--mono); color: var(--accent); letter-spacing: 10px; font-size: 0.8rem;">LOADING_FLOW_FIELD...</div>
     </div>
 
+    <nav>
+        <div>KRTIN KALA // PERSONNEL_ID: 903916172</div>
+        <div class="nav-links">
+            <a href="#hero">PROFILE</a>
+            <a href="#physics">PHYSICS</a>
+            <a href="#systems">SYSTEMS</a>
+            <a href="#nodes">NODES</a>
+            <a href="#contact">CONNECT</a>
+        </div>
+    </nav>
+
+    <canvas id="flow-canvas"></canvas>
+
+    <!-- SECTION 1: HERO -->
+    <section id="hero">
+        <div class="container">
+            <div class="tag">Integrated Aerospace Engineer</div>
+            <h1>FROM ATOMS<br>TO <span style="color:var(--accent)">AIRFRAMES</span></h1>
+            <p style="max-width: 600px; color: var(--text-dim); font-size: 1.1rem; line-height: 1.8;">
+                Graduate Researcher at <strong>Georgia Tech</strong>. 
+                Bridging the gap between high-fidelity reacting flow physics and multi-disciplinary systems architecture.
+            </p>
+            <div class="stats-grid" style="max-width: 500px; margin-top: 3rem;">
+                <div class="stat-item"><span class="stat-label">Current Lab</span><span class="stat-value">Ben T. Zinn Combustion</span></div>
+                <div class="stat-item"><span class="stat-label">Affiliation</span><span class="stat-value">ASDL / Georgia Tech</span></div>
+            </div>
+        </div>
+        <div class="scroll-indicator">SWIPE_TO_NAVIGATE</div>
+    </section>
+
+    <!-- SECTION 2: PHYSICS (COMBUSTION & CFD) -->
+    <section id="physics">
+        <div class="container">
+            <div class="tag">Domain 01 // High-Fidelity Physics</div>
+            <div class="project-block">
+                <div>
+                    <h2>Turbulent<br>Combustion</h2>
+                    <p style="color: var(--text-dim); margin-bottom: 2.5rem;">
+                        Predicting NOx emissions for green H₂/NH₃ blends in gas turbines. Leveraging Flamelet Generated Manifolds (FGM) to reduce computational costs while maintaining accuracy.
+                    </p>
+                    <div class="stats-grid">
+                        <div class="stat-item"><span class="stat-label">Simulation</span><span class="stat-value">LES & FGM</span></div>
+                        <div class="stat-item"><span class="stat-label">Validation</span><span class="stat-value">OH* Chemiluminescence</span></div>
+                        <div class="stat-item"><span class="stat-label">Efficiency</span><span class="stat-value">86% Runtime Reduction</span></div>
+                        <div class="stat-item"><span class="stat-label">Accuracy</span><span class="stat-value">92.6% F1-Score</span></div>
+                    </div>
+                </div>
+                <div style="border-left: 1px solid rgba(255,255,255,0.05); padding-left: 2rem;">
+                    <h3 style="font-family: var(--mono); font-size: 0.8rem; color: var(--accent); margin-bottom: 1rem;">RESEARCH FOCUS</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-dim);">
+                        Entropy-generation analysis for Sandia-D flames. Investigating irreversibility in reacting shear layers using physics-informed data reduction.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 3: SYSTEMS (MDAO & MBSE) -->
+    <section id="systems">
+        <div class="container">
+            <div class="tag">Domain 02 // Systems Architecture</div>
+            <div class="project-block">
+                <div>
+                    <h2>Tactical<br>Mobility MDAO</h2>
+                    <p style="color: var(--text-dim); margin-bottom: 2.5rem;">
+                        Multi-disciplinary analysis for hybrid-electric aircraft. Integrating OpenMDAO with NPSS and FLOPS to evaluate propulsion-airframe trade-offs.
+                    </p>
+                    <div class="stats-grid">
+                        <div class="stat-item"><span class="stat-label">Framework</span><span class="stat-value">OpenMDAO / SysML</span></div>
+                        <div class="stat-item"><span class="stat-label">Application</span><span class="stat-value">Tactical Airlift</span></div>
+                        <div class="stat-item"><span class="stat-label">Method</span><span class="stat-value">MBSE + QFD</span></div>
+                        <div class="stat-item"><span class="stat-label">Current Tool</span><span class="stat-value">SOVERN Supply Chain</span></div>
+                    </div>
+                </div>
+                <div style="border-left: 1px solid rgba(0,212,255,0.1); padding-left: 2rem;">
+                    <h3 style="font-family: var(--mono); font-size: 0.8rem; color: var(--tech-blue); margin-bottom: 1rem;">SOVERN PROJECT</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-dim);">
+                        Quantifying US aerospace supply chain vulnerability using Graph Theory. Mapping dependencies across Tier 0-4 material suppliers.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 4: THE RESEARCH NODES (GRID) -->
+    <section id="nodes">
+        <div class="container">
+            <div class="tag">Comprehensive Portfolio Nodes</div>
+            <div class="nodes-container">
+                <div class="node">
+                    <div class="node-title">Drone Aerodynamics</div>
+                    <p class="node-desc">Compared 2-blade vs 3-blade rotors using RANS $k-\omega$ SST. Validated with Raspberry Pi experimental rig.</p>
+                </div>
+                <div class="node">
+                    <div class="node-title">Scramjet Inlets</div>
+                    <p class="node-desc">CFD validation of 3-ramp and 4-ramp external compression at Mach 5 and Mach 8. Evaluated shock-on-lip dynamics.</p>
+                </div>
+                <div class="node">
+                    <div class="node-title">HVAC Pathogen Control</div>
+                    <p class="node-desc">Simulated thermal stratification at IIT Bombay. Redesigned ventilation to reduce viral exposure by 23%.</p>
+                </div>
+                <div class="node">
+                    <div class="node-title">Savonius VAWT</div>
+                    <p class="node-desc">Optimized helical vertical-axis wind turbines. Improved starting torque by 72% through parametric CFD.</p>
+                </div>
+                <div class="node">
+                    <div class="node-title">Hyperloop India</div>
+                    <p class="node-desc">Propulsion system integration and interface resolution (DFM) for the high-speed pod architecture.</p>
+                </div>
+                <div class="node">
+                    <div class="node-title">Rotorcraft Design</div>
+                    <p class="node-desc">Battery weight estimation and disc loading optimization for hybrid-electric tiltrotor mission segments.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 5: CONTACT -->
+    <section id="contact">
+        <div class="container" style="text-align: center;">
+            <div class="tag" style="justify-content: center;">Data Transmission // Connect</div>
+            <h2 style="font-size: 5rem; margin-bottom: 3rem;">INITIATE<br><span style="color:var(--accent)">FORGE</span></h2>
+            <div style="display: flex; gap: 2rem; justify-content: center;">
+                <a href="mailto:kkala6@gatech.edu" style="text-decoration:none; color:var(--accent); border: 1px solid var(--accent); padding: 1rem 3rem; font-family: var(--mono); transition: 0.3s;" onmouseover="this.style.background='var(--accent)'; this.style.color='#000'">EMAIL_ENGINEER</a>
+                <a href="https://linkedin.com/krtin-kala-07a682198" target="_blank" style="text-decoration:none; color:#fff; border: 1px solid #333; padding: 1rem 3rem; font-family: var(--mono); transition: 0.3s;" onmouseover="this.style.borderColor='var(--accent)'">LINKEDIN</a>
+            </div>
+            <p style="margin-top: 6rem; font-family: var(--mono); font-size: 0.6rem; color: #333; letter-spacing: 2px;">
+                GEORGIA TECH // ATLANTA, GA // SYSTEMS & PROPULSION
+            </p>
+        </div>
+    </section>
+
     <script type="importmap">
-        { "imports": { "three": "[https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js](https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js)" } }
+        { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.150.0/build/three.module.js" } }
     </script>
     <script type="module">
         import * as THREE from 'three';
 
-        // 1. Matrix Hallway Flame Sequence
-        const canvas = document.getElementById('intro-flame-canvas');
+        // --- VORTEX SHEDDING SIMULATION ---
+        const canvas = document.getElementById('flow-canvas');
         const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        
+        renderer.setPixelRatio(window.devicePixelRatio);
+
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.z = 5;
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+        camera.position.z = 100;
 
-        // Particle System for "Travelling Flame"
-        const particleCount = 2500;
-        const geometry = new THREE.BufferGeometry();
-        const posArray = new Float32Array(particleCount * 3);
-        const velArray =;
+        // Particle field
+        const count = 4000;
+        const geo = new THREE.BufferGeometry();
+        const posArr = new Float32Array(count * 3);
+        const colArr = new Float32Array(count * 3);
+        const offsets = new Float32Array(count); // Random seed for turbulence
 
-        for(let i=0; i<particleCount; i++) {
-            posArray[i*3] = (Math.random() - 0.5) * 0.1; // Start in center
-            posArray[i*3+1] = (Math.random() - 0.5) * 0.1;
-            posArray[i*3+2] = 0;
-            velArray.push({
-                x: (Math.random() - 0.5) * 0.2,
-                y: (Math.random() - 0.5) * 0.05,
-                z: Math.random() * 0.1
-            });
+        const colorA = new THREE.Color(0xff4d00); // Orange
+        const colorB = new THREE.Color(0x00d4ff); // Tech Blue
+
+        for(let i=0; i<count; i++) {
+            posArr[i*3] = (Math.random() - 0.5) * 300;
+            posArr[i*3+1] = (Math.random() - 0.5) * 200;
+            posArr[i*3+2] = (Math.random() - 0.5) * 50;
+            
+            offsets[i] = Math.random() * Math.PI * 2;
+            
+            const mix = Math.random();
+            const col = new THREE.Color().lerpColors(colorA, colorB, mix);
+            colArr[i*3] = col.r;
+            colArr[i*3+1] = col.g;
+            colArr[i*3+2] = col.b;
         }
 
-        geometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-        const material = new THREE.PointsMaterial({
-            size: 0.05,
-            color: 0xff4500,
+        geo.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
+        geo.setAttribute('color', new THREE.BufferAttribute(colArr, 3));
+
+        const mat = new THREE.PointsMaterial({
+            size: 1.2,
+            vertexColors: true,
             transparent: true,
-            blending: THREE.AdditiveBlending
+            opacity: 0.4,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
         });
 
-        const points = new THREE.Points(geometry, material);
+        const points = new THREE.Points(geo, mat);
         scene.add(points);
 
-        let startTime = Date.now();
-        let introActive = true;
+        let globalFlowSpeed = 2.0; // Starts fast (Matrix hallway vibe)
+        const cylinderRadius = 20;
 
-        function animateIntro() {
-            if (!introActive) return;
-            const elapsed = (Date.now() - startTime) / 1000;
-            
-            const positions = geometry.attributes.position.array;
-            for(let i=0; i<particleCount; i++) {
-                // Propagate horizontally across viewport like the Matrix hallway scene
-                positions[i*3] += (velArray[i].x * elapsed * 20); 
-                positions[i*3+1] += (velArray[i].y * 2);
+        function animate() {
+            requestAnimationFrame(animate);
+            const time = performance.now() * 0.001;
+            const pos = geo.attributes.position.array;
+
+            for(let i=0; i<count; i++) {
+                // Background drift (X-axis)
+                pos[i*3] += globalFlowSpeed;
+
+                // Vortex Shedding Logic (Mathematical Approximation of Karman Street)
+                const x = pos[i*3];
+                const y = pos[i*3+1];
                 
-                // Color shift to white-hot in center
-                if (Math.abs(positions[i*3]) < 1) material.color.setHex(0xffffff);
-                else material.color.setHex(0xff4500);
-            }
-            geometry.attributes.position.needsUpdate = true;
-            
-            // Fade out after 2.5 seconds
-            if (elapsed > 1.5) {
-                material.opacity -= 0.02;
-                if (material.opacity <= 0) {
-                    introActive = false;
-                    canvas.style.display = 'none';
+                // If particle is behind the "cylinder" at x=0
+                if (x > 0) {
+                    const distanceX = x;
+                    const frequency = 0.05;
+                    const amplitude = 15.0 * (1 - Math.exp(-x * 0.01)); // Wake widens
+                    
+                    // Oscillating vortices
+                    const vortex = Math.sin(x * frequency - time * 5) * amplitude;
+                    pos[i*3+1] += (vortex - pos[i*3+1]) * 0.01;
+                    
+                    // Added turbulence
+                    pos[i*3+1] += Math.sin(time + offsets[i]) * 0.1;
+                }
+
+                // Warp around
+                if(pos[i*3] > 150) {
+                    pos[i*3] = -150;
+                    pos[i*3+1] = (Math.random() - 0.5) * 200;
                 }
             }
 
-            renderer.render(scene, camera);
-            requestAnimationFrame(animateIntro);
-        }
-        animateIntro();
+            // Gradually settle flow speed from intro explosion to steady state
+            if(globalFlowSpeed > 0.4) globalFlowSpeed *= 0.99;
 
-        // 2. Scroll Progress Tracker
-        const container = document.querySelector('.main-container');
-        const progressBar = document.getElementById('pageProgress');
-        container.addEventListener('scroll', () => {
-            const scrollPercent = (container.scrollTop / (container.scrollHeight - container.clientHeight)) * 100;
-            progressBar.style.width = scrollPercent + "%";
+            geo.attributes.position.needsUpdate = true;
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // --- INTERACTION & UI ---
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-        // 3. Handle 3D Model Loading Paths
-        // To use your local models, replace the 'src' in <model-viewer> with './models/yourfile.glb'
-        // Ensure you run a local server (e.g., npx serve) to avoid CORS blocks.
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('intro-shutter').style.transform = 'translateY(-100%)';
+            }, 1000);
+        });
+
+        // Simple Nav Tracking
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.nav-links a');
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(s => {
+                if(pageYOffset >= s.offsetTop - 300) current = s.getAttribute('id');
+            });
+            navLinks.forEach(link => {
+                link.style.color = link.getAttribute('href').includes(current) ? 'var(--accent)' : 'var(--text-dim)';
+            });
+        });
+
     </script>
 </body>
 </html>
