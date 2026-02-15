@@ -331,77 +331,57 @@
         </div>
     </section>
 
-    <script>
+   <script>
 window.onload = function() {
     const canvas = document.getElementById('fluid-canvas');
 
-    const fluid = WebGLFluid(canvas, {
+    const fluid = window['webgl-fluid'].default(canvas, {
         SIM_RESOLUTION: 128,
         DYE_RESOLUTION: 1024,
 
-        // LOWER DISSIPATION (critical)
-        DENSITY_DISSIPATION: 0.995,
-        VELOCITY_DISSIPATION: 0.995,
+        // Almost zero decay
+        DENSITY_DISSIPATION: 0.999,
+        VELOCITY_DISSIPATION: 0.999,
 
-        PRESSURE: 0.6,
-        CURL: 120,                 // Strong vorticity confinement
-        SPLAT_RADIUS: 0.25,
-        SPLAT_FORCE: 8000,
+        PRESSURE: 0.3,
+        CURL: 180,                  // strong vorticity confinement
+        SPLAT_RADIUS: 0.18,
+        SPLAT_FORCE: 6000,
 
         SHADING: true,
         COLORFUL: false,
         PAUSED: false,
         BACK_COLOR: { r: 0, g: 0, b: 0 },
+        BLOOM: false,
         TRANSPARENT: true
     });
 
-    // --- CONTINUOUS ROTATIONAL FORCING ---
-    function perpetualEnergy() {
+    // Continuous deterministic forcing field
+    function driveFlow(time) {
 
-        const t = Date.now() * 0.001;
+        const t = time * 0.0004;
 
-        const x = 0.5 + 0.25 * Math.cos(t);
-        const y = 0.5 + 0.25 * Math.sin(t);
+        // Circular forcing path
+        const x = 0.5 + 0.3 * Math.cos(t);
+        const y = 0.5 + 0.3 * Math.sin(t);
 
-        const dx = 80 * Math.cos(t * 1.5);
-        const dy = 80 * Math.sin(t * 1.5);
+        const dx = 120 * Math.cos(t * 2.0);
+        const dy = 120 * Math.sin(t * 2.0);
 
-        fluid.splat(x, y, dx, dy, { r: 0.9, g: 0.25, b: 0 });
+        fluid.splat(x, y, dx, dy, {
+            r: 0.9,
+            g: 0.25,
+            b: 0
+        });
 
-        requestAnimationFrame(perpetualEnergy);
+        requestAnimationFrame(driveFlow);
     }
 
-    perpetualEnergy();
+    requestAnimationFrame(driveFlow);
 
-    // Initial ignition burst
-    for (let i = 0; i < 10; i++) {
-        fluid.splat(
-            Math.random(),
-            Math.random(),
-            (Math.random() - 0.5) * 200,
-            (Math.random() - 0.5) * 200,
-            { r: 1, g: 0.4, b: 0 }
-        );
-    }
-
-    // Scroll-reactive forcing
-    let lastScrollY = window.scrollY;
-
-    window.addEventListener('scroll', () => {
-        const delta = window.scrollY - lastScrollY;
-
-        fluid.splat(
-            0.5,
-            0.5,
-            0,
-            -delta * 20,
-            { r: 1, g: 0.3, b: 0 }
-        );
-
-        lastScrollY = window.scrollY;
-    });
 };
 </script>
+
 
 </body>
 </html>
