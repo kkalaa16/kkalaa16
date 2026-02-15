@@ -332,79 +332,76 @@
     </section>
 
     <script>
-        window.onload = function() {
-            const canvas = document.getElementById('fluid-canvas');
-            
-            // Initialization for webgl-fluid
-            // The library often returns a controller object or attaches methods to itself
-            const fluid = WebGLFluid(canvas, {
-                SIM_RESOLUTION: 128,
-                DYE_RESOLUTION: 1024,
-                DENSITY_DISSIPATION: 0.98, // Slow fade for persistent vortices
-                VELOCITY_DISSIPATION: 0.99,
-                PRESSURE: 0.8,
-                CURL: 60, // High vorticity for swirls
-                SPLAT_RADIUS: 0.35,
-                SPLAT_FORCE: 6000,
-                SHADING: true,
-                COLORFUL: false, // Technical Orange/Black theme
-                PAUSED: false,
-                BACK_COLOR: { r: 0, g: 0, b: 0 },
-                BLOOM: false,
-                TRANSPARENT: true,
-            });
+window.onload = function() {
+    const canvas = document.getElementById('fluid-canvas');
 
-            // --- PERSISTENCE MECHANISM ---
-            // This function ensures the simulation "keeps iterating over itself" 
-            // by injecting energy whenever the system becomes too static.
-            function maintenanceLoop() {
-                if (fluid && typeof fluid.splat === 'function') {
-                    // Random ignition pulse to keep the "combustion" look alive
-                    if (Math.random() > 0.6) {
-                        fluid.splat(
-                            Math.random(), 
-                            Math.random(), 
-                            (Math.random() - 0.5) * 8, 
-                            (Math.random() - 0.5) * 8, 
-                            { r: 0.6, g: 0.15, b: 0 }
-                        );
-                    }
-                }
-                requestAnimationFrame(maintenanceLoop);
-            }
-            maintenanceLoop();
+    const fluid = WebGLFluid(canvas, {
+        SIM_RESOLUTION: 128,
+        DYE_RESOLUTION: 1024,
 
-            // --- MATRIX "IGNITION" BLAST ---
-            function ignitionSequence() {
-                if (fluid && typeof fluid.splat === 'function') {
-                    for(let i=0; i<12; i++) {
-                        setTimeout(() => {
-                            fluid.splat(0.5, 0.5, (Math.random()-0.5)*150, (Math.random()-0.5)*150, { r: 1, g: 0.4, b: 0 });
-                        }, i * 100);
-                    }
-                }
-            }
-            ignitionSequence();
+        // LOWER DISSIPATION (critical)
+        DENSITY_DISSIPATION: 0.995,
+        VELOCITY_DISSIPATION: 0.995,
 
-            // --- SCROLL REACTIVE "SLOSH" ---
-            let lastScrollY = window.scrollY;
-            window.addEventListener('scroll', () => {
-                const currentScrollY = window.scrollY;
-                const delta = currentScrollY - lastScrollY;
-                
-                if (Math.abs(delta) > 3 && fluid && typeof fluid.splat === 'function') {
-                    // Drive a sloshing wave in the direction of the scroll
-                    for (let i = 0; i < 3; i++) {
-                        const x = Math.random();
-                        const y = 0.5;
-                        const dx = (Math.random() - 0.5) * 20;
-                        const dy = -delta * 12; // Inject force based on scroll speed
-                        fluid.splat(x, y, dx, dy, { r: 0.9, g: 0.3, b: 0 });
-                    }
-                }
-                lastScrollY = currentScrollY;
-            });
-        };
-    </script>
+        PRESSURE: 0.6,
+        CURL: 120,                 // Strong vorticity confinement
+        SPLAT_RADIUS: 0.25,
+        SPLAT_FORCE: 8000,
+
+        SHADING: true,
+        COLORFUL: false,
+        PAUSED: false,
+        BACK_COLOR: { r: 0, g: 0, b: 0 },
+        TRANSPARENT: true
+    });
+
+    // --- CONTINUOUS ROTATIONAL FORCING ---
+    function perpetualEnergy() {
+
+        const t = Date.now() * 0.001;
+
+        const x = 0.5 + 0.25 * Math.cos(t);
+        const y = 0.5 + 0.25 * Math.sin(t);
+
+        const dx = 80 * Math.cos(t * 1.5);
+        const dy = 80 * Math.sin(t * 1.5);
+
+        fluid.splat(x, y, dx, dy, { r: 0.9, g: 0.25, b: 0 });
+
+        requestAnimationFrame(perpetualEnergy);
+    }
+
+    perpetualEnergy();
+
+    // Initial ignition burst
+    for (let i = 0; i < 10; i++) {
+        fluid.splat(
+            Math.random(),
+            Math.random(),
+            (Math.random() - 0.5) * 200,
+            (Math.random() - 0.5) * 200,
+            { r: 1, g: 0.4, b: 0 }
+        );
+    }
+
+    // Scroll-reactive forcing
+    let lastScrollY = window.scrollY;
+
+    window.addEventListener('scroll', () => {
+        const delta = window.scrollY - lastScrollY;
+
+        fluid.splat(
+            0.5,
+            0.5,
+            0,
+            -delta * 20,
+            { r: 1, g: 0.3, b: 0 }
+        );
+
+        lastScrollY = window.scrollY;
+    });
+};
+</script>
+
 </body>
 </html>
