@@ -3,9 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Krtin Kala · Aerospace & Mechanical Engineer</title>
-    <!-- Font Awesome 6 (free) for icons -->
+    <title>Krtin Kala · aerospace & mechanical engineer</title>
+    <!-- Google Fonts, Font Awesome, and Three.js style libraries -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Model Viewer (for 3D embedding) – optional but ready -->
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -14,759 +19,585 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: #f8fafc;
-            color: #0b1c2f;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
             line-height: 1.5;
+            transition: background-color 0.3s ease, color 0.2s ease;
             scroll-behavior: smooth;
-            transition: background 0.3s, color 0.3s;
         }
 
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        /* industrial-modern palette */
         :root {
-            --slate-800: #1e293b;
-            --slate-600: #475569;
-            --slate-200: #e2e8f0;
-            --blue-accent: #2563eb;
-            --blue-light: #dbeafe;
-            --bg-light: #f8fafc;
-            --card-white: #ffffff;
-            --shadow-sm: 0 4px 6px -2px rgba(0,0,0,0.05);
+            --bg-primary: #f0f4fa;
+            --bg-secondary: #ffffff;
+            --text-primary: #171717;
+            --text-secondary: #4b5563;
+            --accent: #0a58ca;
+            --accent-glow: rgba(10, 88, 202, 0.2);
+            --card-bg: rgba(255, 255, 255, 0.75);
+            --card-border: rgba(255, 255, 255, 0.5);
+            --nav-bg: rgba(255, 255, 255, 0.7);
+            --shadow: 0 20px 35px -8px rgba(0,20,40,0.15), 0 0 0 1px rgba(0,0,0,0.02);
+            --glass-edge: rgba(255,255,255,0.6);
         }
 
-        h1, h2, h3 {
-            font-weight: 600;
-            letter-spacing: -0.02em;
+        body.dark {
+            --bg-primary: #0b1423;
+            --bg-secondary: #16213e;
+            --text-primary: #eaeef5;
+            --text-secondary: #b0c4de;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59,130,246,0.3);
+            --card-bg: rgba(20, 30, 50, 0.7);
+            --card-border: rgba(255,255,255,0.05);
+            --nav-bg: rgba(10, 20, 30, 0.7);
+            --shadow: 0 20px 30px -10px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.02);
+            --glass-edge: rgba(255,255,255,0.02);
         }
 
-        h2 {
-            font-size: 2rem;
-            margin-bottom: 2rem;
-            border-bottom: 3px solid var(--blue-accent);
-            padding-bottom: 0.5rem;
-            display: inline-block;
+        /* smooth container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2.5rem;
         }
 
-        .section {
-            padding: 4rem 0;
+        /* glass-panel style */
+        .glass {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: 2rem;
+            box-shadow: var(--shadow);
         }
 
-        /* ----- hero ----- */
+        /* navigation */
+        .navbar {
+            position: fixed;
+            top: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: auto;
+            min-width: 500px;
+            background: var(--nav-bg);
+            backdrop-filter: blur(16px);
+            border-radius: 60px;
+            padding: 0.8rem 1.8rem;
+            border: 1px solid var(--glass-edge);
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            gap: 2.5rem;
+            transition: 0.2s;
+        }
+
+        .navbar a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            letter-spacing: 0.3px;
+            padding: 0.3rem 0;
+            border-bottom: 2px solid transparent;
+            transition: 0.2s;
+        }
+        .navbar a:hover {
+            border-bottom-color: var(--accent);
+            color: var(--accent);
+        }
+        .theme-toggle {
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin-left: 1rem;
+        }
+
+        /* hero */
         .hero {
-            min-height: 80vh;
+            min-height: 100vh;
             display: flex;
             align-items: center;
-            background: linear-gradient(145deg, #ffffff 0%, #f1f5f9 100%);
+            position: relative;
+            overflow: hidden;
         }
-
-        .hero-content h1 {
-            font-size: clamp(3rem, 8vw, 5rem);
-            line-height: 1.1;
-            color: var(--slate-800);
+        .hero-backdrop {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 70% 30%, var(--accent-glow), transparent 60%);
+            z-index: -1;
         }
-
-        .hero-tagline {
-            font-size: 1.5rem;
-            color: var(--slate-600);
-            margin: 1rem 0 2rem;
-            max-width: 700px;
+        .hero-content {
+            max-width: 1000px;
+        }
+        .hero h1 {
+            font-size: clamp(3.8rem, 10vw, 6.5rem);
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, var(--text-primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-dynamic {
+            font-size: 1.6rem;
+            color: var(--text-secondary);
+            margin: 1.8rem 0 2.5rem;
+            min-height: 4rem;
             font-weight: 400;
-            min-height: 4rem; /* for typing effect */
+            border-right: 3px solid var(--accent);
+            display: inline-block;
+            white-space: nowrap;
+            overflow: hidden;
+            padding-right: 10px;
         }
-
-        .btn-group {
+        .cta-group {
             display: flex;
             gap: 1.2rem;
             flex-wrap: wrap;
         }
-
         .btn {
-            display: inline-block;
-            padding: 0.9rem 2rem;
-            border-radius: 4px;
-            font-weight: 500;
+            padding: 1rem 2.8rem;
+            border-radius: 50px;
+            font-weight: 600;
             text-decoration: none;
-            transition: 0.2s ease;
+            transition: 0.25s;
             border: 1px solid transparent;
-            cursor: pointer;
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.1);
+            color: var(--text-primary);
+            border-color: var(--text-secondary);
         }
-
         .btn-primary {
-            background: var(--blue-accent);
+            background: var(--accent);
             color: white;
-            box-shadow: 0 4px 6px -2px rgba(37,99,235,0.3);
+            border-color: var(--accent);
+            box-shadow: 0 10px 20px -5px var(--accent-glow);
         }
-
         .btn-primary:hover {
-            background: #1d4ed8;
-            transform: translateY(-2px);
+            transform: translateY(-4px);
+            filter: brightness(1.1);
         }
-
-        .btn-outline {
-            background: transparent;
-            border-color: var(--slate-600);
-            color: var(--slate-800);
-        }
-
         .btn-outline:hover {
-            background: var(--slate-200);
-            border-color: var(--slate-800);
-        }
-
-        /* filter buttons */
-        .filter-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.8rem;
-            margin-bottom: 2.5rem;
-        }
-        .filter-btn {
-            background: white;
-            border: 1px solid var(--slate-200);
-            padding: 0.5rem 1.4rem;
-            border-radius: 30px;
-            font-weight: 500;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: 0.2s;
-            color: var(--slate-800);
-        }
-        .filter-btn.active {
-            background: var(--blue-accent);
+            background: var(--accent);
             color: white;
-            border-color: var(--blue-accent);
-        }
-        .filter-btn:hover {
-            background: var(--blue-light);
-            border-color: var(--blue-accent);
+            border-color: var(--accent);
         }
 
-        /* ----- skills chips ----- */
+        /* section titles */
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            letter-spacing: -0.02em;
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent) 20%, var(--text-primary) 80%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 0.5rem;
+        }
+
+        /* skill chips */
         .skills-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 2.5rem;
-            margin-top: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
         }
-
-        .skill-cat h3 {
-            font-size: 1.3rem;
-            margin-bottom: 1.2rem;
-            color: var(--slate-800);
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
+        .skill-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            border-radius: 30px;
+            padding: 1.5rem 1.2rem;
+            border: 1px solid var(--card-border);
+            box-shadow: var(--shadow);
+            transition: 0.2s;
         }
-
-        .skill-cat h3 i {
-            color: var(--blue-accent);
-            width: 1.6rem;
+        .skill-card:hover {
+            border-color: var(--accent);
+            transform: scale(1.02);
         }
-
+        .skill-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+        }
         .skill-tags {
             display: flex;
             flex-wrap: wrap;
-            gap: 0.6rem;
+            gap: 0.5rem;
         }
-
         .skill-tag {
-            background: white;
-            border: 1px solid var(--slate-200);
-            padding: 0.4rem 1rem;
-            border-radius: 30px;
-            font-size: 0.85rem;
+            background: var(--bg-secondary);
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            font-size: 0.8rem;
             font-weight: 500;
-            color: var(--slate-800);
-            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-            transition: 0.1s;
+            border: 1px solid var(--text-secondary);
+            color: var(--text-primary);
         }
 
-        .skill-tag:hover {
-            border-color: var(--blue-accent);
-            background: var(--blue-light);
+        /* 3D model viewer card style (placeholders) */
+        .model-placeholder {
+            background: linear-gradient(145deg, #1a2639, #0f172a);
+            border-radius: 24px;
+            height: 240px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            font-size: 1rem;
+            border: 1px dashed var(--accent);
+            margin-bottom: 1rem;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+        .model-placeholder i {
+            font-size: 2.5rem;
+            margin-right: 10px;
         }
 
-        /* ----- project cards (problem-solution-outcome) ----- */
+        /* projects grid — sleek cards */
         .projects-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
             gap: 2rem;
-            margin-top: 1rem;
-            transition: opacity 0.3s;
+            margin: 2rem 0;
         }
-
         .project-card {
-            background: var(--card-white);
-            border-radius: 12px;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 2rem;
+            border: 1px solid var(--card-border);
             overflow: hidden;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.02), 0 2px 6px rgba(0,20,40,0.05);
-            transition: 0.25s ease, opacity 0.3s, transform 0.3s;
-            border: 1px solid var(--slate-200);
+            box-shadow: var(--shadow);
+            transition: 0.25s ease;
             display: flex;
             flex-direction: column;
         }
-
         .project-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 20px 30px -10px rgba(37,99,235,0.15);
-            border-color: var(--blue-accent);
+            transform: translateY(-8px);
+            border-color: var(--accent);
         }
-
         .project-img {
             width: 100%;
-            background: #cbd5e1;
+            background: #1e2a3a;
+            aspect-ratio: 16/9;
+            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #334155;
-            font-size: 0.9rem;
+            color: #adb5bd;
         }
-
-        .project-img img {
-            width: 100%;
-            height: auto;
-            aspect-ratio: 16 / 9;
-            object-fit: cover;
-            background: #e2e8f0;
+        .project-content {
+            padding: 1.8rem;
+        }
+        .project-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+        .project-meta {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+        .project-tag {
+            background: var(--accent);
+            color: white;
+            border-radius: 40px;
+            padding: 0.2rem 1rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        .project-problem, .project-solution, .project-outcome {
+            margin: 0.75rem 0;
+        }
+        .project-label {
+            font-weight: 700;
+            color: var(--accent);
             display: block;
         }
 
-        .project-content {
-            padding: 1.8rem 1.5rem;
-            flex: 1;
-        }
-
-        .project-title {
-            font-size: 1.4rem;
-            font-weight: 600;
-            margin-bottom: 0.8rem;
-            color: var(--slate-800);
-        }
-
-        .project-problem, .project-solution, .project-outcome {
-            margin-bottom: 1rem;
-        }
-
-        .project-label {
-            font-weight: 600;
-            color: var(--blue-accent);
-            display: inline-block;
-            min-width: 5rem;
-        }
-
-        .project-text {
-            color: var(--slate-600);
-            font-size: 0.95rem;
-            margin-top: 0.2rem;
-        }
-
-        /* hidden state for filtering */
-        .project-card.hidden {
-            display: none;
-        }
-
-        /* ----- timeline ----- */
+        /* timeline */
         .timeline {
-            margin-top: 2.5rem;
+            margin-top: 2rem;
         }
-
         .timeline-item {
             display: flex;
             gap: 2rem;
-            margin-bottom: 2.2rem;
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            border-radius: 2rem;
+            padding: 1.8rem;
+            border: 1px solid var(--card-border);
+            margin-bottom: 1.2rem;
+            transition: 0.2s;
         }
-
+        .timeline-item:hover {
+            border-color: var(--accent);
+        }
         .timeline-date {
-            min-width: 130px;
+            min-width: 140px;
             font-weight: 600;
-            color: var(--blue-accent);
+            color: var(--accent);
         }
 
-        .timeline-content h3 {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--slate-800);
-        }
-
-        .timeline-content h4 {
-            font-weight: 500;
-            color: var(--slate-600);
-            margin: 0.2rem 0 0.5rem;
-        }
-
-        .timeline-content p {
-            color: #334155;
-            font-size: 0.95rem;
-            max-width: 700px;
-        }
-
-        /* ----- contact ----- */
+        /* contact */
         .contact-links {
             display: flex;
-            gap: 2.5rem;
+            gap: 3rem;
             flex-wrap: wrap;
-            align-items: center;
-            margin-top: 2rem;
+            justify-content: center;
+            margin: 3rem 0;
         }
-
-        .contact-item {
+        .contact-link {
             display: flex;
             align-items: center;
-            gap: 0.7rem;
-            font-size: 1.2rem;
-            color: var(--slate-800);
+            gap: 0.8rem;
+            background: var(--card-bg);
+            padding: 1rem 2.2rem;
+            border-radius: 60px;
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(10px);
             text-decoration: none;
-            border-bottom: 2px solid transparent;
+            color: var(--text-primary);
+            font-weight: 500;
             transition: 0.2s;
         }
-
-        .contact-item i {
-            color: var(--blue-accent);
-            font-size: 1.6rem;
+        .contact-link:hover {
+            border-color: var(--accent);
+            transform: scale(1.05);
         }
 
-        .contact-item:hover {
-            border-bottom-color: var(--blue-accent);
-        }
-
+        /* footer */
         .footer {
             text-align: center;
-            padding: 2rem 0;
-            color: var(--slate-600);
-            border-top: 1px solid var(--slate-200);
-            margin-top: 2rem;
-        }
-
-        /* back to top button */
-        #backToTop {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: var(--blue-accent);
-            color: white;
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.4rem;
-            cursor: pointer;
-            border: none;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            opacity: 0;
-            visibility: hidden;
-            transition: 0.2s;
-            z-index: 99;
-        }
-        #backToTop.show {
-            opacity: 1;
-            visibility: visible;
-        }
-        #backToTop:hover {
-            background: #1d4ed8;
-            transform: scale(1.05);
+            padding: 3rem 0;
+            color: var(--text-secondary);
         }
 
         /* responsive */
         @media (max-width: 700px) {
-            .container { padding: 0 1.2rem; }
-            .timeline-item { flex-direction: column; gap: 0.3rem; }
-            .timeline-date { min-width: auto; }
-            .hero { min-height: 60vh; }
-            .btn-group { flex-direction: column; align-items: stretch; }
-            .btn { text-align: center; }
-            .filter-bar { justify-content: center; }
+            .navbar { min-width: 90%; gap: 1.2rem; }
+            .hero-dynamic { white-space: normal; border-right: none; }
+            .timeline-item { flex-direction: column; gap: 0.5rem; }
         }
     </style>
 </head>
 <body>
+    <!-- sleek floating nav -->
+    <nav class="navbar">
+        <a href="#home">HOME</a>
+        <a href="#skills">SKILLS</a>
+        <a href="#projects">WORK</a>
+        <a href="#experience">TIMELINE</a>
+        <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
+    </nav>
 
-<!-- HERO SECTION -->
-<section class="hero" id="home">
-    <div class="container">
-        <div class="hero-content">
+    <!-- HERO SECTION -->
+    <section class="hero" id="home">
+        <div class="hero-backdrop"></div>
+        <div class="container hero-content">
             <h1>Krtin Kala</h1>
-            <div class="hero-tagline" id="typingTagline"></div>
-            <div class="btn-group">
-                <a href="#projects" class="btn btn-primary"><i class="fas fa-arrow-down" style="margin-right: 0.5rem;"></i>View My Work</a>
-                <a href="#" class="btn btn-outline" id="downloadResume"><i class="fas fa-file-pdf" style="margin-right: 0.5rem;"></i>Download Resume (PDF)</a>
+            <div class="hero-dynamic" id="typing"></div>
+            <div class="cta-group">
+                <a href="#projects" class="btn btn-primary"><i class="fas fa-arrow-down"></i> View work</a>
+                <a href="#" id="resumeLink" class="btn btn-outline"><i class="fas fa-file-pdf"></i> Resume</a>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- TECHNICAL SKILLS -->
-<section class="section" id="skills">
-    <div class="container">
-        <h2>Technical expertise</h2>
+    <!-- SKILLS with glass cards -->
+    <section class="container" id="skills">
+        <h2 class="section-title">expertise</h2>
         <div class="skills-grid">
-            <div class="skill-cat">
-                <h3><i class="fas fa-cube"></i> CAD & Modeling</h3>
-                <div class="skill-tags">
-                    <span class="skill-tag">SolidWorks</span>
-                    <span class="skill-tag">CATIA V5</span>
-                    <span class="skill-tag">Fusion 360</span>
-                    <span class="skill-tag">AutoCAD</span>
-                    <span class="skill-tag">ANSYS DM</span>
-                    <span class="skill-tag">GD&T</span>
-                    <span class="skill-tag">Tolerance analysis</span>
+            <div class="skill-card"><h3><i class="fas fa-cube"></i> CAD & modeling</h3><div class="skill-tags"><span class="skill-tag">SolidWorks</span><span class="skill-tag">CATIA V5</span><span class="skill-tag">Fusion 360</span><span class="skill-tag">AutoCAD</span><span class="skill-tag">GD&T</span></div></div>
+            <div class="skill-card"><h3><i class="fas fa-wind"></i> CFD & simulation</h3><div class="skill-tags"><span class="skill-tag">ANSYS Fluent</span><span class="skill-tag">OpenFOAM</span><span class="skill-tag">NPSS</span><span class="skill-tag">RANS/LES</span><span class="skill-tag">FGM</span></div></div>
+            <div class="skill-card"><h3><i class="fas fa-code"></i> code & automation</h3><div class="skill-tags"><span class="skill-tag">Python</span><span class="skill-tag">MATLAB</span><span class="skill-tag">C++</span><span class="skill-tag">OpenMDAO</span><span class="skill-tag">bash</span></div></div>
+            <div class="skill-card"><h3><i class="fas fa-brain"></i> AI/ML applied</h3><div class="skill-tags"><span class="skill-tag">clustering</span><span class="skill-tag">regression</span><span class="skill-tag">FNO</span><span class="skill-tag">physics-informed</span></div></div>
+        </div>
+    </section>
+
+    <!-- PROJECT GALLERY + 3D EMBED ZONE (sleek model viewer placeholders) -->
+    <section class="container" id="projects">
+        <h2 class="section-title">featured projects</h2>
+        <!-- 3D spotlight row: instructions for embedding real models -->
+        <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 3rem;">
+            <div class="glass" style="flex:1; padding:2rem;">
+                <div style="display: flex; align-items: center; gap:1rem; margin-bottom:1rem;"><i class="fas fa-cube" style="font-size:2rem; color:var(--accent);"></i><h3 style="font-size:1.5rem;">Interactive 3D models</h3></div>
+                <p style="margin-bottom:1.2rem;">Replace placeholder with live embedded model using <strong>Google Model Viewer</strong> or <strong>p3d.in</strong> [citation:3].</p>
+                <div class="model-placeholder" id="modelViewerDemo">
+                    <i class="fas fa-rotate"></i> 3D model will appear here (GLB/GLTF)
                 </div>
-            </div>
-            <div class="skill-cat">
-                <h3><i class="fas fa-wind"></i> Simulation & CFD</h3>
-                <div class="skill-tags">
-                    <span class="skill-tag">ANSYS Fluent/CFX</span>
-                    <span class="skill-tag">OpenFOAM</span>
-                    <span class="skill-tag">Simulink</span>
-                    <span class="skill-tag">NPSS</span>
-                    <span class="skill-tag">ParaView</span>
-                    <span class="skill-tag">RANS/LES</span>
-                    <span class="skill-tag">Reacting flows (FGM)</span>
-                    <span class="skill-tag">FSI</span>
-                </div>
-            </div>
-            <div class="skill-cat">
-                <h3><i class="fas fa-code"></i> Programming & automation</h3>
-                <div class="skill-tags">
-                    <span class="skill-tag">Python</span>
-                    <span class="skill-tag">C/C++</span>
-                    <span class="skill-tag">MATLAB</span>
-                    <span class="skill-tag">Linux/CLI</span>
-                    <span class="skill-tag">Scripting</span>
-                    <span class="skill-tag">OpenMDAO</span>
-                </div>
-            </div>
-            <div class="skill-cat">
-                <h3><i class="fas fa-sitemap"></i> Systems & decision methods</h3>
-                <div class="skill-tags">
-                    <span class="skill-tag">SysML / MBSE</span>
-                    <span class="skill-tag">QFD</span>
-                    <span class="skill-tag">TOPSIS</span>
-                    <span class="skill-tag">Trade studies</span>
-                    <span class="skill-tag">FLOPS/NPSS</span>
-                </div>
-            </div>
-            <div class="skill-cat">
-                <h3><i class="fas fa-brain"></i> Data / ML (applied)</h3>
-                <div class="skill-tags">
-                    <span class="skill-tag">Feature engineering</span>
-                    <span class="skill-tag">Clustering</span>
-                    <span class="skill-tag">Regression/classification</span>
-                    <span class="skill-tag">Physics-informed ML</span>
-                </div>
-            </div>
-            <div class="skill-cat">
-                <h3><i class="fas fa-microchip"></i> Manufacturing & hands‑on</h3>
-                <div class="skill-tags">
-                    <span class="skill-tag">DFM</span>
-                    <span class="skill-tag">Additive/subtractive</span>
-                    <span class="skill-tag">Experimental rigs</span>
-                    <span class="skill-tag">Raspberry Pi</span>
-                    <span class="skill-tag">Sensors</span>
-                </div>
+                <!-- example embed code (commented) - replace src with your model URL -->
+                <!-- <model-viewer src="path/to/propeller.glb" alt="3D model" auto-rotate camera-controls style="width:100%; height:300px;"></model-viewer> -->
+                <p style="font-size:0.85rem; opacity:0.7;">Upload your model to <strong>p3d.in</strong> (free) and embed via iframe or model-viewer [citation:3]. Sketchfab portfolios also possible [citation:2].</p>
             </div>
         </div>
-    </div>
-</section>
 
-<!-- PROJECT GALLERY with filter -->
-<section class="section" id="projects">
-    <div class="container">
-        <h2>Proof of work: featured projects</h2>
-
-        <!-- filter buttons -->
-        <div class="filter-bar">
-            <button class="filter-btn active" data-filter="all">All</button>
-            <button class="filter-btn" data-filter="cfd">CFD / Combustion</button>
-            <button class="filter-btn" data-filter="propulsion">Propulsion</button>
-            <button class="filter-btn" data-filter="ai">AI / ML</button>
-            <button class="filter-btn" data-filter="design">Design</button>
-        </div>
-
-        <div class="projects-grid" id="projectsGrid">
-            <!-- 1. Drone Blade Flow Analysis (CFD) -->
-            <div class="project-card" data-category="cfd">
-                <div class="project-img">
-                    <img src="placeholder.jpg" alt="Gemfan 6042 two-blade and three-blade propellers CAD">
-                </div>
+        <!-- project cards with problem/solution/outcome -->
+        <div class="projects-grid">
+            <!-- Drone blade -->
+            <div class="project-card">
+                <div class="project-img"><i class="fas fa-cubes" style="font-size:3rem;"></i><span style="margin-left:10px;">propeller CAD</span></div>
                 <div class="project-content">
+                    <span class="project-tag">CFD</span><span class="project-tag">experiment</span>
                     <div class="project-title">Downwash of drone rotors</div>
-                    <div class="project-problem"><span class="project-label">Problem:</span><div class="project-text">Need to quantify flow differences between 2‑blade and 3‑blade fixed‑pitch propellers.</div></div>
-                    <div class="project-solution"><span class="project-label">Solution:</span><div class="project-text">Low‑cost rig (RPi, ESC, anemometer) + OpenFOAM RANS k‑ω SST. Validated wake velocity.</div></div>
-                    <div class="project-outcome"><span class="project-label">Outcome:</span><div class="project-text">3‑blade rotor: +51.7% upthrust, uniform flow; CFD matched experiments within 5%.</div></div>
+                    <div class="project-problem"><span class="project-label">Problem</span> Quantify flow differences 2-blade vs 3-blade propellers.</div>
+                    <div class="project-solution"><span class="project-label">Solution</span> Low-cost rig (RPi, anemometer) + OpenFOAM k-ω SST.</div>
+                    <div class="project-outcome"><span class="project-label">Outcome</span> +51.7% upthrust, 5% error vs experiment.</div>
                 </div>
             </div>
-            <!-- 2. Ammonia‑Hydrogen Combustion (CFD) -->
-            <div class="project-card" data-category="cfd">
-                <div class="project-img">
-                    <img src="placeholder.jpg" alt="Static temperature contour ammonia-hydrogen flame">
-                </div>
+            <!-- NH3/H2 combustion -->
+            <div class="project-card">
+                <div class="project-img"><i class="fas fa-fire"></i><span> flamelet</span></div>
                 <div class="project-content">
-                    <div class="project-title">NH₃/H₂ combustion for gas turbines</div>
-                    <div class="project-problem"><span class="project-label">Problem:</span><div class="project-text">Ammonia‑hydrogen blends reduce CO₂ but NOx emissions and modelling cost remain high.</div></div>
-                    <div class="project-solution"><span class="project-label">Solution:</span><div class="project-text">Flamelet Generated Manifold (FGM) in ANSYS, validated against OH* chemiluminescence.</div></div>
-                    <div class="project-outcome"><span class="project-label">Outcome:</span><div class="project-text">86.7% runtime reduction vs LES, 92.66% F1 score; projected ML‑accelerated LUT (99.55% accuracy).</div></div>
+                    <span class="project-tag">LES/FGM</span>
+                    <div class="project-title">NH₃/H₂ combustion</div>
+                    <div class="project-problem"><span class="project-label">Problem</span> NOx emissions, high cost of LES.</div>
+                    <div class="project-solution"><span class="project-label">Solution</span> FGM in ANSYS, validated vs OH*.</div>
+                    <div class="project-outcome"><span class="project-label">Outcome</span> 86.7% runtime reduction, 92.66% F1.</div>
                 </div>
             </div>
-            <!-- 3. Turbojet/turbofan cycle analysis (Propulsion) -->
-            <div class="project-card" data-category="propulsion">
-                <div class="project-img">
-                    <img src="placeholder.jpg" alt="TSFC vs ST scatter for constant and variable gamma">
-                </div>
+            <!-- cycle analysis -->
+            <div class="project-card">
+                <div class="project-img"><i class="fas fa-chart-line"></i><span> TSFC/ST</span></div>
                 <div class="project-content">
-                    <div class="project-title">Turbojet / turbofan cycle optimization</div>
-                    <div class="project-problem"><span class="project-label">Problem:</span><div class="project-text">Select optimal engine cycle for commercial transport with realistic gas properties.</div></div>
-                    <div class="project-solution"><span class="project-label">Solution:</span><div class="project-text">MATLAB tool sweeping πc, πf, β; compared constant‑γ vs variable‑γ(T) (NASA polynomials).</div></div>
-                    <div class="project-outcome"><span class="project-label">Outcome:</span><div class="project-text">Variable‑γ optimum: πc≈34, πf≈2.5, β≈2 (ST=615 m/s, TSFC=0.504). Constant‑γ overpredicts efficiency by ~12%.</div></div>
+                    <span class="project-tag">propulsion</span>
+                    <div class="project-title">turbofan cycle optimization</div>
+                    <div class="project-problem"><span class="project-label">Problem</span> real-gas effects in design.</div>
+                    <div class="project-solution"><span class="project-label">Solution</span> MATLAB sweep πc,πf,β with var-γ(T).</div>
+                    <div class="project-outcome"><span class="project-label">Outcome</span> optimum πc≈34, β≈2; const-γ overpredicts 12%.</div>
                 </div>
             </div>
-            <!-- 4. Hybrid‑electric propulsion (Propulsion + Design) -->
-            <div class="project-card" data-category="propulsion design">
-                <div class="project-img">
-                    <img src="placeholder.jpg" alt="Hybrid-electric architecture">
-                </div>
+            <!-- hybrid electric -->
+            <div class="project-card">
+                <div class="project-img"><i class="fas fa-bolt"></i><span> hybrid</span></div>
                 <div class="project-content">
-                    <div class="project-title">Hybrid‑electric tactical transport</div>
-                    <div class="project-problem"><span class="project-label">Problem:</span><div class="project-text">AFRL requires tactical mobility with better fuel economy and STOL.</div></div>
-                    <div class="project-solution"><span class="project-label">Solution:</span><div class="project-text">Multi‑fidelity optimization (NPSS/FLOPS + OpenMDAO), DoE in JMP.</div></div>
-                    <div class="project-outcome"><span class="project-label">Outcome:</span><div class="project-text">15.7% range ↑, 6.7% takeoff distance ↓, 2.78% payload ↑ vs C‑130J.</div></div>
+                    <span class="project-tag">OpenMDAO</span>
+                    <div class="project-title">hybrid-electric tactical transport</div>
+                    <div class="project-problem"><span class="project-label">Problem</span> AFRL range/payload trade.</div>
+                    <div class="project-solution"><span class="project-label">Solution</span> NPSS/FLOPS + OpenMDAO, DoE.</div>
+                    <div class="project-outcome"><span class="project-label">Outcome</span> +15.7% range, -6.7% TO distance.</div>
                 </div>
             </div>
-            <!-- 5. F1 AI PitWall (AI) -->
-            <div class="project-card" data-category="ai">
-                <div class="project-img">
-                    <img src="placeholder.jpg" alt="F1 AI PitWall dashboard">
-                </div>
+            <!-- F1 AI -->
+            <div class="project-card">
+                <div class="project-img"><i class="fas fa-flag-checkered"></i><span> AI</span></div>
                 <div class="project-content">
-                    <div class="project-title">Formula 1 AI PitWall</div>
-                    <div class="project-problem"><span class="project-label">Problem:</span><div class="project-text">Real‑time data overload; teams need quick, probabilistic strategy insights.</div></div>
-                    <div class="project-solution"><span class="project-label">Solution:</span><div class="project-text">Five ML models (driver profiling, tyre choice, track DNA clustering, etc.) + interactive dashboard.</div></div>
-                    <div class="project-outcome"><span class="project-label">Outcome:</span><div class="project-text">Track DNA via DBSCAN/GMM; integrated into one visual tool for mock race decisions.</div></div>
+                    <span class="project-tag">ML</span>
+                    <div class="project-title">F1 AI PitWall</div>
+                    <div class="project-problem"><span class="project-label">Problem</span> real-time strategy overload.</div>
+                    <div class="project-solution"><span class="project-label">Solution</span> 5 ML models, track DNA (DBSCAN).</div>
+                    <div class="project-outcome"><span class="project-label">Outcome</span> interactive dashboard for race decisions.</div>
                 </div>
             </div>
-            <!-- 6. Hydrogen BWB (Design + Propulsion) -->
-            <div class="project-card" data-category="design propulsion">
-                <div class="project-img">
-                    <img src="placeholder.jpg" alt="Hydrogen Blended Wing Body concept">
-                </div>
+            <!-- H2 BWB -->
+            <div class="project-card">
+                <div class="project-img"><i class="fas fa-plane"></i><span> BWB</span></div>
                 <div class="project-content">
-                    <div class="project-title">Next‑gen hydrogen BWB</div>
-                    <div class="project-problem"><span class="project-label">Problem:</span><div class="project-text">Design a H₂‑powered blended wing body with 20% CO₂ cut, airport‑compatible.</div></div>
-                    <div class="project-solution"><span class="project-label">Solution:</span><div class="project-text">MBSE (SysML), morphological matrix, QFD, TOPSIS; trade studies on fuel, materials.</div></div>
-                    <div class="project-outcome"><span class="project-label">Outcome:</span><div class="project-text">20% CO₂ reduction, +10% fuel efficiency, +15% range; buckling mitigation via multi‑bubble cabin.</div></div>
+                    <span class="project-tag">MBSE</span>
+                    <div class="project-title">hydrogen blended wing body</div>
+                    <div class="project-problem"><span class="project-label">Problem</span> 20% CO2 reduction, airport compat.</div>
+                    <div class="project-solution"><span class="project-label">Solution</span> SysML, QFD, TOPSIS, multi-bubble cabin.</div>
+                    <div class="project-outcome"><span class="project-label">Outcome</span> +10% efficiency, +15% range.</div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- EXPERIENCE & EDUCATION (timeline) -->
-<section class="section" id="experience">
-    <div class="container">
-        <h2>Timeline</h2>
+    <!-- TIMELINE (Experience & Education) -->
+    <section class="container" id="experience">
+        <h2 class="section-title">path</h2>
         <div class="timeline">
-            <div class="timeline-item">
-                <div class="timeline-date">2025 – present</div>
-                <div class="timeline-content">
-                    <h3>Graduate Student Researcher</h3>
-                    <h4>Ben T. Zinn Combustion Lab · Georgia Tech</h4>
-                    <p>Entropy generation in turbulent diffusion flames (Sandia‑D). Developed reacting CFD model (ANSYS) with Bilr mixture fraction, automated post‑processing, benchmark against laser diagnostics.</p>
-                </div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-date">Aug – Dec 2025</div>
-                <div class="timeline-content">
-                    <h3>Graduate Teaching Assistant</h3>
-                    <h4>AE 3330 Aerospace Vehicle Performance · Georgia Tech</h4>
-                    <p>Mentored students in propulsion, range/endurance, orbital mechanics; created problem walkthroughs, liaison with instructor.</p>
-                </div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-date">2024 (est.)</div>
-                <div class="timeline-content">
-                    <h3>Research Project Assistant</h3>
-                    <h4>Baker Hughes & Eindhoven University</h4>
-                    <p>Applied FGM to turbulent NH₃/H₂ combustion; achieved 86.7% speed‑up vs LES. Validated against Baker Hughes experiments (92.66% F1).</p>
-                </div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-date">Jul 2023 – Jan 2024</div>
-                <div class="timeline-content">
-                    <h3>Research Project Assistant</h3>
-                    <h4>IIT Bombay</h4>
-                    <p>CFD of classroom ventilation, identified stagnation zones, proposed HVAC redesign +23.7% ACH improvement.</p>
-                </div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-date">May 2023 – Jul 2023</div>
-                <div class="timeline-content">
-                    <h3>Project Intern</h3>
-                    <h4>HAL (Hindustan Aeronautics)</h4>
-                    <p>Subsystem integration & trade‑offs for sustainable aircraft; documented design workflows.</p>
-                </div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-date">Aug 2020 – May 2022</div>
-                <div class="timeline-content">
-                    <h3>Design Engineer</h3>
-                    <h4>Hyperloop India</h4>
-                    <p>Propulsion integration, GD&T for 50+ safety‑critical components, DFM, tolerance analysis. Accelerated learning by 22%.</p>
-                </div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-date">Education</div>
-                <div class="timeline-content">
-                    <h3>M.S. Aerospace Engineering</h3>
-                    <h4>Georgia Institute of Technology · 2024 – present</h4>
-                    <p style="margin-top:0.5rem;"><strong>B.E. Mechanical Engineering</strong><br>BITS Pilani · 2019 – 2023</p>
-                </div>
-            </div>
+            <div class="timeline-item"><span class="timeline-date">2025–now</span><div><strong>Graduate researcher</strong> – Georgia Tech / Ben T. Zinn lab <br> <small>entropy generation, Sandia-D flame, reacting CFD</small></div></div>
+            <div class="timeline-item"><span class="timeline-date">2024–2025</span><div><strong>Research assistant</strong> – Baker Hughes / TU/e <br> <small>FGM for NH3/H2, 86% speed increase, validation</small></div></div>
+            <div class="timeline-item"><span class="timeline-date">2023–2024</span><div><strong>Project asst.</strong> – IIT Bombay <br> <small>classroom ventilation CFD, +23.7% ACH redesign</small></div></div>
+            <div class="timeline-item"><span class="timeline-date">2020–2022</span><div><strong>Design engineer</strong> – Hyperloop India <br> <small>propulsion integration, GD&T, DFM, 50+ components</small></div></div>
+            <div class="timeline-item"><span class="timeline-date">education</span><div><strong>M.S. aerospace eng.</strong> Georgia Tech 2024–<br><strong>B.E. mechanical eng.</strong> BITS Pilani 2019–2023</div></div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- CONTACT & LINKS -->
-<section class="section" id="contact">
-    <div class="container">
-        <h2>Connect</h2>
+    <!-- CONTACT -->
+    <section class="container" id="contact" style="margin-bottom:4rem;">
+        <h2 class="section-title">connect</h2>
         <div class="contact-links">
-            <a href="#" class="contact-item"><i class="fab fa-linkedin"></i> linkedin.com/in/krtin-kala</a>
-            <a href="#" class="contact-item"><i class="fab fa-github"></i> github.com/krtin-kala</a>
-            <a href="#" class="contact-item"><i class="fas fa-envelope"></i> kkala6@gatech.edu</a>
-            <a href="#" class="contact-item"><i class="fas fa-file-alt"></i> GrabCAD / portfolio</a>
+            <a href="#" class="contact-link"><i class="fab fa-linkedin"></i> LinkedIn</a>
+            <a href="#" class="contact-link"><i class="fab fa-github"></i> GitHub</a>
+            <a href="#" class="contact-link"><i class="fas fa-envelope"></i> kkala6@gatech.edu</a>
+            <a href="#" class="contact-link"><i class="fas fa-cube"></i> GrabCAD</a>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- FOOTER -->
-<footer class="footer">
-    <div class="container">
-        <p>© 2025 Krtin Kala — built with HTML/CSS/JS. Placeholder images marked “placeholder.jpg”.</p>
-    </div>
-</footer>
+    <footer class="footer">
+        <p>© 2025 Krtin Kala — designed with industrial elegance. 3D embed via p3d.in / model-viewer [citation:1][citation:3]</p>
+    </footer>
 
-<!-- BACK TO TOP BUTTON -->
-<button id="backToTop" aria-label="Back to top"><i class="fas fa-arrow-up"></i></button>
+    <!-- back to top button (simple) -->
+    <div id="backTop" style="position:fixed; bottom:2rem; right:2rem; background:var(--accent); color:white; width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; opacity:0; transition:0.2s; box-shadow:var(--shadow);"><i class="fas fa-arrow-up"></i></div>
 
-<script>
-    (function() {
-        // ---------- TYPING EFFECT IN HERO ----------
-        const taglineEl = document.getElementById('typingTagline');
-        const phrases = [
-            'M.S. Aerospace Engineering @ Georgia Tech',
-            'CFD · Propulsion · Energy Systems · AI/ML',
-            'turbulent combustion · hybrid propulsion · data analytics'
-        ];
-        let phraseIndex = 0;
-        let charIndex = 0;
-        let isDeleting = false;
-        let currentText = '';
-
-        function typeEffect() {
-            const fullText = phrases[phraseIndex];
-            if (isDeleting) {
-                currentText = fullText.substring(0, charIndex - 1);
-                charIndex--;
-            } else {
-                currentText = fullText.substring(0, charIndex + 1);
-                charIndex++;
-            }
-            taglineEl.textContent = currentText;
-
-            if (!isDeleting && charIndex === fullText.length) {
-                isDeleting = true;
-                setTimeout(typeEffect, 1500); // pause before delete
-            } else if (isDeleting && charIndex === 0) {
-                isDeleting = false;
-                phraseIndex = (phraseIndex + 1) % phrases.length;
-                setTimeout(typeEffect, 300);
-            } else {
-                const speed = isDeleting ? 40 : 70;
-                setTimeout(typeEffect, speed);
-            }
-        }
-        if (taglineEl) typeEffect();
-
-        // ---------- PROJECT FILTERING ----------
-        const filterButtons = document.querySelectorAll('.filter-btn');
-        const projectCards = document.querySelectorAll('.project-card');
-        const projectsGrid = document.getElementById('projectsGrid');
-
-        function filterProjects(category) {
-            // update active button
-            filterButtons.forEach(btn => {
-                if (btn.dataset.filter === category) btn.classList.add('active');
-                else btn.classList.remove('active');
-            });
-
-            // fade out grid, filter, fade in
-            projectsGrid.style.opacity = '0.5';
-            setTimeout(() => {
-                projectCards.forEach(card => {
-                    const cardCat = card.dataset.category; // e.g., "cfd" or "propulsion design"
-                    if (category === 'all') {
-                        card.classList.remove('hidden');
-                    } else {
-                        // check if category string contains the filter (space-separated)
-                        const cats = cardCat.split(' ');
-                        if (cats.includes(category)) {
-                            card.classList.remove('hidden');
-                        } else {
-                            card.classList.add('hidden');
-                        }
-                    }
-                });
-                projectsGrid.style.opacity = '1';
-            }, 150);
-        }
-
-        filterButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const category = btn.dataset.filter;
-                filterProjects(category);
-            });
-        });
-
-        // ---------- BACK TO TOP BUTTON ----------
-        const backToTop = document.getElementById('backToTop');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 500) {
-                backToTop.classList.add('show');
-            } else {
-                backToTop.classList.remove('show');
-            }
-        });
-        backToTop.addEventListener('click', () => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-
-        // ---------- DOWNLOAD RESUME PLACEHOLDER ALERT ----------
-        document.getElementById('downloadResume').addEventListener('click', (e) => {
-            e.preventDefault();
-            alert('📄 Resume PDF placeholder — replace with actual file link.');
-        });
-
-        // ---------- SMOOTH SCROLL FOR INTERNAL LINKS (already in CSS) ----------
-        // add protection for contact links (they are #, but we keep them as placeholders)
-        document.querySelectorAll('.contact-item').forEach(link => {
-            link.addEventListener('click', (e) => {
-                if (link.getAttribute('href') === '#') {
-                    e.preventDefault();
-                    alert('🔗 LinkedIn/GitHub/email placeholders — update URLs in code.');
+    <script>
+        (function() {
+            // typing effect
+            const el = document.getElementById('typing');
+            const phrases = ['M.S. Aerospace @ Georgia Tech', 'CFD · propulsion · energy · AI/ML', 'turbulent flames · hybrid aircraft'];
+            let i = 0, j = 0, isDeleting = false;
+            function type() {
+                const current = phrases[i];
+                if (isDeleting) {
+                    el.textContent = current.substring(0, j-1);
+                    j--;
+                } else {
+                    el.textContent = current.substring(0, j+1);
+                    j++;
                 }
+                if (!isDeleting && j === current.length) { isDeleting = true; setTimeout(type, 1500); return; }
+                if (isDeleting && j === 0) { isDeleting = false; i = (i+1) % phrases.length; }
+                setTimeout(type, isDeleting ? 40 : 80);
+            }
+            type();
+
+            // theme toggle
+            const toggle = document.getElementById('themeToggle');
+            const icon = toggle.querySelector('i');
+            toggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark');
+                if (document.body.classList.contains('dark')) icon.className = 'fas fa-sun';
+                else icon.className = 'fas fa-moon';
             });
-        });
 
-    })();
-</script>
+            // resume alert placeholder
+            document.getElementById('resumeLink').addEventListener('click', (e) => {
+                e.preventDefault();
+                alert('📄 PDF resume placeholder – replace with actual file.');
+            });
 
-<!-- small note: images use placeholder.jpg; replace with actual images and update alt text -->
+            // back to top
+            const btt = document.getElementById('backTop');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 600) btt.style.opacity = '1';
+                else btt.style.opacity = '0';
+            });
+            btt.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+            // simple 3D demo note: for real embedding use <model-viewer> or p3d.in iframe
+            const demoDiv = document.getElementById('modelViewerDemo');
+            if (demoDiv) {
+                demoDiv.addEventListener('click', () => {
+                    alert('Replace this placeholder with actual 3D model using:\n- Google Model Viewer (<model-viewer src="...">)\n- p3d.in embed iframe\n- Sketchfab portfolio embed [citation:2][citation:3]');
+                });
+            }
+        })();
+    </script>
+    <!-- Example of commented model viewer (ready to uncomment) 
+    <model-viewer src="https://modelviewer.dev/shared-assets/models/Astronaut.glb" alt="astronaut" auto-rotate camera-controls style="width:100%; height:400px;"></model-viewer> -->
 </body>
 </html>
