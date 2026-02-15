@@ -1,15 +1,29 @@
-window.addEventListener("load", () => {
+// SAFE SPLAT INJECTION SCRIPT
+window.addEventListener("load", function () {
 
-    console.log("Page loaded. Checking fluid...");
+    console.log("Page loaded");
 
-    // Force constant splats every 2 seconds
-    setInterval(() => {
-        if (window.splatStack) {
-            console.log("Injecting splat");
-            window.splatStack.push(15);
-        } else {
-            console.log("splatStack not found");
+    // Wait until fluid engine exposes splatStack
+    const waitForFluid = setInterval(function () {
+
+        if (typeof window.splatStack !== "undefined") {
+
+            console.log("Fluid engine detected");
+
+            clearInterval(waitForFluid);
+
+            // Continuous subtle motion
+            setInterval(function () {
+                window.splatStack.push(8);
+            }, 2500);
+
+            // Stronger splat on scroll
+            window.addEventListener("scroll", function () {
+                window.splatStack.push(12);
+            });
+
         }
-    }, 2000);
+
+    }, 200);
 
 });
