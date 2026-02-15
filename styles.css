@@ -18,10 +18,7 @@ body {
     min-height: 100vh;
 }
 
-/* IMPORTANT:
-   The official script auto-creates a canvas.
-   We force it to behave like a background.
-*/
+/* Force the AUTO-CREATED canvas to behave like background */
 canvas {
     position: fixed !important;
     top: 0;
@@ -71,10 +68,6 @@ nav a:hover {
 
 .hero span {
     color: var(--accent);
-}
-
-#projects {
-    margin-bottom: 200px;
 }
 
 .card {
