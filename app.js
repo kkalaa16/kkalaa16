@@ -100,6 +100,7 @@ function runIntroGate() {
 function initSingleSetCarouselToTimeline() {
   const cards = [...document.querySelectorAll('.timeline-card')];
   const projects = document.getElementById('projects');
+  const path = document.querySelector('.timeline-path');
   if (!cards.length || !projects) return;
 
   let t = 0;
@@ -110,6 +111,17 @@ function initSingleSetCarouselToTimeline() {
     const rect = projects.getBoundingClientRect();
     const progressRaw = (window.innerHeight * 0.62 - rect.top) / (rect.height - window.innerHeight);
     const progress = Math.max(0, Math.min(1, progressRaw));
+
+    if (path) {
+      const pMain = Math.max(0, Math.min(1, (progress - 0.05) / 0.55));
+      const pBranch = Math.max(0, Math.min(1, (progress - 0.22) / 0.22));
+      const pBottom = Math.max(0, Math.min(1, (progress - 0.52) / 0.2));
+      path.style.setProperty('--p-main', pMain.toFixed(4));
+      path.style.setProperty('--p-branch', pBranch.toFixed(4));
+      path.style.setProperty('--p-bottom', pBottom.toFixed(4));
+      if (progress > 0.05) document.body.classList.add('path-active');
+      else document.body.classList.remove('path-active');
+    }
 
     cards.forEach((card, i) => {
       const n = cards.length;

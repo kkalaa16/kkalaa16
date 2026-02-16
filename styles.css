@@ -41,44 +41,47 @@ body.intro-complete .cards-layer { opacity: 1; }
   position: absolute;
   inset: 0;
   opacity: 0;
-  transition: opacity 500ms ease;
+  transition: opacity 300ms ease;
+  --p-main: 0;
+  --p-branch: 0;
+  --p-bottom: 0;
 }
-body.intro-complete .timeline-path { opacity: 1; }
+body.path-active .timeline-path { opacity: 1; }
 .path-main,
 .path-branch,
 .path-join {
   position: absolute;
-  background: rgba(255,255,255,0.78);
+  background: linear-gradient(to bottom, rgba(255,255,255,0.38), rgba(255,255,255,0.9));
 }
 .path-main {
   left: 50%;
   top: calc(50% - 430px);
   width: 2px;
-  height: 760px;
+  height: calc(760px * var(--p-main));
   transform: translateX(-50%);
 }
 .path-join.top {
   left: calc(50% - 250px);
   top: calc(50% - 380px);
-  width: 500px;
+  width: calc(500px * var(--p-branch));
   height: 2px;
 }
 .path-branch.left {
   left: calc(50% - 250px);
   top: calc(50% - 380px);
   width: 2px;
-  height: 320px;
+  height: calc(320px * var(--p-branch));
 }
 .path-branch.right {
   left: calc(50% + 250px);
   top: calc(50% - 380px);
   width: 2px;
-  height: 320px;
+  height: calc(320px * var(--p-branch));
 }
 .path-join.bottom {
   left: calc(50% - 250px);
   top: calc(50% - 60px);
-  width: 500px;
+  width: calc(500px * var(--p-bottom));
   height: 2px;
 }
 
