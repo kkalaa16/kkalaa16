@@ -37,7 +37,7 @@ body.intro-complete .stage { opacity: 1; transform: translateY(0) scale(1); poin
 .edu-tick::before { content: attr(data-year); position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); font: 700 0.68rem "Space Mono"; color: #ddd; white-space: nowrap; }
 .edu-tick::after { content: attr(data-label); position: absolute; top: 20px; left: 50%; transform: translateX(-50%); font: 400 0.66rem "Space Mono"; color: var(--dim); white-space: nowrap; }
 
-.projects { position: relative; min-height: 420vh; }
+.projects { position: relative; min-height: 280vh; }
 .vline { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; transform: translateX(-50%); background: #fff; opacity: .75; z-index: 1; }
 .cards-viewport { position: sticky; top: 0; height: 100vh; display: grid; place-items: center; perspective: 1800px; z-index: 3; }
 
