@@ -1,7 +1,7 @@
 window.addEventListener('load', () => {
   initFluid();
   runIntroGate();
-  initCarouselTimelineFusion();
+  initSingleSetCarouselToTimeline();
   initMatrix();
 });
 
@@ -15,9 +15,9 @@ function initFluid() {
     DENSITY_DISSIPATION: 0.999,
     VELOCITY_DISSIPATION: 0.997,
     PRESSURE: 0.8,
-    CURL: 86,
+    CURL: 88,
     SPLAT_RADIUS: 0.33,
-    SPLAT_FORCE: 6400,
+    SPLAT_FORCE: 6500,
     SHADING: true,
     COLORFUL: false,
     BACK_COLOR: { r: 0, g: 0, b: 0 },
@@ -32,52 +32,38 @@ function initFluid() {
 
   for (let i = 0; i < 6; i += 1) {
     setTimeout(() => {
-      splat(0.5, 0.5, (Math.random() - 0.5) * 90, (Math.random() - 0.5) * 90, { r: 0.46, g: 0.18, b: 0.03 });
+      splat(0.5, 0.5, (Math.random() - 0.5) * 88, (Math.random() - 0.5) * 88, { r: 0.46, g: 0.18, b: 0.03 });
     }, i * 130);
   }
 
-  // Persistent emitter loop: constant flow + bouncing edge injectors.
-  const edge = {
-    x: 0.12,
-    y: 0.2,
-    vx: 0.004,
-    vy: 0.003
-  };
+  const edge = { x: 0.2, y: 0.2, vx: 0.0038, vy: 0.0029 };
   let frame = 0;
 
-  const fluidTick = () => {
+  const loop = () => {
     frame += 1;
 
-    // soft ambient churn
     if (frame % 7 === 0) {
-      splat(
-        Math.random(),
-        Math.random(),
-        (Math.random() - 0.5) * 16,
-        (Math.random() - 0.5) * 16,
-        { r: 0.56, g: 0.2, b: 0.03 }
-      );
+      splat(Math.random(), Math.random(), (Math.random() - 0.5) * 14, (Math.random() - 0.5) * 14, { r: 0.56, g: 0.2, b: 0.03 });
     }
 
-    // bouncing injector keeps vortices moving around screen
     edge.x += edge.vx;
     edge.y += edge.vy;
     if (edge.x < 0.02 || edge.x > 0.98) edge.vx *= -1;
     if (edge.y < 0.02 || edge.y > 0.98) edge.vy *= -1;
 
     if (frame % 3 === 0) {
-      splat(edge.x, edge.y, edge.vx * 14000, edge.vy * 14000, { r: 0.5, g: 0.18, b: 0.02 });
+      splat(edge.x, edge.y, edge.vx * 14500, edge.vy * 14500, { r: 0.52, g: 0.19, b: 0.02 });
     }
 
-    requestAnimationFrame(fluidTick);
+    requestAnimationFrame(loop);
   };
-  requestAnimationFrame(fluidTick);
+  requestAnimationFrame(loop);
 
   let lastScroll = window.scrollY;
   window.addEventListener('scroll', () => {
     const dy = window.scrollY - lastScroll;
     if (Math.abs(dy) > 1) {
-      splat(Math.random(), 0.5, (Math.random() - 0.5) * 28, -dy * 10, { r: 0.62, g: 0.22, b: 0.03 });
+      splat(Math.random(), 0.5, (Math.random() - 0.5) * 24, -dy * 9, { r: 0.62, g: 0.22, b: 0.03 });
     }
     lastScroll = window.scrollY;
   });
@@ -110,66 +96,48 @@ function runIntroGate() {
   }, 3500);
 }
 
-function initCarouselTimelineFusion() {
-  const carousel = document.getElementById('carousel3d');
-  const orbitCards = [...document.querySelectorAll('.orbit-card')];
+function initSingleSetCarouselToTimeline() {
   const cards = [...document.querySelectorAll('.timeline-card')];
-  const projectSec = document.getElementById('projects');
-  if (!carousel || !orbitCards.length || !cards.length || !projectSec) return;
+  const projects = document.getElementById('projects');
+  if (!cards.length || !projects) return;
 
-  let orbitTime = 0;
+  let t = 0;
 
   const animate = () => {
-    orbitTime += 0.008;
+    t += 0.009;
 
-    // Restore revolving top-door carousel.
-    const orbitCount = orbitCards.length;
-    const topRadius = Math.min(320, Math.max(180, window.innerWidth * 0.2));
-    orbitCards.forEach((card, i) => {
-      const a = (i / orbitCount) * Math.PI * 2 + orbitTime * 1.1;
-      const x = Math.cos(a) * topRadius;
-      const y = Math.sin(a * 1.3) * 18;
-      const z = Math.sin(a) * topRadius;
-      const scale = 0.72 + ((z + topRadius) / (2 * topRadius)) * 0.34;
-      card.style.transform = `translate3d(calc(-50% + ${x}px), calc(-50% + ${y}px), ${z}px) scale(${scale})`;
-      card.style.zIndex = `${Math.floor(z + topRadius)}`;
-      card.style.opacity = `${0.42 + ((z + topRadius) / (2 * topRadius)) * 0.58}`;
-    });
-
-    // Fly-down into timeline.
-    const rect = projectSec.getBoundingClientRect();
+    const rect = projects.getBoundingClientRect();
     const progressRaw = (window.innerHeight * 0.62 - rect.top) / (rect.height - window.innerHeight);
     const progress = Math.max(0, Math.min(1, progressRaw));
 
-    if (progress > 0.05) document.body.classList.add('timeline-mode');
-    else document.body.classList.remove('timeline-mode');
-
     cards.forEach((card, i) => {
       const n = cards.length;
-      const angle = (i / n) * Math.PI * 2 + orbitTime;
-      const revRadius = Math.min(400, window.innerWidth * 0.26);
+      const angle = (i / n) * Math.PI * 2 + t;
+      const orbitRadius = Math.min(300, Math.max(180, window.innerWidth * 0.2));
 
-      const orbitX = Math.cos(angle) * revRadius;
-      const orbitY = Math.sin(angle * 1.4) * 48;
-      const orbitZ = Math.sin(angle) * revRadius;
+      // SAME cards in carousel first
+      const orbitX = Math.cos(angle) * orbitRadius;
+      const orbitY = Math.sin(angle * 1.35) * 24;
+      const orbitZ = Math.sin(angle) * orbitRadius;
 
+      // then SAME cards become timeline anchors
       const idx = Number(card.dataset.index || i);
       const fork = card.dataset.fork || 'center';
-      const baseY = idx * 300 - 460;
+      const targetY = idx * 280 - 420;
       let targetX = 0;
-      if (fork === 'left') targetX = -Math.min(280, window.innerWidth * 0.22);
-      if (fork === 'right') targetX = Math.min(280, window.innerWidth * 0.22);
+      if (fork === 'left') targetX = -Math.min(270, window.innerWidth * 0.22);
+      if (fork === 'right') targetX = Math.min(270, window.innerWidth * 0.22);
 
-      const cardProgress = Math.max(0, Math.min(1, (progress - idx * 0.12) / 0.34));
+      const cardProgress = Math.max(0, Math.min(1, (progress - idx * 0.11) / 0.33));
 
       const x = orbitX * (1 - cardProgress) + targetX * cardProgress;
-      const y = orbitY * (1 - cardProgress) + baseY * cardProgress;
+      const y = orbitY * (1 - cardProgress) + targetY * cardProgress;
       const z = orbitZ * (1 - cardProgress);
       const rotY = angle * (1 - cardProgress);
-      const scale = 0.82 + 0.18 * cardProgress;
+      const scale = 0.8 + 0.2 * cardProgress;
 
-      card.style.opacity = String(0.3 + 0.7 * Math.max(cardProgress, 0.14));
-      card.style.transform = `translate3d(${x}px, ${y}px, ${z}px) rotateY(${rotY}rad) scale(${scale})`;
+      card.style.opacity = String(0.3 + 0.7 * Math.max(cardProgress, 0.18));
+      card.style.transform = `translate3d(calc(-50% + ${x}px), calc(-50% + ${y}px), ${z}px) rotateY(${rotY}rad) scale(${scale})`;
     });
 
     requestAnimationFrame(animate);
