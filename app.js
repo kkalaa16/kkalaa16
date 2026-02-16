@@ -85,6 +85,7 @@ function runIntroGate() {
   setTimeout(() => {
     intro.classList.add('hidden');
     topHeader.classList.add('ready');
+    document.body.classList.add('intro-complete');
     document.body.classList.remove('lock-scroll');
   }, 3600);
 }

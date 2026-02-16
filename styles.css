@@ -53,6 +53,15 @@ body.lock-scroll { height: 100vh; overflow: hidden; }
   place-items: center;
   text-align: center;
   perspective: 1400px;
+  opacity: 0;
+  transform: translateY(20px) scale(0.98);
+  pointer-events: none;
+  transition: opacity 650ms ease, transform 650ms ease;
+}
+body.intro-complete .stage {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
 }
 
 .carousel-3d {
