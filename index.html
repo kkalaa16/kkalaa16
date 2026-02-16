@@ -9,13 +9,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Space+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Fluid Engine Library -->
     <script src="https://cdn.jsdelivr.net/npm/webgl-fluid"></script>
 
     <style>
         :root {
             --bg: #000000;
-            --card-bg: rgba(10, 10, 10, 0.98);
+            --card-bg: rgba(10, 11, 18, 0.98);
             --accent: #ff4d00;
             --tech-blue: #00d4ff;
             --matrix: #00ff41;
@@ -23,6 +22,8 @@
             --text-dim: #888888;
             --mono: 'Space Mono', monospace;
             --timeline-white: #ffffff;
+            --glass: rgba(175, 214, 255, 0.08);
+            --line: rgba(255, 255, 255, 0.4);
         }
 
         html, body {
@@ -46,7 +47,7 @@
             pointer-events: none;
         }
 
-        /* --- 01: INTRO SEQUENCE --- */
+        /* --- 01: CINEMATIC INTRO (Slower Easing) --- */
         #intro-overlay {
             height: 100vh;
             display: flex;
@@ -64,29 +65,29 @@
             position: absolute;
             text-align: center;
             width: 85%;
-            transition: opacity 0.6s ease, transform 0.6s ease, filter 0.6s ease;
+            transition: opacity 2s cubic-bezier(0.4, 0, 0.2, 1), transform 2s cubic-bezier(0.4, 0, 0.2, 1), filter 2s ease;
         }
 
         #hi-text { font-size: clamp(5rem, 20vw, 12rem); font-weight: 900; opacity: 1; letter-spacing: -5px; }
         
         #welcome-text { 
             opacity: 0; 
-            transform: translateY(30px);
-            max-width: 900px;
+            transform: translateY(40px);
+            max-width: 1000px;
         }
 
         .welcome-title {
-            font-size: clamp(1.1rem, 2.5vw, 1.8rem);
+            font-size: clamp(1.2rem, 3vw, 2.2rem);
             font-weight: 300;
-            letter-spacing: 5px;
+            letter-spacing: 8px;
             text-transform: uppercase;
             color: var(--text-dim);
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             display: block;
         }
 
         .welcome-name {
-            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-size: clamp(2.5rem, 8vw, 5.5rem);
             font-weight: 900;
             line-height: 1;
             display: block;
@@ -94,27 +95,27 @@
 
         .welcome-sub {
             font-family: var(--mono);
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: var(--accent);
-            margin-top: 2rem;
+            margin-top: 3rem;
             display: block;
-            letter-spacing: 2px;
+            letter-spacing: 4px;
         }
 
-        /* --- 02: BIO SECTION --- */
+        /* --- 02: TECHNICAL BIO --- */
         .bio-section {
-            height: 80vh;
+            height: 100vh;
             display: flex;
             align-items: center;
             padding: 0 15%;
             opacity: 0;
-            transition: opacity 1s ease;
+            transition: opacity 2.5s ease;
         }
-        .bio-text { font-size: clamp(1.5rem, 3.5vw, 2.8rem); font-weight: 700; line-height: 1.2; max-width: 800px; }
+        .bio-text { font-size: clamp(1.6rem, 3.8vw, 3rem); font-weight: 700; line-height: 1.3; max-width: 900px; }
 
         /* --- 03: EDUCATION (Laminar Draw) --- */
         .edu-section {
-            height: 50vh;
+            height: 60vh;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -122,7 +123,7 @@
             padding: 0 10%;
         }
 
-        .edu-axis-container { width: 100%; max-width: 1000px; position: relative; }
+        .edu-axis-container { width: 100%; max-width: 1100px; position: relative; }
         
         .edu-axis-line {
             height: 1px;
@@ -130,51 +131,68 @@
             width: 0%; 
             margin: 0 auto;
             position: relative;
-            transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: width 1.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .edu-tick {
             position: absolute;
-            width: 1px; height: 30px;
+            width: 1px; height: 35px;
             background: #fff;
-            top: -15px;
+            top: -17px;
             opacity: 0;
-            transition: opacity 0.5s ease;
+            transition: opacity 1s ease;
         }
         .edu-tick.left { left: 0; }
         .edu-tick.right { right: 0; }
 
         .edu-tick-label {
-            position: absolute; top: 40px; left: 50%; transform: translateX(-50%);
-            font-family: var(--mono); font-size: 0.75rem; white-space: nowrap; color: #fff;
+            position: absolute; top: 45px; left: 50%; transform: translateX(-50%);
+            font-family: var(--mono); font-size: 0.8rem; white-space: nowrap; color: #fff;
         }
         .edu-tick-year {
-            position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
-            font-family: var(--mono); font-size: 0.7rem; color: var(--accent);
+            position: absolute; bottom: 45px; left: 50%; transform: translateX(-50%);
+            font-family: var(--mono); font-size: 0.75rem; color: var(--accent);
         }
 
-        /* --- 04: PROJECT TIMELINE --- */
+        /* --- 04: PROJECT TIMELINE (Split Parallel Logic) --- */
         .project-section {
             position: relative;
-            min-height: 800vh;
+            min-height: 900vh;
             opacity: 0;
-            transition: opacity 1s ease;
+            transition: opacity 2s ease;
         }
 
-        .white-vertical-line {
+        /* Timeline Graphics Layer */
+        .timeline-background {
             position: absolute;
-            left: 50%; top: 0; bottom: 0;
-            width: 2px;
-            background: var(--timeline-white);
-            transform: translateX(-50%);
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
             z-index: 1;
+        }
+
+        .timeline-svg {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0; left: 0;
+        }
+
+        .timeline-path {
+            fill: none;
+            stroke: var(--timeline-white);
+            stroke-width: 2px;
+            stroke-dasharray: 0; /* Solid line */
+            opacity: 0.8;
+            transition: stroke-dashoffset 0.5s ease;
         }
 
         .cards-viewport {
             position: sticky;
             top: 0;
             height: 100vh;
-            perspective: 2500px;
+            perspective: 3000px;
             z-index: 10;
             display: flex;
             align-items: center;
@@ -183,35 +201,37 @@
 
         .card {
             position: absolute;
-            width: min(420px, 85vw);
+            width: 420px;
             background: var(--card-bg);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 2.2rem;
-            backdrop-filter: blur(50px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 2.8rem;
+            backdrop-filter: blur(60px);
             transform-style: preserve-3d;
-            transition: transform 0.1s linear, opacity 0.5s ease;
+            transition: transform 0.1s linear, opacity 0.8s ease;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.5);
             opacity: 0;
         }
 
-        .card.matrix-card { border-color: var(--matrix); }
-        .matrix-bg { position: absolute; inset: 0; opacity: 0.2; z-index: 0; pointer-events: none; }
+        .card.matrix-card { border-color: var(--matrix); box-shadow: 0 0 30px rgba(0, 255, 65, 0.1); }
+        .matrix-bg { position: absolute; inset: 0; opacity: 0.25; z-index: 0; pointer-events: none; }
         .card-content { position: relative; z-index: 2; }
 
-        .date { font-family: var(--mono); color: var(--accent); font-size: 0.65rem; display: block; margin-bottom: 0.8rem; letter-spacing: 2px; }
-        h2 { font-size: 1.4rem; font-weight: 900; text-transform: uppercase; margin-bottom: 1rem; line-height: 1.1; }
-        p { color: var(--text-dim); font-size: 0.9rem; line-height: 1.6; }
+        .date { font-family: var(--mono); color: var(--accent); font-size: 0.7rem; display: block; margin-bottom: 1.2rem; letter-spacing: 2px; }
+        h2 { font-size: 1.6rem; font-weight: 900; text-transform: uppercase; margin-bottom: 1rem; line-height: 1.1; color: #fff; }
+        p { color: var(--text-dim); font-size: 0.95rem; line-height: 1.7; }
 
         .stats {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
-            margin-top: 1.5rem; padding-top: 1rem;
-            border-top: 1px solid rgba(255,255,255,0.08);
+            display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
+            margin-top: 1.8rem; padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
             font-family: var(--mono);
         }
         .stat { border-left: 2px solid var(--accent); padding-left: 1rem; }
-        .s-val { font-size: 0.8rem; font-weight: bold; }
+        .s-val { font-size: 0.9rem; font-weight: bold; }
 
-        @media (max-width: 1024px) {
-            .white-vertical-line { left: 40px; transform: none; }
+        @media (max-width: 1100px) {
+            .card { width: 85%; }
+            .timeline-path { opacity: 0.2; } /* Hide complex lines on mobile */
         }
     </style>
 </head>
@@ -232,7 +252,7 @@
     <!-- BIO -->
     <section class="bio-section" id="bio-block">
         <div class="bio-text">
-            Bridging the gap between <span style="color:var(--accent)">high-fidelity physics</span> and mission-level systems engineering.
+            Architecting high-performance systems through <span style="color:var(--accent)">atomic-fidelity physics</span> and automated design workflows.
         </div>
     </section>
 
@@ -254,14 +274,31 @@
 
     <!-- PROJECTS -->
     <section class="project-section" id="project-anchor">
-        <div class="white-vertical-line"></div>
+        <div class="timeline-background">
+            <svg class="timeline-svg" id="timeline-svg">
+                <!-- Single track top -->
+                <line class="timeline-path" id="line-top" x1="50%" y1="0" x2="50%" y2="10%"></line>
+                <!-- Split track -->
+                <path class="timeline-path" id="line-fork" d=""></path>
+                <!-- Parallel tracks -->
+                <line class="timeline-path fork-line" id="line-left" x1="22%" y1="15%" x2="22%" y2="40%"></line>
+                <line class="timeline-path fork-line" id="line-right" x1="78%" y1="15%" x2="78%" y2="40%"></line>
+                <!-- Re-convergence -->
+                <path class="timeline-path" id="line-merge" d=""></path>
+                <!-- Single track middle -->
+                <line class="timeline-path" id="line-mid" x1="50%" y1="45%" x2="50%" y2="70%"></line>
+                <!-- Single track end -->
+                <line class="timeline-path" id="line-bottom" x1="50%" y1="70%" x2="50%" y2="100%"></line>
+            </svg>
+        </div>
         
         <div class="cards-viewport">
+            <!-- 0: TU/e (Left Parallel) -->
             <div class="card interact-card" data-index="0" data-fork="left">
                 <div class="card-content">
                     <span class="date">2024 - 2025 // RESEARCH</span>
                     <h2>NH₃/H₂ REACTING FLOW</h2>
-                    <p>High-fidelity CFD optimization for carbon-neutral turbines. Research at TU/e & Baker Hughes.</p>
+                    <p>Optimization of green hydrogen-ammonia blends using high-fidelity LES and FGM for carbon-neutral turbines.</p>
                     <div class="stats">
                         <div class="stat"><span class="s-val">86.7% Gain</span></div>
                         <div class="stat"><span class="s-val">FGM / LES</span></div>
@@ -269,36 +306,39 @@
                 </div>
             </div>
 
+            <!-- 1: Ben Zinn (Right Parallel) -->
             <div class="card interact-card" data-index="1" data-fork="right">
                 <div class="card-content">
                     <span class="date">PRESENT // ATLANTA</span>
                     <h2>BEN ZINN LAB</h2>
-                    <p>Analytical frameworks for entropy-generation analysis in turbulent diffusion flames.</p>
+                    <p>Developing entropy-generation analysis frameworks to quantify irreversibility in reacting shear layers.</p>
                     <div class="stats">
                         <div class="stat"><span class="s-val">Thermodynamics</span></div>
-                        <div class="stat"><span class="s-val">LES Modeling</span></div>
+                        <div class="stat"><span class="s-val">GT Aerospace</span></div>
                     </div>
                 </div>
             </div>
 
+            <!-- 2: F1 ML (Center) -->
             <div class="card interact-card matrix-card" data-index="2" data-fork="center">
                 <canvas class="matrix-bg"></canvas>
                 <div class="card-content">
                     <span class="date" style="color:var(--matrix)">ML // DATA SCIENCE</span>
                     <h2 style="color:var(--matrix)">F1 STRATEGY AI</h2>
-                    <p>End-to-end ML pipeline for pit-stop optimization using high-frequency timing telemetry.</p>
+                    <p>Machine Learning pipeline for pit-stop optimization and predictive timing using telemetry.</p>
                     <div class="stats">
                         <div class="stat" style="border-color:var(--matrix)"><span class="s-val">Python / SKL</span></div>
-                        <div class="stat" style="border-color:var(--matrix)"><span class="s-val">Predictive UI</span></div>
+                        <div class="stat" style="border-color:var(--matrix)"><span class="s-val">Decision Support</span></div>
                     </div>
                 </div>
             </div>
 
+            <!-- 3: Drone Thesis (Center) -->
             <div class="card interact-card" data-index="3" data-fork="center">
                 <div class="card-content">
                     <span class="date">2023 THESIS</span>
                     <h2>DRONE DOWNWASH</h2>
-                    <p>RANS study of rotor downwash using custom Raspberry Pi anemometer rigs.</p>
+                    <p>Computational study of rotor aerodynamics using RANS study validated with anemometer rigs.</p>
                     <div class="stats">
                         <div class="stat"><span class="s-val">+51.7% Upthrust</span></div>
                         <div class="stat"><span class="s-val">OpenFOAM</span></div>
@@ -306,14 +346,15 @@
                 </div>
             </div>
 
+            <!-- 4: VAWT (Right Parallel track - solo for now) -->
             <div class="card interact-card" data-index="4" data-fork="right">
                 <div class="card-content">
                     <span class="date">2021 // ENERGY</span>
                     <h2>HELICAL VAWT</h2>
-                    <p>Optimizing vertical axis wind turbines via parametric CFD and Coandă effect analysis.</p>
+                    <p>Optimizing vertical axis wind turbines via parametric CFD and flow attachment analysis.</p>
                     <div class="stats">
                         <div class="stat"><span class="s-val">72% Gain</span></div>
-                        <div class="stat"><span class="s-val">Torque Optimization</span></div>
+                        <div class="stat"><span class="s-val">Torque Analysis</span></div>
                     </div>
                 </div>
             </div>
@@ -329,7 +370,7 @@
             // --- 1. FLUID ENGINE ---
             const canvas = document.getElementById('fluid-canvas');
             const fluid = WebGLFluid(canvas, {
-                SIM_RESOLUTION: 128, CURL: 90, DENSITY_DISSIPATION: 0.98,
+                SIM_RESOLUTION: 128, CURL: 95, DENSITY_DISSIPATION: 0.98,
                 COLORFUL: false, BACK_COLOR: {r:0, g:0, b:0}, TRANSPARENT: true
             });
 
@@ -349,23 +390,46 @@
             let isReady = false;
             let revolvingTime = 0;
 
-            // --- 2. CINEMATIC INTRO SEQUENCE (Burst & Reveal) ---
+            // Update SVG paths for the fork
+            function setupTimelineSVG() {
+                const svg = document.getElementById('timeline-svg');
+                const fork = document.getElementById('line-fork');
+                const merge = document.getElementById('line-merge');
+                const w = window.innerWidth;
+                const h = projectSec.offsetHeight;
+
+                // Fork from center (50%) to 22% and 78%
+                const forkTop = 0.10 * h;
+                const forkEnd = 0.15 * h;
+                fork.setAttribute('d', `M ${w*0.5} ${forkTop} L ${w*0.22} ${forkEnd} M ${w*0.5} ${forkTop} L ${w*0.78} ${forkEnd}`);
+                
+                // Merge from 22%/78% back to center
+                const mergeTop = 0.40 * h;
+                const mergeEnd = 0.45 * h;
+                merge.setAttribute('d', `M ${w*0.22} ${mergeTop} L ${w*0.5} ${mergeEnd} M ${w*0.78} ${mergeTop} L ${w*0.5} ${mergeEnd}`);
+            }
+            setupTimelineSVG();
+
+            // --- 2. CINEMATIC INTRO SEQUENCE (Significantly Slower) ---
             setTimeout(() => {
-                // HIGH INTENSITY BURST
-                for(let i=0; i<12; i++) {
-                    setTimeout(() => safeSplat(0.5, 0.5, (Math.random()-0.5)*300, (Math.random()-0.5)*300, {r:1, g:0.4, b:0}), i * 80);
+                // VIOLENT INITIAL BURST
+                for(let i=0; i<15; i++) {
+                    setTimeout(() => safeSplat(0.5, 0.5, (Math.random()-0.5)*350, (Math.random()-0.5)*350, {r:1, g:0.4, b:0}), i * 120);
                 }
                 
                 setTimeout(() => {
+                    // Dissolve Hi (Slowly)
                     hi.style.opacity = "0";
-                    hi.style.filter = "blur(30px)";
+                    hi.style.filter = "blur(40px)";
                     
                     setTimeout(() => {
+                        // Reveal Welcome (Cinematic delay)
                         welcome.style.opacity = "1";
                         welcome.style.transform = "translateY(0)";
-                        safeSplat(0.5, 0.5, 200, 200, {r:0, g:0.6, b:1});
+                        safeSplat(0.5, 0.5, 250, 250, {r:0, g:0.6, b:1}); // Reveal splat
                         
                         setTimeout(() => {
+                            // Phase out intro and reveal technical content
                             overlay.style.opacity = "0";
                             setTimeout(() => {
                                 overlay.style.display = "none";
@@ -373,17 +437,17 @@
                                 bio.style.opacity = "1";
                                 isReady = true;
                                 animateLoop();
-                            }, 800);
-                        }, 2000);
-                    }, 600);
-                }, 1000);
-            }, 400);
+                            }, 1500);
+                        }, 4500); // WELCOME STAYS LONGER
+                    }, 1500);
+                }, 2200);
+            }, 600);
 
             // --- 3. SCROLL OBSERVERS ---
             const eduObserver = new IntersectionObserver((entries) => {
                 if(entries[0].isIntersecting) {
                     axisLine.style.width = "100%";
-                    setTimeout(() => ticks.forEach(t => t.style.opacity = "1"), 800);
+                    setTimeout(() => ticks.forEach(t => t.style.opacity = "1"), 1200);
                 }
             }, { threshold: 0.5 });
             eduObserver.observe(document.getElementById('edu-trigger'));
@@ -407,7 +471,7 @@
                 const sectionTop = projectSec.offsetTop;
                 const sectionHeight = projectSec.offsetHeight;
                 
-                // Unified progress through timeline
+                // Sensitive progress mapping
                 const totalProgress = Math.max(0, Math.min(1, (scrollY - sectionTop + window.innerHeight/2) / (sectionHeight - window.innerHeight)));
 
                 cards.forEach((card, i) => {
@@ -415,18 +479,20 @@
                     const index = parseInt(card.dataset.index);
                     const fork = card.dataset.fork;
 
-                    // Carousel Params
-                    const angle = (i / cards.length) * Math.PI * 2 + revolvingTime + (scrollY * 0.0005);
-                    const revRadius = Math.min(550, window.innerWidth * 0.35);
+                    // Carousel Params (Orbital Rotation)
+                    const angle = (i / cards.length) * Math.PI * 2 + revolvingTime + (scrollY * 0.0004);
+                    const revRadius = Math.min(650, window.innerWidth * 0.45);
                     
-                    // Timeline Params (Anchored positions)
-                    const lineY = (index * 550) - 250;
+                    // Timeline Params (The Anchored Tracks)
+                    const lineY = (index * 620) - 250;
                     let lineX = 0;
+                    // Connect directly to the visual timeline paths
                     if(fork === 'left') lineX = -window.innerWidth * 0.28;
                     if(fork === 'right') lineX = window.innerWidth * 0.28;
+                    if(fork === 'center') lineX = 0;
 
-                    // cardProgress maps the transition from orbit to line
-                    const cardProgress = Math.max(0, Math.min(1, (totalProgress - (index * 0.1)) / 0.25));
+                    // Interpolation (Revolving Door -> Static Timeline Anchor)
+                    const cardProgress = Math.max(0, Math.min(1, (totalProgress - (index * 0.12)) / 0.3));
 
                     const curX = (Math.cos(angle) * revRadius * (1-cardProgress)) + (lineX * cardProgress);
                     const curY = (0 * (1-cardProgress)) + (lineY * cardProgress);
@@ -435,11 +501,11 @@
 
                     card.style.transform = `translate3d(${curX}px, ${curY}px, ${curZ}px) rotateY(${rotY}rad)`;
 
-                    // Fluid Wake
+                    // Fluid Wake Effect
                     if (Math.abs(scrollDelta) > 1 && cardProgress > 0) {
                         const r = card.getBoundingClientRect();
                         if(r.top > 0 && r.top < window.innerHeight) {
-                            safeSplat(r.left/window.innerWidth, 1 - (r.top/window.innerHeight), 1.2, -scrollDelta*12, {r:1, g:0.2, b:0});
+                            safeSplat(r.left/window.innerWidth, 1 - (r.top/window.innerHeight), 1.4, -scrollDelta*12, {r:1, g:0.3, b:0});
                         }
                     }
                 });
@@ -452,35 +518,34 @@
                 lastScroll = window.scrollY;
             });
 
-            // --- 5. MATRIX BACKGROUND (Localized to ML cards) ---
+            // --- 5. MATRIX LOCAL ENGINE ---
             document.querySelectorAll('.matrix-bg').forEach(mCanvas => {
                 const ctx = mCanvas.getContext('2d');
-                let cols, drops;
+                let drops;
                 const resize = () => {
                     mCanvas.width = mCanvas.parentElement.offsetWidth;
                     mCanvas.height = mCanvas.parentElement.offsetHeight;
-                    cols = Math.floor(mCanvas.width / 18);
-                    drops = Array(cols).fill(1);
+                    drops = Array(Math.floor(mCanvas.width / 18)).fill(1);
                 };
                 resize();
                 const draw = () => {
-                    ctx.fillStyle = 'rgba(0,0,0,0.12)'; // Ghosting effect
+                    ctx.fillStyle = 'rgba(0,0,0,0.15)';
                     ctx.fillRect(0,0,mCanvas.width, mCanvas.height);
                     ctx.fillStyle = '#0F0';
                     ctx.font = '13px Space Mono';
                     drops.forEach((y, i) => {
-                        const text = "10CFDML"[Math.floor(Math.random()*7)];
-                        ctx.fillText(text, i*18, y*18);
+                        ctx.fillText("01CFDML"[Math.floor(Math.random()*7)], i*18, y*18);
                         if(y*18 > mCanvas.height && Math.random() > 0.98) drops[i] = 0;
                         drops[i]++;
                     });
                 };
-                setInterval(draw, 50);
+                setInterval(draw, 60); // Matrix rain speed
                 window.addEventListener('resize', resize);
             });
 
-            // Fluid Heartbeat
-            setInterval(() => safeSplat(Math.random(), Math.random(), 5, 5, {r:0.4, g:0.1, b:0}), 1500);
+            // Persistent Fluid Swirl
+            setInterval(() => safeSplat(Math.random(), Math.random(), 5, 5, {r:0.4, g:0.1, b:0}), 1800);
+            window.addEventListener('resize', setupTimelineSVG);
         };
     </script>
 </body>
