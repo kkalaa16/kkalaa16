@@ -21,7 +21,7 @@
             --text: #ffffff;
             --text-dim: #888888;
             --mono: 'Space Mono', monospace;
-            --white-line: #ffffff;
+            --timeline-white: #ffffff;
         }
 
         html, body {
@@ -62,30 +62,62 @@
         .intro-msg {
             position: absolute;
             text-align: center;
-            transition: opacity 1.2s ease, transform 1.2s ease, filter 1.2s ease;
+            width: 85%;
+            transition: opacity 0.7s ease, transform 0.7s ease, filter 0.7s ease;
         }
 
-        #hi-text { font-size: clamp(5rem, 15vw, 12rem); font-weight: 900; opacity: 1; letter-spacing: -5px; }
-        #welcome-text { opacity: 0; transform: translateY(40px); font-size: clamp(1.5rem, 4vw, 3rem); font-weight: 300; }
+        #hi-text { font-size: clamp(5rem, 20vw, 12rem); font-weight: 900; opacity: 1; letter-spacing: -5px; }
+        
+        #welcome-text { 
+            opacity: 0; 
+            transform: translateY(30px);
+            max-width: 900px;
+        }
+
+        .welcome-title {
+            font-size: clamp(1.1rem, 2.5vw, 1.8rem);
+            font-weight: 300;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .welcome-name {
+            font-size: clamp(2.2rem, 7vw, 4.5rem);
+            font-weight: 900;
+            line-height: 1;
+            display: block;
+        }
+
+        .welcome-sub {
+            font-family: var(--mono);
+            font-size: 0.75rem;
+            color: var(--accent);
+            margin-top: 1.5rem;
+            display: block;
+            letter-spacing: 2px;
+        }
 
         /* --- 02: TECHNICAL BIO --- */
         .bio-section {
-            height: 100vh;
+            height: 80vh;
             display: flex;
             align-items: center;
             padding: 0 15%;
             opacity: 0;
-            transition: opacity 1.5s ease;
+            transition: opacity 1s ease;
         }
 
         .bio-content { max-width: 900px; }
-        .bio-tag { font-family: var(--mono); color: var(--accent); font-size: 0.8rem; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 2rem; display: block; }
-        .bio-text { font-size: clamp(1.5rem, 3.5vw, 2.8rem); font-weight: 700; line-height: 1.2; color: #fff; }
-        .bio-subtext { margin-top: 2rem; color: var(--text-dim); font-size: 1.1rem; line-height: 1.8; max-width: 600px; }
+        .bio-tag { font-family: var(--mono); color: var(--accent); font-size: 0.75rem; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 1.5rem; display: block; }
+        .bio-text { font-size: clamp(1.4rem, 3vw, 2.5rem); font-weight: 700; line-height: 1.2; color: #fff; }
+        .bio-subtext { margin-top: 1.5rem; color: var(--text-dim); font-size: 1rem; line-height: 1.7; max-width: 600px; }
 
         /* --- 03: EDUCATION (Laminar Draw) --- */
         .edu-section {
-            height: 60vh;
+            height: 50vh;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -98,10 +130,10 @@
         .edu-axis-line {
             height: 1px;
             background: #fff;
-            width: 0%; /* Animated */
+            width: 0%; 
             margin: 0 auto;
             position: relative;
-            transition: width 2s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .edu-tick {
@@ -110,7 +142,7 @@
             background: #fff;
             top: -15px;
             opacity: 0;
-            transition: opacity 0.8s ease;
+            transition: opacity 0.5s ease;
         }
 
         .edu-tick.left { left: 0; }
@@ -120,7 +152,7 @@
             position: absolute;
             top: 40px;
             font-family: var(--mono);
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             white-space: nowrap;
             text-align: center;
             transform: translateX(-50%);
@@ -131,7 +163,7 @@
             position: absolute;
             bottom: 40px;
             font-family: var(--mono);
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             color: var(--accent);
             left: 50%;
             transform: translateX(-50%);
@@ -140,7 +172,7 @@
         /* --- 04: PROJECT TIMELINE --- */
         .project-section {
             position: relative;
-            min-height: 600vh;
+            min-height: 800vh;
             opacity: 0;
             transition: opacity 1.2s ease;
         }
@@ -170,7 +202,7 @@
             width: min(420px, 85vw);
             background: var(--card-bg);
             border: 1px solid rgba(255,255,255,0.15);
-            padding: 2.5rem;
+            padding: 2.2rem;
             backdrop-filter: blur(50px);
             transform-style: preserve-3d;
             transition: transform 0.1s linear, opacity 0.5s ease;
@@ -181,18 +213,18 @@
         .matrix-bg { position: absolute; inset: 0; opacity: 0.15; z-index: 0; pointer-events: none; }
         .card-content { position: relative; z-index: 2; }
 
-        .date { font-family: var(--mono); color: var(--accent); font-size: 0.65rem; display: block; margin-bottom: 1rem; letter-spacing: 2px; }
-        h2 { font-size: 1.5rem; font-weight: 900; text-transform: uppercase; margin-bottom: 1rem; line-height: 1.1; }
-        p { color: var(--text-dim); font-size: 0.9rem; line-height: 1.6; }
+        .date { font-family: var(--mono); color: var(--accent); font-size: 0.6rem; display: block; margin-bottom: 0.8rem; letter-spacing: 2px; }
+        h2 { font-size: 1.3rem; font-weight: 900; text-transform: uppercase; margin-bottom: 0.8rem; line-height: 1.1; }
+        p { color: var(--text-dim); font-size: 0.85rem; line-height: 1.6; }
 
         .stats {
             display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
-            margin-top: 1.5rem; padding-top: 1rem;
+            margin-top: 1.2rem; padding-top: 1rem;
             border-top: 1px solid rgba(255,255,255,0.08);
             font-family: var(--mono);
         }
-        .stat { border-left: 2px solid var(--accent); padding-left: 1rem; }
-        .s-val { font-size: 0.8rem; font-weight: bold; }
+        .stat { border-left: 2px solid var(--accent); padding-left: 0.8rem; }
+        .s-val { font-size: 0.75rem; font-weight: bold; }
 
         @media (max-width: 1024px) {
             .white-vertical-line { left: 40px; transform: none; }
@@ -207,36 +239,37 @@
     <section id="intro-overlay">
         <div id="hi-text" class="intro-msg">HI.</div>
         <div id="welcome-text" class="intro-msg">
-            WELCOME TO MY PORTFOLIO.<br>
-            I AM <span style="color:var(--accent)">KRTIN KALA</span>
+            <span class="welcome-title">Welcome to my Portfolio</span>
+            <span class="welcome-name">I AM <span style="color:var(--accent)">KRTIN KALA</span></span>
+            <span class="welcome-sub">[ SYSTEMS DESIGN // REACTING FLOWS // ML ARCHITECT ]</span>
         </div>
     </section>
 
     <!-- TECHNICAL BIO -->
     <section class="bio-section" id="bio-block">
         <div class="bio-content">
-            <span class="bio-tag">// RESEARCHER & SYSTEMS ARCHITECT</span>
+            <span class="bio-tag">// MULTI-DISCIPLINARY ARCHITECT</span>
             <h2 class="bio-text">
-                Bridging the gap between <span style="color:var(--accent)">atomic-fidelity physics</span> and mission-level systems engineering.
+                Bridging the gap between <span style="color:var(--accent)">high-fidelity physics</span> and mission-level systems engineering.
             </h2>
             <p class="bio-subtext">
-                Currently a Graduate Researcher at the Ben T. Zinn Combustion Lab, Georgia Tech. I specialize in reacting flows, multidisciplinary optimization (MDAO), and high-performance machine learning architectures.
+                Currently a Graduate Researcher at the Ben T. Zinn Combustion Lab, Georgia Tech. Specialized in LES/FGM modeling, Multi-Disciplinary Optimization (MDAO), and Data Strategy.
             </p>
         </div>
     </section>
 
     <!-- EDUCATION -->
     <section class="edu-section" id="edu-trigger">
-        <h2 style="font-family: var(--mono); font-size: 0.7rem; letter-spacing: 5px; margin-bottom: 60px; color: var(--text-dim);">[ EDUCATION ]</h2>
+        <h2 style="font-family: var(--mono); font-size: 0.65rem; letter-spacing: 5px; margin-bottom: 50px; color: var(--text-dim);">[ EDUCATION ]</h2>
         <div class="edu-axis-container">
             <div class="edu-axis-line" id="laminar-axis">
                 <div class="edu-tick left" id="tick-1">
                     <span class="edu-tick-year">2019 - 2023</span>
-                    <span class="edu-tick-label">BITS PILANI // BE MECHANICAL</span>
+                    <span class="edu-tick-label">BITS PILANI // MECHANICAL</span>
                 </div>
                 <div class="edu-tick right" id="tick-2">
                     <span class="edu-tick-year">2024 - PRESENT</span>
-                    <span class="edu-tick-label">GEORGIA TECH // MS AEROSPACE</span>
+                    <span class="edu-tick-label">GEORGIA TECH // AEROSPACE</span>
                 </div>
             </div>
         </div>
@@ -254,7 +287,7 @@
                     <p>High-fidelity CFD optimization for carbon-neutral turbines. Research at TU/e & Baker Hughes.</p>
                     <div class="stats">
                         <div class="stat"><span class="s-val">86.7% Gain</span></div>
-                        <div class="stat"><span class="s-val">FGM / LES</span></div>
+                        <div class="stat"><span class="s-val">LES/FGM</span></div>
                     </div>
                 </div>
             </div>
@@ -266,7 +299,7 @@
                     <p>Analytical frameworks for entropy-generation analysis in turbulent diffusion flames.</p>
                     <div class="stats">
                         <div class="stat"><span class="s-val">Thermodynamics</span></div>
-                        <div class="stat"><span class="s-val">GT Aerospace</span></div>
+                        <div class="stat"><span class="s-val">LES Modeling</span></div>
                     </div>
                 </div>
             </div>
@@ -279,7 +312,7 @@
                     <p>End-to-end ML pipeline for pit-stop optimization using timing telemetry data.</p>
                     <div class="stats">
                         <div class="stat" style="border-color:var(--matrix)"><span class="s-val">Python / SKL</span></div>
-                        <div class="stat" style="border-color:var(--matrix)"><span class="s-val">Predictive UI</span></div>
+                        <div class="stat" style="border-color:var(--matrix)"><span class="s-val">Race Strategy</span></div>
                     </div>
                 </div>
             </div>
@@ -303,11 +336,15 @@
                     <p>Optimizing vertical axis wind turbines via parametric CFD and Coandă effect analysis.</p>
                     <div class="stats">
                         <div class="stat"><span class="s-val">72% Gain</span></div>
-                        <div class="stat"><span class="s-val">Starting Torque</span></div>
+                        <div class="stat"><span class="s-val">CFD Analysis</span></div>
                     </div>
                 </div>
             </div>
         </div>
+    </section>
+
+    <section style="height: 100vh; display: flex; align-items: center; justify-content: center; background: #000;">
+        <h2 style="font-size: clamp(3rem, 10vw, 6rem); font-weight: 900; text-align: center;">INITIATE<br><span style="color:var(--accent)">FORGE</span></h2>
     </section>
 
     <script>
@@ -315,7 +352,7 @@
             // --- 1. FLUID ENGINE ---
             const canvas = document.getElementById('fluid-canvas');
             const fluid = WebGLFluid(canvas, {
-                SIM_RESOLUTION: 128, CURL: 80, DENSITY_DISSIPATION: 0.98,
+                SIM_RESOLUTION: 128, CURL: 95, DENSITY_DISSIPATION: 0.98,
                 COLORFUL: false, BACK_COLOR: {r:0, g:0, b:0}, TRANSPARENT: true
             });
 
@@ -335,24 +372,23 @@
             let isReady = false;
             let revolvingTime = 0;
 
-            // --- 2. CINEMATIC INTRO ---
+            // --- 2. CINEMATIC INTRO (Optimized Speed) ---
             setTimeout(() => {
-                // Initial Fluid Ignite
-                for(let i=0; i<6; i++) {
-                    setTimeout(() => safeSplat(0.5, 0.5, (Math.random()-0.5)*200, (Math.random()-0.5)*200, {r:1, g:0.3, b:0}), i * 150);
+                // Violent Fluid Ignite
+                for(let i=0; i<8; i++) {
+                    setTimeout(() => safeSplat(0.5, 0.5, (Math.random()-0.5)*250, (Math.random()-0.5)*250, {r:1, g:0.3, b:0}), i * 100);
                 }
                 
                 setTimeout(() => {
                     hi.style.opacity = "0";
-                    hi.style.filter = "blur(30px)";
+                    hi.style.filter = "blur(20px)";
                     
                     setTimeout(() => {
                         welcome.style.opacity = "1";
                         welcome.style.transform = "translateY(0)";
-                        safeSplat(0.5, 0.5, 120, 120, {r:0, g:0.6, b:1});
+                        safeSplat(0.5, 0.5, 150, 150, {r:0, g:0.5, b:1});
                         
                         setTimeout(() => {
-                            // Phase out overlay and reveal bio
                             overlay.style.opacity = "0";
                             setTimeout(() => {
                                 overlay.style.display = "none";
@@ -360,19 +396,19 @@
                                 bio.style.opacity = "1";
                                 isReady = true;
                                 animateLoop();
-                            }, 1000);
-                        }, 2500);
-                    }, 800);
-                }, 1500);
-            }, 500);
+                            }, 600);
+                        }, 1800);
+                    }, 600);
+                }, 900);
+            }, 400);
 
             // --- 3. SCROLL OBSERVERS ---
             const eduObserver = new IntersectionObserver((entries) => {
                 if(entries[0].isIntersecting) {
                     axisLine.style.width = "100%";
-                    setTimeout(() => ticks.forEach(t => t.style.opacity = "1"), 1500);
+                    setTimeout(() => ticks.forEach(t => t.style.opacity = "1"), 800);
                 }
-            }, { threshold: 0.5 });
+            }, { threshold: 0.4 });
             eduObserver.observe(document.getElementById('edu-trigger'));
 
             const projectObserver = new IntersectionObserver((entries) => {
@@ -380,46 +416,54 @@
             }, { threshold: 0.1 });
             projectObserver.observe(projectSec);
 
-            // --- 4. REVOLVING & TIMELINE ANIMATION ---
+            // --- 4. REVOLVING & TIMELINE ANIMATION (Robust Anchoring) ---
             function animateLoop() {
-                revolvingTime += 0.005;
-                updateCards();
+                revolvingTime += 0.007; // Faster rotation
+                updateVisuals();
                 requestAnimationFrame(animateLoop);
             }
 
-            function updateCards() {
+            function updateVisuals() {
                 const scrollY = window.scrollY;
                 const sectionTop = projectSec.offsetTop;
                 const sectionHeight = projectSec.offsetHeight;
                 
-                const progress = Math.max(0, Math.min(1, (scrollY - sectionTop + window.innerHeight/2) / (sectionHeight - window.innerHeight)));
+                // Sensitive progress mapping
+                const progress = Math.max(0, Math.min(1, (scrollY - sectionTop + window.innerHeight/1.5) / (sectionHeight - window.innerHeight)));
 
                 cards.forEach((card, i) => {
                     card.style.opacity = "1";
                     const index = parseInt(card.dataset.index);
                     const fork = card.dataset.fork;
 
+                    // Carousel state
                     const angle = (i / cards.length) * Math.PI * 2 + revolvingTime + (scrollY * 0.0005);
-                    const revRadius = Math.min(600, window.innerWidth * 0.35);
+                    const revRadius = Math.min(500, window.innerWidth * 0.35);
                     
+                    // Anchored state
                     const lineY = (index * 550) - 250;
                     let lineX = 0;
                     if(fork === 'left') lineX = -window.innerWidth * 0.28;
                     if(fork === 'right') lineX = window.innerWidth * 0.28;
 
-                    const cardProgress = Math.max(0, Math.min(1, (progress - (index * 0.12)) / 0.35));
+                    // cardProgress goes from 0 (carousel) to 1 (timeline anchor)
+                    // We stagger them so they "break off" one by one
+                    const cardProgress = Math.max(0, Math.min(1, (progress - (index * 0.08)) / 0.25));
 
                     const curX = (Math.cos(angle) * revRadius * (1-cardProgress)) + (lineX * cardProgress);
                     const curY = (0 * (1-cardProgress)) + (lineY * cardProgress);
                     const curZ = (Math.sin(angle) * revRadius * (1-cardProgress)) + (0 * cardProgress);
+                    
+                    // Stop rotation as card Progress reaches 1
                     const rotY = (angle * (1-cardProgress)) + (0 * cardProgress);
 
                     card.style.transform = `translate3d(${curX}px, ${curY}px, ${curZ}px) rotateY(${rotY}rad)`;
 
+                    // Fluid Wake
                     if (Math.abs(scrollDelta) > 1 && cardProgress > 0) {
                         const r = card.getBoundingClientRect();
                         if(r.top > 0 && r.top < window.innerHeight) {
-                            safeSplat(r.left/window.innerWidth, 1 - (r.top/window.innerHeight), 1, -scrollDelta*10, {r:1, g:0.2, b:0});
+                            safeSplat(r.left/window.innerWidth, 1 - (r.top/window.innerHeight), 1.5, -scrollDelta*12, {r:1, g:0.25, b:0});
                         }
                     }
                 });
@@ -443,7 +487,7 @@
                 };
                 resize();
                 const draw = () => {
-                    ctx.fillStyle = 'rgba(0,0,0,0.1)';
+                    ctx.fillStyle = 'rgba(0,0,0,0.12)';
                     ctx.fillRect(0,0,mCanvas.width, mCanvas.height);
                     ctx.fillStyle = '#0F0';
                     ctx.font = '13px Space Mono';
@@ -457,7 +501,8 @@
                 window.addEventListener('resize', resize);
             });
 
-            setInterval(() => safeSplat(Math.random(), Math.random(), 5, 5, {r:0.4, g:0.1, b:0}), 2000);
+            // Persistent Heartbeat for background fluid
+            setInterval(() => safeSplat(Math.random(), Math.random(), 5, 5, {r:0.4, g:0.1, b:0}), 1500);
         };
     </script>
 </body>
