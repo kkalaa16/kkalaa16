@@ -3,6 +3,7 @@ window.addEventListener('load', () => {
   runIntroGate();
   initSingleSetCarouselToTimeline();
   initMatrix();
+  initEducationAxis();
 });
 
 function initFluid() {
@@ -85,7 +86,7 @@ function runIntroGate() {
 
   setTimeout(() => {
     welcome.style.opacity = '1';
-    welcome.style.transform = 'scale(1.02)';
+    welcome.style.transform = 'translateY(0)';
   }, 1600);
 
   setTimeout(() => {
@@ -144,6 +145,23 @@ function initSingleSetCarouselToTimeline() {
   };
 
   requestAnimationFrame(animate);
+}
+
+
+function initEducationAxis() {
+  const section = document.getElementById('education');
+  const axis = document.getElementById('laminar-axis');
+  const ticks = document.querySelectorAll('.edu-tick');
+  if (!section || !axis || !ticks.length) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    if (!entries[0].isIntersecting) return;
+    axis.style.width = '100%';
+    setTimeout(() => ticks.forEach((t) => (t.style.opacity = '1')), 450);
+    observer.disconnect();
+  }, { threshold: 0.35 });
+
+  observer.observe(section);
 }
 
 function initMatrix() {
