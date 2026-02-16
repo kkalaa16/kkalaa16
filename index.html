@@ -3,14 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>KRTIN KALA | MISSION ARCHIVE</title>
+    <title>KRTIN KALA | PORTFOLIO</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Space+Mono:wght@400;700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/webgl-fluid"></script>
 
     <link rel="stylesheet" href="styles.css" />
@@ -19,66 +16,66 @@
   <body>
     <canvas id="fluid-canvas"></canvas>
 
-    <section id="intro-overlay">
-      <div id="hi-text" class="intro-text">HI.</div>
-      <div id="welcome-text" class="intro-text">
-        WELCOME TO MY PORTFOLIO.<br />I AM <span class="accent">KRTIN KALA</span>
+    <section class="stage" id="top">
+      <h1>Krtin Kala Portfolio</h1>
+      <p>Scroll to collapse the 3D stack into the timeline.</p>
+      <div class="carousel-3d" id="carousel3d">
+        <article class="orbit-card" style="--i:0"><img src="assets/projects/combustion.svg" alt="Combustion"/><span>Combustion CFD</span></article>
+        <article class="orbit-card" style="--i:1"><img src="assets/projects/supply.svg" alt="Systems"/><span>Systems Research</span></article>
+        <article class="orbit-card" style="--i:2"><img src="assets/projects/f1.svg" alt="F1 ML"/><span>F1 ML</span></article>
+        <article class="orbit-card" style="--i:3"><img src="assets/projects/llm.svg" alt="DL"/><span>Scientific DL</span></article>
       </div>
     </section>
 
-    <main class="page-shell">
-      <section class="edu-section" id="education">
-        <h2 class="section-title">MISSION_PHASES</h2>
+    <main class="content">
+      <section class="education" id="education">
+        <h2>Education</h2>
         <div class="edu-axis">
-          <div class="edu-tick" data-year="2019 - 2023" data-label="BITS PILANI // BE MECHANICAL"></div>
-          <div class="edu-tick" data-year="2024 - PRESENT" data-label="GEORGIA TECH // MS AEROSPACE"></div>
+          <div class="edu-tick" data-year="2019 - 2023" data-label="BITS Pilani · BE Mechanical"></div>
+          <div class="edu-tick" data-year="2024 - Present" data-label="Georgia Tech · MS Aerospace"></div>
         </div>
       </section>
 
-      <section class="project-section" id="projects">
-        <div class="vertical-line"></div>
+      <section class="projects" id="projects">
+        <div class="vline"></div>
 
-        <div class="timeline-node y-fork">
-          <article class="branch card interact-card">
-            <img src="assets/projects/combustion.svg" class="card-img" alt="LES contours" />
-            <div class="card-content">
-              <span class="date">2024 - 2025 // RESEARCH</span>
-              <h3>NH₃/H₂ REACTING FLOW</h3>
-              <p>Predicting NOx mechanisms for green ammonia blends with LES + FGM optimization.</p>
-            </div>
-          </article>
-          <article class="branch card interact-card shifted">
-            <img src="assets/projects/supply.svg" class="card-img" alt="supply chain visualization" />
-            <div class="card-content">
-              <span class="date">PRESENT // GEORGIA TECH</span>
-              <h3>BEN ZINN LAB</h3>
-              <p>Entropy-generation frameworks for turbulent diffusion flames and irreversibility analysis.</p>
-            </div>
-          </article>
-        </div>
+        <article class="timeline-card left">
+          <img src="assets/projects/combustion.svg" alt="Combustion research" />
+          <div>
+            <span>2024 - 2025</span>
+            <h3>NH₃ / H₂ Reacting Flow</h3>
+            <p>LES + FGM pipeline for emissions prediction and combustion performance mapping.</p>
+          </div>
+        </article>
 
-        <div class="timeline-node center-node">
-          <article class="card interact-card matrix-card full-span">
-            <canvas class="matrix-bg"></canvas>
-            <img src="assets/projects/f1.svg" class="card-img" alt="F1 telemetry" />
-            <div class="card-content">
-              <span class="date matrix-date">DATA_SCIENCE // ML</span>
-              <h3 class="matrix-head">F1 RACE STRATEGY MODELING</h3>
-              <p>ML pipeline for pit-stop optimization and predictive timing using high-frequency telemetry.</p>
-            </div>
-          </article>
-        </div>
+        <article class="timeline-card right">
+          <img src="assets/projects/supply.svg" alt="Supply chain" />
+          <div>
+            <span>2024 - Present</span>
+            <h3>Supply Chain Vulnerability</h3>
+            <p>Network concentration analysis and resilience modeling for aerospace materials.</p>
+          </div>
+        </article>
 
-        <div class="timeline-node center-node">
-          <article class="card interact-card">
-            <img src="assets/projects/llm.svg" class="card-img" alt="deep learning workflow" />
-            <div class="card-content">
-              <span class="date">2023 // THESIS</span>
-              <h3>DRONE ROTOR DOWNWASH</h3>
-              <p>RANS SST study of rotor configurations; validated on a custom Raspberry Pi rig.</p>
-            </div>
-          </article>
-        </div>
+        <article class="timeline-card left matrix-card">
+          <canvas class="matrix-bg"></canvas>
+          <img src="assets/projects/f1.svg" alt="F1 ML" />
+          <div>
+            <span>ML / DL</span>
+            <h3>F1 Strategy Modeling</h3>
+            <p>Telemetry-driven race strategy forecasting and adaptive pit-window inference.</p>
+          </div>
+        </article>
+
+        <article class="timeline-card right matrix-card">
+          <canvas class="matrix-bg"></canvas>
+          <img src="assets/projects/llm.svg" alt="Scientific DL" />
+          <div>
+            <span>Scientific ML</span>
+            <h3>Deep Learning Pipeline</h3>
+            <p>Simulation-to-inference workflow for deployable scientific decision support.</p>
+          </div>
+        </article>
       </section>
     </main>
   </body>
