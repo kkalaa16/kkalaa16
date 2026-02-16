@@ -3,133 +3,100 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Krtin Kala | Liquid Latent Space Portfolio</title>
+    <title>KRTIN KALA | SYSTEMS & CFD PORTFOLIO</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Space+Mono&family=Sora:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/webgl-fluid"></script>
 
     <link rel="stylesheet" href="./styles.css" />
     <script src="./app.js" defer></script>
   </head>
   <body>
-    <canvas id="fluid-layer" aria-hidden="true"></canvas>
-    <div class="ambient-vignette" aria-hidden="true"></div>
+    <canvas id="fluid-canvas" aria-hidden="true"></canvas>
 
     <div class="page-shell">
       <nav class="site-nav">
-        <a class="brand" href="#top">KRTIN KALA / ML + FLUIDS</a>
+        <a class="brand" href="#hero">KRTIN KALA // PERSONNEL_ID: 903916172</a>
         <div class="nav-links">
-          <a href="#work">Work</a>
-          <a href="#stack">Stack</a>
-          <a href="#research">Research</a>
-          <a href="#contact">Contact</a>
+          <a href="#hero">OVERVIEW</a>
+          <a href="#chapters">CHAPTERS</a>
+          <a href="#signals">SIGNALS</a>
+          <a href="#contact">CONTACT</a>
         </div>
       </nav>
 
-      <header class="hero" id="top">
-        <article class="hero-copy glass-panel">
-          <span class="eyebrow">Liquid Latent Space</span>
-          <h1>Engineering ML systems for reactive flows and real-world decisions.</h1>
+      <section class="hero" id="hero">
+        <article class="hero-main panel">
+          <span class="tag">Aerospace Systems & Propulsion Architecture</span>
+          <h1>From molecules to <span style="color: var(--accent)">missions</span></h1>
           <p>
-            I build the bridge between computational fluid dynamics and production ML: from
-            physics-informed modeling and reduced-order surrogates to deployment-ready inference
-            and optimization pipelines.
+            Bridging high-fidelity reacting flows with multidisciplinary optimization and applied ML.
+            Designing technical systems that hold up both in simulation and operational contexts.
           </p>
-          <div class="hero-actions">
-            <a class="btn btn-primary" href="#work">Explore Case Studies</a>
-            <a class="btn btn-ghost" href="#contact">Let’s Build</a>
-          </div>
         </article>
-
-        <aside class="hero-metrics glass-panel">
-          <div class="metric-card">
-            <div class="metric-label">Primary Focus</div>
-            <div class="metric-value">Physics-informed ML + CFD</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">Current Node</div>
-            <div class="metric-value">Georgia Tech / ASDL</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">System Style</div>
-            <div class="metric-value">Research-grade to production-grade</div>
-          </div>
+        <aside class="metrics panel">
+          <div class="metric"><span>Primary Node</span><strong>Combustion CFD + ML</strong></div>
+          <div class="metric"><span>Affiliation</span><strong>Georgia Tech / TU/e</strong></div>
+          <div class="metric"><span>Current Build</span><strong>Fluid-first Portfolio v2</strong></div>
         </aside>
-      </header>
+      </section>
 
-      <section class="content-section" id="work">
-        <div class="section-heading glass-panel">
-          <span class="section-kicker">Selected Work</span>
-          <h2>Projects where fluid physics meets deployable intelligence.</h2>
-        </div>
-
-        <div class="case-grid">
-          <article class="case-card glass-card">
-            <p class="case-label">Case 01 / Combustion</p>
-            <h3 class="case-title">Hydrogen-Ammonia NOx prediction with flamelet-informed models</h3>
-            <p class="case-meta">
-              Built fast surrogate models grounded in high-fidelity chemistry to estimate emissions
-              and operating envelopes under uncertain conditions.
-            </p>
-          </article>
-
-          <article class="case-card glass-card">
-            <p class="case-label">Case 02 / Motorsport ML</p>
-            <h3 class="case-title">Race-strategy forecasting and tire-state intelligence</h3>
-            <p class="case-meta">
-              Designed sequence-based models to evaluate pit strategy, stint degradation, and
-              scenario outcomes under race-time constraints.
-            </p>
-          </article>
-
-          <article class="case-card glass-card">
-            <p class="case-label">Case 03 / Systems</p>
-            <h3 class="case-title">End-to-end scientific ML pipeline from simulation to serving</h3>
-            <p class="case-meta">
-              Automated data versioning, experiment tracking, model evaluation, and deployment so
-              insights move from notebook to decision support.
-            </p>
-          </article>
+      <section id="chapters">
+        <div>
+          <div class="section-intro panel">
+            <span class="tag">New organization idea #1</span>
+            <h2>Technical Chapters</h2>
+            <p>Organize by depth: Physics, Systems, ML Strategy. Each chapter can carry context, method, and measurable outcome.</p>
+          </div>
+          <div class="case-grid">
+            <article class="case panel">
+              <span class="tag">Chapter 01</span>
+              <h3>Physics</h3>
+              <p>Reactive flow simulation, emissions pathways, turbulence-chemistry interaction.</p>
+            </article>
+            <article class="case panel">
+              <span class="tag">Chapter 02</span>
+              <h3>Systems</h3>
+              <p>MDAO, network resilience, and mission-level trade studies.</p>
+            </article>
+            <article class="case panel">
+              <span class="tag">Chapter 03</span>
+              <h3>ML Strategy</h3>
+              <p>Data-driven forecasting and decision support with interpretable models.</p>
+            </article>
+          </div>
         </div>
       </section>
 
-      <section class="content-section" id="stack">
-        <div class="section-heading glass-panel">
-          <span class="section-kicker">Capability Rail</span>
-          <h2>Tooling and domains I use to ship reliable ML systems.</h2>
-        </div>
-
-        <div class="capability-row glass-panel">
-          <span class="chip">CFD + Reacting Flows</span>
-          <span class="chip">Physics-Informed ML</span>
-          <span class="chip">Surrogate Modeling</span>
-          <span class="chip">MLOps + CI/CD</span>
-          <span class="chip">Model Evaluation</span>
-          <span class="chip">Optimization</span>
-          <span class="chip">Python / PyTorch</span>
-          <span class="chip">Scientific Computing</span>
-        </div>
-      </section>
-
-      <section class="content-section" id="research">
-        <div class="section-heading glass-panel">
-          <span class="section-kicker">Research Style</span>
-          <h2>From latent structures to interpretable engineering outcomes.</h2>
-          <p>
-            My workflow prioritizes physically consistent features, uncertainty-aware evaluation,
-            and clear communication of trade-offs for multidisciplinary teams.
-          </p>
+      <section id="signals">
+        <div>
+          <div class="section-intro panel">
+            <span class="tag">New organization idea #2</span>
+            <h2>Signal Dashboard</h2>
+            <p>Alternative structure: put proof points first using compact operational signals instead of long narrative sections.</p>
+          </div>
+          <div class="chips panel">
+            <span>NOx Modeling</span>
+            <span>FGM / LES</span>
+            <span>OpenMDAO</span>
+            <span>Graph Theory</span>
+            <span>Race Strategy ML</span>
+            <span>Python + Scikit-Learn</span>
+            <span>Deployment Thinking</span>
+            <span>Decision Support</span>
+          </div>
         </div>
       </section>
 
-      <footer class="footer-cta glass-panel" id="contact">
-        <h2>Let’s build ML systems that respect both data and physics.</h2>
-        <p>Email: <a href="mailto:krtinkala@example.com">krtinkala@example.com</a></p>
-      </footer>
+      <section id="contact">
+        <div class="contact panel">
+          <span class="tag">Link established</span>
+          <h2>Initiate Forge</h2>
+          <p>Email: <a href="mailto:kkala6@gatech.edu">kkala6@gatech.edu</a></p>
+        </div>
+      </section>
     </div>
   </body>
 </html>
