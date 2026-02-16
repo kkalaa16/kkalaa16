@@ -1,128 +1,122 @@
-window.addEventListener("load", () => {
-  initFluid();
-  initMatrixCards();
-});
-
-function initFluid() {
-  const canvas = document.getElementById("fluid-canvas");
-  if (!canvas || typeof window.WebGLFluid !== "function") return;
+window.onload = function () {
+  const canvas = document.getElementById('fluid-canvas');
+  const hi = document.getElementById('hi-text');
+  const welcome = document.getElementById('welcome-text');
 
   const fluid = window.WebGLFluid(canvas, {
     SIM_RESOLUTION: 128,
     DYE_RESOLUTION: 1024,
-    DENSITY_DISSIPATION: 0.99,
+    DENSITY_DISSIPATION: 0.985,
     VELOCITY_DISSIPATION: 0.992,
     PRESSURE: 0.8,
-    CURL: 75,
-    SPLAT_RADIUS: 0.35,
-    SPLAT_FORCE: 7000,
+    CURL: 62,
+    SPLAT_RADIUS: 0.34,
+    SPLAT_FORCE: 6400,
     SHADING: true,
     COLORFUL: false,
-    PAUSED: false,
     BACK_COLOR: { r: 0, g: 0, b: 0 },
     BLOOM: false,
     TRANSPARENT: true
   });
 
-  const splat = (x, y, dx, dy, color) => {
-    if (fluid && typeof fluid.splat === "function") fluid.splat(x, y, dx, dy, color);
+  const safeSplat = (x, y, dx, dy, color) => {
+    if (fluid && typeof fluid.splat === 'function') {
+      fluid.splat(x, y, dx, dy, color);
+    }
   };
 
-  (function heartbeat() {
-    splat(Math.random(), Math.random(), (Math.random() - 0.5) * 20, (Math.random() - 0.5) * 20, {
-      r: 0.8,
-      g: 0.3,
-      b: 0
+  // Intro: Hi -> dissolve into swirl -> welcome text
+  setTimeout(() => {
+    // muted opening burst (reduced white intensity)
+    safeSplat(0.5, 0.52, (Math.random() - 0.5) * 110, (Math.random() - 0.5) * 110, {
+      r: 0.62,
+      g: 0.24,
+      b: 0.04
     });
-    setTimeout(heartbeat, 1000);
-  })();
 
-  for (let i = 0; i < 10; i += 1) {
     setTimeout(() => {
-      splat(0.5, 0.5, (Math.random() - 0.5) * 200, (Math.random() - 0.5) * 200, {
-        r: 1,
-        g: 0.4,
-        b: 0
-      });
-    }, i * 120);
+      hi.style.opacity = '0';
+      hi.style.filter = 'blur(14px)';
+      hi.style.transform = 'scale(0.92)';
+
+      setTimeout(() => {
+        welcome.style.opacity = '1';
+      }, 850);
+    }, 900);
+  }, 700);
+
+  // Continuous fluid activity in background
+  function heartbeat() {
+    safeSplat(Math.random(), Math.random(), (Math.random() - 0.5) * 16, (Math.random() - 0.5) * 16, {
+      r: 0.55,
+      g: 0.2,
+      b: 0.02
+    });
+    setTimeout(heartbeat, 1100);
   }
+  heartbeat();
 
-  const uv = (clientX, clientY) => ({
-    x: clientX / window.innerWidth,
-    y: 1 - clientY / window.innerHeight
-  });
+  // Additional background motion to prevent settling
+  function driftPulse() {
+    safeSplat(0.5 + (Math.random() - 0.5) * 0.4, 0.5 + (Math.random() - 0.5) * 0.4, (Math.random() - 0.5) * 30, (Math.random() - 0.5) * 30, {
+      r: 0.68,
+      g: 0.24,
+      b: 0.03
+    });
+    setTimeout(driftPulse, 2400);
+  }
+  driftPulse();
 
-  let last = null;
-  window.addEventListener("pointerdown", (e) => {
-    const p = uv(e.clientX, e.clientY);
-    splat(p.x, p.y, (Math.random() - 0.5) * 240, (Math.random() - 0.5) * 240, { r: 1, g: 0.35, b: 0.02 });
-  });
+  // matrix background for ML cards
+  const matrixCanvases = document.querySelectorAll('.matrix-bg');
+  const mChars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ$+-*/=%';
 
-  window.addEventListener("pointermove", (e) => {
-    if (!last) {
-      last = { x: e.clientX, y: e.clientY };
-      return;
+  matrixCanvases.forEach((mCanvas) => {
+    const ctx = mCanvas.getContext('2d');
+    let columns;
+    let drops;
+
+    function resize() {
+      mCanvas.width = mCanvas.parentElement.offsetWidth;
+      mCanvas.height = mCanvas.parentElement.offsetHeight;
+      columns = Math.max(1, Math.floor(mCanvas.width / 20));
+      drops = Array(columns).fill(1);
     }
-    if (e.buttons !== 1) {
-      last = { x: e.clientX, y: e.clientY };
-      return;
-    }
-    const p = uv(e.clientX, e.clientY);
-    splat(p.x, p.y, (e.clientX - last.x) * 8, (last.y - e.clientY) * 8, { r: 0.96, g: 0.32, b: 0.01 });
-    last = { x: e.clientX, y: e.clientY };
-  });
 
-  let lastScrollY = window.scrollY;
-  window.addEventListener("scroll", () => {
-    const delta = window.scrollY - lastScrollY;
-    if (Math.abs(delta) > 2) {
-      for (let i = 0; i < 4; i += 1) {
-        splat(Math.random(), 0.5, (Math.random() - 0.5) * 30, -delta * 15, { r: 0.9, g: 0.3, b: 0 });
+    function draw() {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.07)';
+      ctx.fillRect(0, 0, mCanvas.width, mCanvas.height);
+      ctx.fillStyle = '#0bdc43';
+      ctx.font = '14px Space Mono';
+
+      for (let i = 0; i < drops.length; i += 1) {
+        const text = mChars[Math.floor(Math.random() * mChars.length)];
+        ctx.fillText(text, i * 20, drops[i] * 20);
+        if (drops[i] * 20 > mCanvas.height && Math.random() > 0.974) drops[i] = 0;
+        drops[i] += 1;
       }
     }
-    lastScrollY = window.scrollY;
+
+    resize();
+    setInterval(draw, 42);
+    window.addEventListener('resize', resize);
   });
-}
 
-function initMatrixCards() {
-  const matrixCanvases = document.querySelectorAll(".matrix-canvas");
-  matrixCanvases.forEach((canvas) => runMatrix(canvas));
-}
-
-function runMatrix(canvas) {
-  const ctx = canvas.getContext("2d");
-  const chars = "アァカサタナハマヤャラワ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  let columns = [];
-
-  const resize = () => {
-    const rect = canvas.getBoundingClientRect();
-    canvas.width = Math.max(1, Math.floor(rect.width));
-    canvas.height = Math.max(1, Math.floor(rect.height));
-    const fontSize = 14;
-    const count = Math.max(1, Math.floor(canvas.width / fontSize));
-    columns = Array.from({ length: count }, () => Math.random() * canvas.height);
-    ctx.font = `${fontSize}px monospace`;
-  };
-
-  resize();
-  window.addEventListener("resize", resize);
-
-  const draw = () => {
-    ctx.fillStyle = "rgba(0,0,0,0.08)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "rgba(45, 255, 93, 0.7)";
-
-    const fontSize = 14;
-    for (let i = 0; i < columns.length; i += 1) {
-      const text = chars[Math.floor(Math.random() * chars.length)];
-      const x = i * fontSize;
-      const y = columns[i];
-      ctx.fillText(text, x, y);
-      columns[i] = y > canvas.height + Math.random() * 1000 ? 0 : y + fontSize;
+  // scroll splats near visible cards
+  const cards = document.querySelectorAll('.interact-card');
+  let lastScroll = window.scrollY;
+  window.addEventListener('scroll', () => {
+    const dy = window.scrollY - lastScroll;
+    if (Math.abs(dy) > 1) {
+      cards.forEach((card) => {
+        const r = card.getBoundingClientRect();
+        if (r.top < window.innerHeight && r.bottom > 0) {
+          const x = (r.left + r.width / 2) / window.innerWidth;
+          const y = 1 - (r.top + r.height / 2) / window.innerHeight;
+          safeSplat(x, y, (Math.random() - 0.5) * 12, -dy * 9, { r: 0.66, g: 0.22, b: 0.02 });
+        }
+      });
     }
-
-    requestAnimationFrame(draw);
-  };
-
-  draw();
-}
+    lastScroll = window.scrollY;
+  });
+};
