@@ -109,7 +109,8 @@ function initSingleSetCarouselToTimeline() {
     t += 0.009;
 
     const rect = projects.getBoundingClientRect();
-    const progressRaw = (window.innerHeight * 0.62 - rect.top) / (rect.height - window.innerHeight);
+    const startOffset = window.innerHeight * 0.08;
+    const progressRaw = (startOffset - rect.top) / (rect.height - window.innerHeight * 0.75);
     const progress = Math.max(0, Math.min(1, progressRaw));
 
     if (path) {
@@ -150,7 +151,7 @@ function initSingleSetCarouselToTimeline() {
       const rotY = angle * (1 - cardProgress);
       const scale = 0.8 + 0.2 * cardProgress;
 
-      card.style.opacity = String(0.3 + 0.7 * Math.max(cardProgress, 0.18));
+      card.style.opacity = progress <= 0 ? '1' : String(Math.max(0.18, Math.min(1, cardProgress * 1.15)));
       card.style.transform = `translate3d(calc(-50% + ${x}px), calc(-50% + ${y}px), ${z}px) rotateY(${rotY}rad) scale(${scale})`;
     });
 
