@@ -1,422 +1,135 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KRTIN KALA | SYSTEMS & CFD PORTFOLIO</title>
-    
-    <!-- Design Assets -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Space+Mono&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Fluid Engine Library -->
-    <script src="https://cdn.jsdelivr.net/npm/webgl-fluid"></script>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Krtin Kala | Liquid Latent Space Portfolio</title>
 
-    <style>
-        :root {
-            --bg: #010101;
-            --card-bg: rgba(10, 10, 10, 0.95);
-            --accent: #ff4d00;
-            --tech-blue: #00d4ff;
-            --text-main: #ffffff;
-            --text-dim: #888888;
-            --mono: 'Space Mono', monospace;
-            --border: rgba(255, 255, 255, 0.1);
-        }
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <canvas id="fluid-layer" aria-hidden="true"></canvas>
+    <div class="ambient-vignette" aria-hidden="true"></div>
 
-        body {
-            background-color: var(--bg);
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-            scroll-snap-type: y mandatory;
-            height: 100vh;
-        }
-
-        /* --- FLUID BACKGROUND --- */
-        #fluid-canvas {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        /* --- NAVIGATION --- */
-        nav {
-            position: fixed;
-            top: 0; width: 100%;
-            padding: 1.5rem 5%;
-            z-index: 100;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-family: var(--mono);
-            font-size: 0.7rem;
-            letter-spacing: 2px;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.98), transparent);
-        }
-
-        .nav-links { display: flex; gap: 2rem; }
-        .nav-links a { color: var(--text-dim); text-decoration: none; transition: 0.3s; position: relative; }
-        .nav-links a:hover { color: var(--accent); }
-
-        /* --- SECTION BASE --- */
-        section {
-            height: 100vh;
-            width: 100%;
-            scroll-snap-align: start;
-            display: flex;
-            align-items: center;
-            padding: 0 8%;
-            position: relative;
-        }
-
-        .container {
-            max-width: 1300px;
-            width: 100%;
-            z-index: 10;
-        }
-
-        /* --- MODULAR CARDS (F1 STYLE) --- */
-        .module-grid {
-            display: grid;
-            grid-template-columns: 1fr 1.1fr;
-            gap: 2rem;
-            width: 100%;
-        }
-
-        .feature-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(40px);
-            border: 1px solid var(--border);
-            padding: 3.5rem;
-            position: relative;
-            transition: 0.4s ease;
-        }
-
-        .feature-card:hover {
-            border-color: var(--accent);
-            background: rgba(15, 15, 15, 1);
-            box-shadow: 0 50px 100px rgba(0,0,0,1);
-        }
-
-        .tag {
-            font-family: var(--mono);
-            color: var(--accent);
-            font-size: 0.6rem;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            margin-bottom: 1.5rem;
-            display: block;
-        }
-
-        h1 { font-size: clamp(3rem, 10vw, 7rem); font-weight: 900; line-height: 0.8; text-transform: uppercase; margin-bottom: 2rem; letter-spacing: -2px; }
-        h2 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; text-transform: uppercase; line-height: 0.95; margin-bottom: 1.5rem; }
-
-        /* --- DATA TELEMETRY --- */
-        .metric-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-top: 2.5rem;
-            font-family: var(--mono);
-        }
-
-        .metric { border-left: 1px solid var(--accent); padding-left: 1.5rem; }
-        .metric.blue { border-color: var(--tech-blue); }
-        .m-label { font-size: 0.55rem; color: var(--text-dim); text-transform: uppercase; display: block; margin-bottom: 0.3rem; }
-        .m-val { font-size: 0.95rem; font-weight: bold; color: #fff; }
-
-        /* --- BUTTONS --- */
-        .btn {
-            display: inline-block;
-            margin-top: 2rem;
-            padding: 1.2rem 3rem;
-            border: 1px solid var(--accent);
-            color: var(--accent);
-            text-decoration: none;
-            font-family: var(--mono);
-            font-size: 0.7rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            transition: 0.4s;
-            cursor: pointer;
-            background: transparent;
-        }
-
-        .btn:hover {
-            background: var(--accent);
-            color: #000;
-            box-shadow: 0 0 30px var(--accent);
-        }
-
-        /* --- ARCHIVE GRID --- */
-        .nodes-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
-
-        .node-small {
-            padding: 2.5rem;
-            background: rgba(12, 12, 12, 0.7);
-            border: 1px solid var(--border);
-            transition: 0.4s;
-        }
-        .node-small:hover { border-color: var(--accent); transform: translateY(-10px); background: #000; }
-        .node-title { font-family: var(--mono); font-size: 0.7rem; color: var(--accent); margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 2px; }
-        .node-text { font-size: 0.8rem; color: var(--text-dim); line-height: 1.7; }
-
-        @media (max-width: 1100px) {
-            .module-grid, .nodes-grid { grid-template-columns: 1fr; }
-            section { height: auto; padding: 6rem 5%; scroll-snap-align: none; }
-            .feature-card { padding: 2.5rem; }
-        }
-    </style>
-</head>
-<body>
-
-    <canvas id="fluid-canvas"></canvas>
-
-    <nav>
-        <div class="logo">KRTIN KALA // PERSONNEL_ID: 903916172</div>
+    <div class="page-shell">
+      <nav class="site-nav">
+        <a class="brand" href="#top">KRTIN KALA / ML + FLUIDS</a>
         <div class="nav-links">
-            <a href="#hero">OVERVIEW</a>
-            <a href="#physics">PHYSICS</a>
-            <a href="#systems">SYSTEMS</a>
-            <a href="#f1-project">F1_ML</a>
-            <a href="#nodes">ARCHIVE</a>
+          <a href="#work">Work</a>
+          <a href="#stack">Stack</a>
+          <a href="#research">Research</a>
+          <a href="#contact">Contact</a>
         </div>
-    </nav>
+      </nav>
 
-    <!-- 01: HERO -->
-    <section id="hero">
-        <div class="container">
-            <span class="tag">Aerospace Systems & Propulsion Architecture</span>
-            <h1>FROM MOLECULES<br>TO <span style="color:var(--accent)">MISSIONS</span></h1>
-            <p style="max-width: 650px; color: var(--text-dim); font-size: 1.3rem; line-height: 1.8;">
-                Bridging <strong>High-Fidelity Reacting Flows</strong> with <strong>Multidisciplinary Optimization</strong>. Graduate researcher at Georgia Tech's ASDL / Ben T. Zinn Lab.
+      <header class="hero" id="top">
+        <article class="hero-copy glass-panel">
+          <span class="eyebrow">Liquid Latent Space</span>
+          <h1>Engineering ML systems for reactive flows and real-world decisions.</h1>
+          <p>
+            I build the bridge between computational fluid dynamics and production ML: from
+            physics-informed modeling and reduced-order surrogates to deployment-ready inference
+            and optimization pipelines.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#work">Explore Case Studies</a>
+            <a class="btn btn-ghost" href="#contact">Let’s Build</a>
+          </div>
+        </article>
+
+        <aside class="hero-metrics glass-panel">
+          <div class="metric-card">
+            <div class="metric-label">Primary Focus</div>
+            <div class="metric-value">Physics-informed ML + CFD</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Current Node</div>
+            <div class="metric-value">Georgia Tech / ASDL</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">System Style</div>
+            <div class="metric-value">Research-grade to production-grade</div>
+          </div>
+        </aside>
+      </header>
+
+      <section class="content-section" id="work">
+        <div class="section-heading glass-panel">
+          <span class="section-kicker">Selected Work</span>
+          <h2>Projects where fluid physics meets deployable intelligence.</h2>
+        </div>
+
+        <div class="case-grid">
+          <article class="case-card glass-card">
+            <p class="case-label">Case 01 / Combustion</p>
+            <h3 class="case-title">Hydrogen-Ammonia NOx prediction with flamelet-informed models</h3>
+            <p class="case-meta">
+              Built fast surrogate models grounded in high-fidelity chemistry to estimate emissions
+              and operating envelopes under uncertain conditions.
             </p>
-            <div class="metric-row" style="max-width: 600px;">
-                <div class="metric"><span class="m-label">Primary Node</span><span class="m-val">Combustion CFD</span></div>
-                <div class="metric"><span class="m-label">Affiliation</span><span class="m-val">Georgia Tech / TU/e</span></div>
-            </div>
-        </div>
-    </section>
+          </article>
 
-    <!-- 02: PHYSICS MODULE -->
-    <section id="physics">
-        <div class="container">
-            <div class="module-grid">
-                <div class="feature-card">
-                    <span class="tag">Technical Chapter 01 // Physics</span>
-                    <h2>Reactive Flow<br>Simulations</h2>
-                    <p style="color: var(--text-dim); line-height: 1.8;">
-                        Numerical investigation of green H₂/NH₃ blends using <strong>Flamelet Generated Manifold (FGM)</strong>. Predicting NOx mechanism pathways in gas turbine environments with high-fidelity LES.
-                    </p>
-                    <div class="metric-row">
-                        <div class="metric"><span class="m-label">Accuracy</span><span class="m-val">92.6% F1-Score</span></div>
-                        <div class="metric"><span class="m-label">Efficiency</span><span class="m-val">86.7% Time Gain</span></div>
-                    </div>
-                </div>
-                <div class="feature-card" style="border-color: rgba(255,255,255,0.05);">
-                    <span class="tag" style="color: #fff;">Sandia-D Research</span>
-                    <p style="color: var(--text-dim); font-size: 0.9rem; line-height: 1.8;">
-                        Developing an entropy-generation analysis framework to quantify irreversibility in reacting shear layers. Quantifying local entropy production to optimize thermal management for carbon-neutral propulsion.
-                    </p>
-                    <div class="metric-row">
-                        <div class="metric"><span class="m-label">Domain</span><span class="m-val">Turbulent Flames</span></div>
-                        <div class="metric"><span class="m-label">Validation</span><span class="m-val">OH* Chemilum.</span></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 03: SYSTEMS MODULE -->
-    <section id="systems">
-        <div class="container">
-            <div class="module-grid">
-                <div class="feature-card">
-                    <span class="tag">Technical Chapter 02 // MDAO</span>
-                    <h2>Supply Chain<br>Vulnerability</h2>
-                    <p style="color: var(--text-dim); line-height: 1.8;">
-                        Quantifying US aerospace supply chain resilience using <strong>Graph Theory</strong>. Visualizing Tier 0-4 material dependencies for strategic mitigation of Titanium and Vanadium disruptions.
-                    </p>
-                    <div class="metric-row">
-                        <div class="metric blue"><span class="m-label">Methodology</span><span class="m-val">HHI Market Index</span></div>
-                        <div class="metric blue"><span class="m-label">Prototype</span><span class="m-val">SOVERN Tool</span></div>
-                    </div>
-                </div>
-                <div class="feature-card">
-                    <span class="tag" style="color: var(--tech-blue);">Tactical Mobility</span>
-                    <p style="color: var(--text-dim); font-size: 0.9rem; line-height: 1.8;">
-                        Executing Multi-Disciplinary Analysis for Tactical Airlift aircraft. Integrating OpenMDAO with NPSS and FLOPS to evaluate propulsion-airframe trade-offs for hybrid-electric tiltrotors.
-                    </p>
-                    <div class="metric-row">
-                        <div class="metric blue"><span class="m-label">Framework</span><span class="m-val">OpenMDAO / SysML</span></div>
-                        <div class="metric blue"><span class="m-label">Focus</span><span class="m-val">Mission Trade-offs</span></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 04: FEATURED F1 ML -->
-    <section id="f1-project">
-        <div class="container">
-            <div class="feature-card" style="grid-template-columns: 1fr; border-left: 5px solid var(--accent);">
-                <span class="tag">High-Speed Data // F1 Strategy Node</span>
-                <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 4rem; align-items: center;">
-                    <div>
-                        <h2 style="font-size: 4rem;">F1 Race Strategy<br><span style="color:var(--accent)">ML Modeling</span></h2>
-                        <p style="color: var(--text-dim); font-size: 1.15rem; margin-top: 1rem; line-height: 1.6;">
-                            End-to-end Machine Learning pipeline analyzing telemetry to optimize pit-stop strategy and race predictions. Modeled on the sleek modularity of the F1 UI.
-                        </p>
-                        <div class="metric-row">
-                            <div class="metric"><span class="m-label">Stack</span><span class="m-val">Python / Scikit-Learn</span></div>
-                            <div class="metric"><span class="m-label">Deployment</span><span class="m-val">F1 Modular Dashboard</span></div>
-                        </div>
-                        <a href="https://kkalaa16.github.io/ML_Project_F1/" target="_blank" class="btn">Launch Project Site</a>
-                    </div>
-                    <div style="text-align: center; opacity: 0.05;">
-                        <i class="fas fa-car" style="font-size: 15rem;"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 05: ARCHIVE NODES -->
-    <section id="nodes">
-        <div class="container">
-            <span class="tag">Technical Project Archive</span>
-            <div class="nodes-grid">
-                <div class="node-small">
-                    <div class="node-title">Drone Aerodynamics</div>
-                    <p class="node-text">RANS study of rotor downwash. 51.7% upthrust gain via optimized fixed-pitch 3-blade configurations.</p>
-                </div>
-                <div class="node-small">
-                    <div class="node-title">Scramjet Inlets</div>
-                    <p class="node-text">CFD validation of external compression at Mach 5 and Mach 8. Analyzed shock-on-lip efficiency.</p>
-                </div>
-                <div class="node-small">
-                    <div class="node-title">HVAC Pathogens</div>
-                    <p class="node-text">Redesigned ventilation at IIT Bombay to reduce viral exposure by 23.7% via thermal stratification.</p>
-                </div>
-                <div class="node-small">
-                    <div class="node-title">Savonius VAWT</div>
-                    <p class="node-text">72% improvement in power output through optimized multi-blade helical turbine geometry.</p>
-                </div>
-                <div class="node-small">
-                    <div class="node-title">Hyperloop India</div>
-                    <p class="node-text">Propulsion integration and CAD DFM for high-speed pod architecture competition.</p>
-                </div>
-                <div class="node-small">
-                    <div class="node-title">Turbofan Cycles</div>
-                    <p class="node-text">MATLAB framework for variable-gamma cycle analysis evaluating real-gas effects on TSFC.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 06: CONTACT -->
-    <section id="contact">
-        <div class="container" style="text-align: center;">
-            <span class="tag" style="justify-content: center;">Link established // Terminal Ready</span>
-            <h1 style="font-size: clamp(3rem, 12vw, 6rem);">INITIATE<br><span style="color:var(--accent)">FORGE</span></h1>
-            <div style="display: flex; gap: 2rem; justify-content: center; margin-top: 3rem;">
-                <a href="mailto:kkala6@gatech.edu" class="btn">Email_Engineer</a>
-                <a href="https://linkedin.com/in/krtin-kala-07a682198" target="_blank" class="btn" style="border-color:#333; color:#fff;">LinkedIn_Profile</a>
-            </div>
-            <p style="margin-top: 6rem; font-family: var(--mono); font-size: 0.65rem; color: #222; letter-spacing: 5px;">
-                GEORGIA INSTITUTE OF TECHNOLOGY // SYSTEMS & PROPULSION
+          <article class="case-card glass-card">
+            <p class="case-label">Case 02 / Motorsport ML</p>
+            <h3 class="case-title">Race-strategy forecasting and tire-state intelligence</h3>
+            <p class="case-meta">
+              Designed sequence-based models to evaluate pit strategy, stint degradation, and
+              scenario outcomes under race-time constraints.
             </p>
+          </article>
+
+          <article class="case-card glass-card">
+            <p class="case-label">Case 03 / Systems</p>
+            <h3 class="case-title">End-to-end scientific ML pipeline from simulation to serving</h3>
+            <p class="case-meta">
+              Automated data versioning, experiment tracking, model evaluation, and deployment so
+              insights move from notebook to decision support.
+            </p>
+          </article>
         </div>
-    </section>
+      </section>
 
-    <script>
-        window.onload = function() {
-            const canvas = document.getElementById('fluid-canvas');
-            
-            // Initialization for webgl-fluid
-            // Some CDN versions require a direct function call, others may return a controller.
-            const fluidOptions = {
-                SIM_RESOLUTION: 128,
-                DYE_RESOLUTION: 1024,
-                DENSITY_DISSIPATION: 0.99, // Persistent swirls (closer to 1.0 = lasts longer)
-                VELOCITY_DISSIPATION: 0.992,
-                PRESSURE: 0.8,
-                CURL: 75, // Extreme vorticity for heavy spirals
-                SPLAT_RADIUS: 0.35,
-                SPLAT_FORCE: 7000,
-                SHADING: true,
-                COLORFUL: false, // Technical Orange/Black theme
-                PAUSED: false,
-                BACK_COLOR: { r: 0, g: 0, b: 0 },
-                BLOOM: false,
-                TRANSPARENT: true,
-            };
+      <section class="content-section" id="stack">
+        <div class="section-heading glass-panel">
+          <span class="section-kicker">Capability Rail</span>
+          <h2>Tooling and domains I use to ship reliable ML systems.</h2>
+        </div>
 
-            // Call the library initialization
-            const fluid = WebGLFluid(canvas, fluidOptions);
+        <div class="capability-row glass-panel">
+          <span class="chip">CFD + Reacting Flows</span>
+          <span class="chip">Physics-Informed ML</span>
+          <span class="chip">Surrogate Modeling</span>
+          <span class="chip">MLOps + CI/CD</span>
+          <span class="chip">Model Evaluation</span>
+          <span class="chip">Optimization</span>
+          <span class="chip">Python / PyTorch</span>
+          <span class="chip">Scientific Computing</span>
+        </div>
+      </section>
 
-            // Robust Splat Helper - handles cases where fluid object might be differently structured
-            function triggerSplat(x, y, dx, dy, color) {
-                if (fluid && typeof fluid.splat === 'function') {
-                    fluid.splat(x, y, dx, dy, color);
-                } else if (window.fluid && typeof window.fluid.splat === 'function') {
-                    window.fluid.splat(x, y, dx, dy, color);
-                }
-            }
+      <section class="content-section" id="research">
+        <div class="section-heading glass-panel">
+          <span class="section-kicker">Research Style</span>
+          <h2>From latent structures to interpretable engineering outcomes.</h2>
+          <p>
+            My workflow prioritizes physically consistent features, uncertainty-aware evaluation,
+            and clear communication of trade-offs for multidisciplinary teams.
+          </p>
+        </div>
+      </section>
 
-            // --- PERSISTENCE HEARTBEAT ---
-            // Automatically fires random "combustion" pulses every second to keep background iterative
-            function heartbeat() {
-                const x = Math.random();
-                const y = Math.random();
-                const dx = (Math.random() - 0.5) * 20;
-                const dy = (Math.random() - 0.5) * 20;
-                triggerSplat(x, y, dx, dy, { r: 0.8, g: 0.3, b: 0 });
-                
-                setTimeout(heartbeat, 1000); // Continuous loop
-            }
-            heartbeat();
-
-            // --- INITIAL IGNITION BLAST ---
-            function ignition() {
-                for(let i=0; i<10; i++) {
-                    setTimeout(() => {
-                        triggerSplat(0.5, 0.5, (Math.random()-0.5)*200, (Math.random()-0.5)*200, { r: 1, g: 0.4, b: 0 });
-                    }, i * 120);
-                }
-            }
-            ignition();
-
-            // --- SCROLL SLOSH REACTIVITY ---
-            let lastScrollY = window.scrollY;
-            window.addEventListener('scroll', () => {
-                const currentScrollY = window.scrollY;
-                const delta = currentScrollY - lastScrollY;
-                
-                if (Math.abs(delta) > 2) {
-                    // Create a directional "wake" of swirls
-                    for (let i = 0; i < 4; i++) {
-                        const x = Math.random();
-                        const y = 0.5;
-                        const dx = (Math.random() - 0.5) * 30;
-                        const dy = -delta * 15; // Vertical directional slosh
-                        triggerSplat(x, y, dx, dy, { r: 0.9, g: 0.3, b: 0 });
-                    }
-                }
-                lastScrollY = currentScrollY;
-            });
-        };
-    </script>
-</body>
+      <footer class="footer-cta glass-panel" id="contact">
+        <h2>Let’s build ML systems that respect both data and physics.</h2>
+        <p>Email: <a href="mailto:krtinkala@example.com">krtinkala@example.com</a></p>
+      </footer>
+    </div>
+  </body>
 </html>
