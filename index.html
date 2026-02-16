@@ -13,17 +13,24 @@
     <link rel="stylesheet" href="styles.css" />
     <script src="app.js" defer></script>
   </head>
-  <body>
+  <body class="lock-scroll">
     <canvas id="fluid-canvas"></canvas>
 
+    <section class="intro-sequence" id="introSequence">
+      <div class="intro-hi" id="introHi">Hi.</div>
+      <div class="intro-welcome" id="introWelcome">Welcome to my portfolio.</div>
+    </section>
+
+    <header class="top-header" id="topHeader">
+      <h1 id="headerTitle">Welcome to my portfolio.</h1>
+    </header>
+
     <section class="stage" id="top">
-      <h1>Krtin Kala Portfolio</h1>
-      <p>Scroll to collapse the 3D stack into the timeline.</p>
       <div class="carousel-3d" id="carousel3d">
-        <article class="orbit-card" style="--i:0"><img src="assets/projects/combustion.svg" alt="Combustion"/><span>Combustion CFD</span></article>
-        <article class="orbit-card" style="--i:1"><img src="assets/projects/supply.svg" alt="Systems"/><span>Systems Research</span></article>
-        <article class="orbit-card" style="--i:2"><img src="assets/projects/f1.svg" alt="F1 ML"/><span>F1 ML</span></article>
-        <article class="orbit-card" style="--i:3"><img src="assets/projects/llm.svg" alt="DL"/><span>Scientific DL</span></article>
+        <article class="orbit-card"><img src="assets/projects/combustion.svg" alt="Combustion"/><span>Combustion CFD</span></article>
+        <article class="orbit-card"><img src="assets/projects/supply.svg" alt="Systems"/><span>Systems Research</span></article>
+        <article class="orbit-card"><img src="assets/projects/f1.svg" alt="F1 ML"/><span>F1 ML</span></article>
+        <article class="orbit-card"><img src="assets/projects/llm.svg" alt="DL"/><span>Scientific DL</span></article>
       </div>
     </section>
 

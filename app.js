@@ -3,6 +3,7 @@ window.addEventListener('load', () => {
   initCarousel();
   initTimelineTransition();
   initMatrix();
+  runIntroGate();
 });
 
 function initFluid() {
@@ -12,12 +13,12 @@ function initFluid() {
   const fluid = window.WebGLFluid(canvas, {
     SIM_RESOLUTION: 128,
     DYE_RESOLUTION: 1024,
-    DENSITY_DISSIPATION: 0.986,
-    VELOCITY_DISSIPATION: 0.992,
+    DENSITY_DISSIPATION: 0.995,
+    VELOCITY_DISSIPATION: 0.995,
     PRESSURE: 0.8,
-    CURL: 60,
-    SPLAT_RADIUS: 0.32,
-    SPLAT_FORCE: 6000,
+    CURL: 64,
+    SPLAT_RADIUS: 0.34,
+    SPLAT_FORCE: 5800,
     SHADING: true,
     COLORFUL: false,
     BACK_COLOR: { r: 0, g: 0, b: 0 },
@@ -29,25 +30,63 @@ function initFluid() {
     if (fluid && typeof fluid.splat === 'function') fluid.splat(x, y, dx, dy, color);
   };
 
+  window.__splat = splat;
+
   for (let i = 0; i < 8; i += 1) {
     setTimeout(() => {
-      splat(0.5, 0.5, (Math.random() - 0.5) * 120, (Math.random() - 0.5) * 120, { r: 0.58, g: 0.22, b: 0.03 });
+      splat(0.5, 0.5, (Math.random() - 0.5) * 80, (Math.random() - 0.5) * 80, { r: 0.44, g: 0.16, b: 0.02 });
     }, i * 120);
   }
 
   (function heartbeat() {
-    splat(Math.random(), Math.random(), (Math.random() - 0.5) * 18, (Math.random() - 0.5) * 18, { r: 0.5, g: 0.18, b: 0.02 });
-    setTimeout(heartbeat, 1200);
+    splat(Math.random(), Math.random(), (Math.random() - 0.5) * 22, (Math.random() - 0.5) * 22, { r: 0.54, g: 0.19, b: 0.02 });
+    setTimeout(heartbeat, 900);
+  })();
+
+  (function sustain() {
+    const cx = 0.5 + (Math.random() - 0.5) * 0.5;
+    const cy = 0.5 + (Math.random() - 0.5) * 0.5;
+    splat(cx, cy, (Math.random() - 0.5) * 28, (Math.random() - 0.5) * 28, { r: 0.6, g: 0.22, b: 0.03 });
+    setTimeout(sustain, 1400);
   })();
 
   let lastScroll = window.scrollY;
   window.addEventListener('scroll', () => {
     const dy = window.scrollY - lastScroll;
     if (Math.abs(dy) > 1) {
-      splat(Math.random(), 0.5, (Math.random() - 0.5) * 24, -dy * 8, { r: 0.62, g: 0.22, b: 0.03 });
+      splat(Math.random(), 0.5, (Math.random() - 0.5) * 24, -dy * 9, { r: 0.62, g: 0.22, b: 0.03 });
     }
     lastScroll = window.scrollY;
   });
+}
+
+function runIntroGate() {
+  const hi = document.getElementById('introHi');
+  const welcome = document.getElementById('introWelcome');
+  const intro = document.getElementById('introSequence');
+  const topHeader = document.getElementById('topHeader');
+
+  const splat = window.__splat || (() => {});
+
+  hi.style.opacity = '1';
+
+  setTimeout(() => {
+    splat(0.5, 0.52, (Math.random() - 0.5) * 100, (Math.random() - 0.5) * 100, { r: 0.56, g: 0.2, b: 0.03 });
+    hi.style.opacity = '0';
+    hi.style.filter = 'blur(12px)';
+    hi.style.transform = 'scale(0.93)';
+  }, 800);
+
+  setTimeout(() => {
+    welcome.style.opacity = '1';
+    welcome.style.transform = 'scale(1.02)';
+  }, 1700);
+
+  setTimeout(() => {
+    intro.classList.add('hidden');
+    topHeader.classList.add('ready');
+    document.body.classList.remove('lock-scroll');
+  }, 3600);
 }
 
 function initCarousel() {
@@ -87,11 +126,8 @@ function initTimelineTransition() {
 
   const onScroll = () => {
     const y = projects.getBoundingClientRect().top;
-    if (y < window.innerHeight * 0.75) {
-      document.body.classList.add('timeline-mode');
-    } else {
-      document.body.classList.remove('timeline-mode');
-    }
+    if (y < window.innerHeight * 0.75) document.body.classList.add('timeline-mode');
+    else document.body.classList.remove('timeline-mode');
   };
 
   onScroll();
