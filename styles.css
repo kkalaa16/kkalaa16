@@ -11,9 +11,9 @@ body { background: var(--bg); color: var(--text); font-family: Inter, sans-serif
 body.lock-scroll { height: 100vh; overflow: hidden; }
 #fluid-canvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -3; pointer-events: none; }
 
-.intro-sequence { position: fixed; inset: 0; display: grid; place-items: center; background: radial-gradient(circle at center, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.82)); z-index: 40; transition: opacity 700ms ease; }
+.intro-sequence { position: fixed; inset: 0; display: grid; place-items: center; background: radial-gradient(circle at center, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.82)); z-index: 40; transition: opacity 1000ms ease; }
 .intro-sequence.hidden { opacity: 0; pointer-events: none; }
-.intro-hi, .intro-welcome { position: absolute; font-weight: 800; letter-spacing: -0.02em; text-transform: uppercase; transition: opacity 900ms ease, transform 900ms ease, filter 900ms ease; }
+.intro-hi, .intro-welcome { position: absolute; font-weight: 800; letter-spacing: -0.02em; text-transform: uppercase; transition: opacity 1300ms ease, transform 1300ms ease, filter 1300ms ease; }
 .intro-hi { font-size: clamp(2.8rem, 11vw, 8rem); opacity: 1; }
 .intro-welcome { opacity: 0; transform: translateY(30px); text-align: center; max-width: 900px; }
 .welcome-title { font-size: clamp(1.1rem, 2.5vw, 1.8rem); font-weight: 300; letter-spacing: 5px; text-transform: uppercase; color: var(--dim); margin-bottom: 1rem; display: block; }
@@ -25,9 +25,8 @@ body.lock-scroll { height: 100vh; overflow: hidden; }
 .top-header.ready { opacity: 1; transform: translateY(0) scale(1); }
 .top-header h1 { font-size: clamp(1rem, 2.6vw, 1.6rem); font-weight: 600; letter-spacing: .01em; }
 
-.stage { min-height: 76vh; }
+.stage { min-height: 88vh; }
 
-/* single shared card set */
 .cards-layer {
   position: fixed;
   inset: 0;
@@ -38,11 +37,56 @@ body.lock-scroll { height: 100vh; overflow: hidden; }
 }
 body.intro-complete .cards-layer { opacity: 1; }
 
+.timeline-path {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 500ms ease;
+}
+body.intro-complete .timeline-path { opacity: 1; }
+.path-main,
+.path-branch,
+.path-join {
+  position: absolute;
+  background: rgba(255,255,255,0.78);
+}
+.path-main {
+  left: 50%;
+  top: calc(50% - 430px);
+  width: 2px;
+  height: 760px;
+  transform: translateX(-50%);
+}
+.path-join.top {
+  left: calc(50% - 250px);
+  top: calc(50% - 380px);
+  width: 500px;
+  height: 2px;
+}
+.path-branch.left {
+  left: calc(50% - 250px);
+  top: calc(50% - 380px);
+  width: 2px;
+  height: 320px;
+}
+.path-branch.right {
+  left: calc(50% + 250px);
+  top: calc(50% - 380px);
+  width: 2px;
+  height: 320px;
+}
+.path-join.bottom {
+  left: calc(50% - 250px);
+  top: calc(50% - 60px);
+  width: 500px;
+  height: 2px;
+}
+
 .timeline-card {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: min(440px, 40vw);
+  width: min(440px, 38vw);
   border: 1px solid rgba(255,255,255,.14);
   background: rgba(10,10,10,.88);
   backdrop-filter: blur(12px);
@@ -61,7 +105,7 @@ body.intro-complete .cards-layer { opacity: 1; }
 .matrix-bg { position: absolute; inset: 0; z-index: 1; opacity: .18; }
 .matrix-card img, .matrix-card div { position: relative; z-index: 2; }
 
-.content { width: min(1100px, 92vw); margin: 0 auto; position: relative; z-index: 3; }
+.content { width: min(1100px, 92vw); margin: 0 auto; position: relative; z-index: 3; padding-top: 2.5rem; }
 .education { padding: 60px 0 90px; }
 .education h2 { font-size: 1.4rem; font-weight: 600; margin-bottom: 1.6rem; }
 .edu-axis-container { width: 100%; max-width: 980px; position: relative; }
@@ -72,10 +116,13 @@ body.intro-complete .cards-layer { opacity: 1; }
 .edu-tick-label { position: absolute; top: 34px; font: 400 0.66rem "Space Mono"; white-space: nowrap; left: 50%; transform: translateX(-50%); color: var(--dim); }
 .edu-tick-year { position: absolute; bottom: 34px; font: 700 0.68rem "Space Mono"; color: #ddd; left: 50%; transform: translateX(-50%); white-space: nowrap; }
 
-.projects { position: relative; min-height: 220vh; }
-.vline { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; transform: translateX(-50%); background: #fff; opacity: .75; z-index: 1; }
+.projects { position: relative; min-height: 180vh; }
+.vline { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; transform: translateX(-50%); background: rgba(255,255,255,0.55); z-index: 1; }
 
 @media (max-width: 980px) {
   .vline { left: 20px; transform: none; }
   .timeline-card { width: calc(100% - 44px); }
+  .path-main,
+  .path-join,
+  .path-branch { display: none; }
 }

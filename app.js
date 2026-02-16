@@ -82,19 +82,19 @@ function runIntroGate() {
     hi.style.opacity = '0';
     hi.style.filter = 'blur(12px)';
     hi.style.transform = 'scale(0.93)';
-  }, 800);
+  }, 1200);
 
   setTimeout(() => {
     welcome.style.opacity = '1';
     welcome.style.transform = 'translateY(0)';
-  }, 1600);
+  }, 2900);
 
   setTimeout(() => {
     intro.classList.add('hidden');
     topHeader.classList.add('ready');
     document.body.classList.add('intro-complete');
     document.body.classList.remove('lock-scroll');
-  }, 3500);
+  }, 6200);
 }
 
 function initSingleSetCarouselToTimeline() {
@@ -114,7 +114,7 @@ function initSingleSetCarouselToTimeline() {
     cards.forEach((card, i) => {
       const n = cards.length;
       const angle = (i / n) * Math.PI * 2 + t;
-      const orbitRadius = Math.min(300, Math.max(180, window.innerWidth * 0.2));
+      const orbitRadius = Math.min(300, Math.max(170, window.innerWidth * 0.19));
 
       // SAME cards in carousel first
       const orbitX = Math.cos(angle) * orbitRadius;
@@ -124,12 +124,13 @@ function initSingleSetCarouselToTimeline() {
       // then SAME cards become timeline anchors
       const idx = Number(card.dataset.index || i);
       const fork = card.dataset.fork || 'center';
-      const targetY = idx * 280 - 420;
+      const slot = Number(card.dataset.slot ?? idx);
+      const targetY = slot * 300 - 380;
       let targetX = 0;
-      if (fork === 'left') targetX = -Math.min(270, window.innerWidth * 0.22);
-      if (fork === 'right') targetX = Math.min(270, window.innerWidth * 0.22);
+      if (fork === 'left') targetX = -Math.min(250, window.innerWidth * 0.2);
+      if (fork === 'right') targetX = Math.min(250, window.innerWidth * 0.2);
 
-      const cardProgress = Math.max(0, Math.min(1, (progress - idx * 0.11) / 0.33));
+      const cardProgress = Math.max(0, Math.min(1, (progress - idx * 0.10) / 0.31));
 
       const x = orbitX * (1 - cardProgress) + targetX * cardProgress;
       const y = orbitY * (1 - cardProgress) + targetY * cardProgress;

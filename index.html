@@ -33,7 +33,14 @@
 
     <!-- One shared card set: revolves first, then flies down to timeline -->
     <div class="cards-layer" id="cardsLayer">
-      <article class="timeline-card" data-index="0" data-fork="left">
+      <div class="timeline-path" aria-hidden="true">
+        <div class="path-main"></div>
+        <div class="path-join top"></div>
+        <div class="path-branch left"></div>
+        <div class="path-branch right"></div>
+        <div class="path-join bottom"></div>
+      </div>
+      <article class="timeline-card" data-index="0" data-slot="0" data-fork="left">
         <img src="assets/projects/combustion.svg" alt="Combustion research" />
         <div>
           <span>2024 - 2025</span>
@@ -42,7 +49,7 @@
         </div>
       </article>
 
-      <article class="timeline-card" data-index="1" data-fork="right">
+      <article class="timeline-card" data-index="1" data-slot="0" data-fork="right">
         <img src="assets/projects/supply.svg" alt="Supply chain" />
         <div>
           <span>2024 - Present</span>
@@ -51,7 +58,7 @@
         </div>
       </article>
 
-      <article class="timeline-card matrix-card" data-index="2" data-fork="center">
+      <article class="timeline-card matrix-card" data-index="2" data-slot="1" data-fork="center">
         <canvas class="matrix-bg"></canvas>
         <img src="assets/projects/f1.svg" alt="F1 ML" />
         <div>
@@ -61,7 +68,7 @@
         </div>
       </article>
 
-      <article class="timeline-card matrix-card" data-index="3" data-fork="right">
+      <article class="timeline-card matrix-card" data-index="3" data-slot="2" data-fork="center">
         <canvas class="matrix-bg"></canvas>
         <img src="assets/projects/llm.svg" alt="Scientific DL" />
         <div>
