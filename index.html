@@ -3,11 +3,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>KRTIN KALA | SYSTEMS & CFD PORTFOLIO</title>
+    <title>KRTIN KALA | PROJECT TIMELINE</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Space+Mono&family=Sora:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/webgl-fluid"></script>
 
     <link rel="stylesheet" href="./styles.css" />
@@ -18,84 +18,95 @@
 
     <div class="page-shell">
       <nav class="site-nav">
-        <a class="brand" href="#hero">KRTIN KALA // PERSONNEL_ID: 903916172</a>
+        <a class="brand" href="#top">KRTIN KALA // TIMELINE LOG</a>
         <div class="nav-links">
-          <a href="#hero">OVERVIEW</a>
-          <a href="#chapters">CHAPTERS</a>
-          <a href="#signals">SIGNALS</a>
+          <a href="#projects">PROJECTS</a>
+          <a href="#education">EDUCATION</a>
           <a href="#contact">CONTACT</a>
         </div>
       </nav>
 
-      <section class="hero" id="hero">
-        <article class="hero-main panel">
-          <span class="tag">Aerospace Systems & Propulsion Architecture</span>
-          <h1>From molecules to <span style="color: var(--accent)">missions</span></h1>
-          <p>
-            Bridging high-fidelity reacting flows with multidisciplinary optimization and applied ML.
-            Designing technical systems that hold up both in simulation and operational contexts.
-          </p>
-        </article>
-        <aside class="metrics panel">
-          <div class="metric"><span>Primary Node</span><strong>Combustion CFD + ML</strong></div>
-          <div class="metric"><span>Affiliation</span><strong>Georgia Tech / TU/e</strong></div>
-          <div class="metric"><span>Current Build</span><strong>Fluid-first Portfolio v2</strong></div>
-        </aside>
-      </section>
+      <header class="hero" id="top">
+        <span class="tag">Systems + CFD + ML</span>
+        <h1>Project timeline with parallel forks and ML matrix nodes</h1>
+        <p>Vertical timeline for projects/work experience. Concurrent efforts split into a Y-fork. Education is separated into a compact horizontal axis.</p>
+      </header>
 
-      <section id="chapters">
-        <div>
-          <div class="section-intro panel">
-            <span class="tag">New organization idea #1</span>
-            <h2>Technical Chapters</h2>
-            <p>Organize by depth: Physics, Systems, ML Strategy. Each chapter can carry context, method, and measurable outcome.</p>
+      <section id="projects" class="timeline-wrap">
+        <h2 class="section-title">Projects & Work Experience</h2>
+
+        <div class="timeline">
+          <article class="timeline-item">
+            <div class="tick">2020</div>
+            <div class="card">
+              <img src="assets/projects/combustion.svg" alt="Reactive flow CFD project" />
+              <div class="card-body">
+                <span class="tag">Combustion Physics</span>
+                <h3>Reactive Flow Simulations</h3>
+                <p>FGM-based analysis for H₂/NH₃ blends and NOx mechanism pathways in turbine-relevant conditions.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="timeline-item fork-start">
+            <div class="tick">2021</div>
+          </article>
+
+          <div class="fork-branches">
+            <article class="timeline-item branch left">
+              <div class="tick">2021-2022</div>
+              <div class="card">
+                <img src="assets/projects/supply.svg" alt="Supply chain systems project" />
+                <div class="card-body">
+                  <span class="tag">Systems / MDAO</span>
+                  <h3>Supply Chain Vulnerability Research</h3>
+                  <p>Tiered network mapping and concentration risk metrics for aerospace material resilience.</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="timeline-item branch right matrix-node">
+              <div class="tick">2021-2022</div>
+              <div class="card matrix-card">
+                <canvas class="matrix-canvas" aria-hidden="true"></canvas>
+                <img src="assets/projects/f1.svg" alt="F1 ML strategy project" />
+                <div class="card-body">
+                  <span class="tag">ML / DL</span>
+                  <h3>F1 Strategy Modeling</h3>
+                  <p>Telemetry-driven prediction stack for pit-stop and stint strategy under uncertainty.</p>
+                </div>
+              </div>
+            </article>
           </div>
-          <div class="case-grid">
-            <article class="case panel">
-              <span class="tag">Chapter 01</span>
-              <h3>Physics</h3>
-              <p>Reactive flow simulation, emissions pathways, turbulence-chemistry interaction.</p>
-            </article>
-            <article class="case panel">
-              <span class="tag">Chapter 02</span>
-              <h3>Systems</h3>
-              <p>MDAO, network resilience, and mission-level trade studies.</p>
-            </article>
-            <article class="case panel">
-              <span class="tag">Chapter 03</span>
-              <h3>ML Strategy</h3>
-              <p>Data-driven forecasting and decision support with interpretable models.</p>
-            </article>
-          </div>
+
+          <article class="timeline-item fork-merge">
+            <div class="tick">2023</div>
+            <div class="card matrix-card">
+              <canvas class="matrix-canvas" aria-hidden="true"></canvas>
+              <img src="assets/projects/llm.svg" alt="ML and deep learning systems" />
+              <div class="card-body">
+                <span class="tag">ML / DL Work</span>
+                <h3>Scientific ML + Deep Learning Pipeline</h3>
+                <p>Integrated simulation outputs with ML/DL inference workflows and decision-oriented model deployment.</p>
+              </div>
+            </div>
+          </article>
         </div>
       </section>
 
-      <section id="signals">
-        <div>
-          <div class="section-intro panel">
-            <span class="tag">New organization idea #2</span>
-            <h2>Signal Dashboard</h2>
-            <p>Alternative structure: put proof points first using compact operational signals instead of long narrative sections.</p>
-          </div>
-          <div class="chips panel">
-            <span>NOx Modeling</span>
-            <span>FGM / LES</span>
-            <span>OpenMDAO</span>
-            <span>Graph Theory</span>
-            <span>Race Strategy ML</span>
-            <span>Python + Scikit-Learn</span>
-            <span>Deployment Thinking</span>
-            <span>Decision Support</span>
-          </div>
+      <section id="education" class="education-wrap">
+        <h2 class="section-title">Education Timeline (axis only)</h2>
+        <div class="edu-axis">
+          <div class="edu-tick" style="left: 8%"><span>2016</span></div>
+          <div class="edu-tick" style="left: 34%"><span>2020</span></div>
+          <div class="edu-tick" style="left: 62%"><span>2022</span></div>
+          <div class="edu-tick" style="left: 88%"><span>2024</span></div>
         </div>
       </section>
 
-      <section id="contact">
-        <div class="contact panel">
-          <span class="tag">Link established</span>
-          <h2>Initiate Forge</h2>
-          <p>Email: <a href="mailto:kkala6@gatech.edu">kkala6@gatech.edu</a></p>
-        </div>
+      <section id="contact" class="contact">
+        <h2>Initiate Forge</h2>
+        <p>Email: <a href="mailto:kkala6@gatech.edu">kkala6@gatech.edu</a></p>
       </section>
     </div>
   </body>
