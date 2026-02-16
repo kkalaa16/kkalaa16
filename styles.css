@@ -86,7 +86,7 @@ body.intro-complete .timeline-path { opacity: 1; }
   position: absolute;
   left: 50%;
   top: 50%;
-  width: min(440px, 38vw);
+  width: min(420px, 84vw);
   border: 1px solid rgba(255,255,255,.14);
   background: rgba(10,10,10,.88);
   backdrop-filter: blur(12px);
@@ -95,15 +95,18 @@ body.intro-complete .timeline-path { opacity: 1; }
   opacity: 0;
   box-shadow: 0 16px 44px rgba(0,0,0,0.45);
 }
-.timeline-card img { width: 100%; height: 180px; object-fit: cover; display: block; }
-.timeline-card div { padding: 1rem 1.1rem 1.2rem; }
-.timeline-card span { color: var(--accent); font: 700 0.67rem "Space Mono"; letter-spacing: .08em; }
-.timeline-card h3 { margin: 0.55rem 0; font-size: 1.18rem; text-transform: uppercase; }
+.card-content { position: relative; z-index: 2; padding: 2rem; }
+.date { display:block; color: var(--accent); font: 700 0.65rem "Space Mono"; letter-spacing: .12em; margin-bottom: .8rem; }
+.card-title { font-size: 1.35rem; font-weight: 900; text-transform: uppercase; margin-bottom: .95rem; line-height: 1.1; }
 .timeline-card p { color: var(--dim); line-height: 1.6; font-size: .9rem; }
+.stats { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1.35rem; padding-top:1rem; border-top:1px solid rgba(255,255,255,.08); font-family:"Space Mono", monospace; }
+.stat { border-left:2px solid var(--accent); padding-left:.8rem; }
+.s-val { font-size:.78rem; font-weight:700; }
 
 .matrix-card { border-color: rgba(46, 255, 89, 0.45); }
-.matrix-bg { position: absolute; inset: 0; z-index: 1; opacity: .18; }
-.matrix-card img, .matrix-card div { position: relative; z-index: 2; }
+.matrix-bg { position: absolute; inset: 0; z-index: 1; opacity: .2; }
+.matrix-date, .matrix-title { color: #00ff41; }
+.matrix-stat { border-left-color: #00ff41; }
 
 .content { width: min(1100px, 92vw); margin: 0 auto; position: relative; z-index: 3; padding-top: 2.5rem; }
 .education { padding: 60px 0 90px; }
@@ -116,7 +119,7 @@ body.intro-complete .timeline-path { opacity: 1; }
 .edu-tick-label { position: absolute; top: 34px; font: 400 0.66rem "Space Mono"; white-space: nowrap; left: 50%; transform: translateX(-50%); color: var(--dim); }
 .edu-tick-year { position: absolute; bottom: 34px; font: 700 0.68rem "Space Mono"; color: #ddd; left: 50%; transform: translateX(-50%); white-space: nowrap; }
 
-.projects { position: relative; min-height: 180vh; }
+.projects { position: relative; min-height: 220vh; }
 .vline { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; transform: translateX(-50%); background: rgba(255,255,255,0.55); z-index: 1; }
 
 @media (max-width: 980px) {
