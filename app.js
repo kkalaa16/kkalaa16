@@ -1,9 +1,8 @@
 window.addEventListener('load', () => {
   initFluid();
-  initCarousel();
-  initTimelineTransition();
-  initMatrix();
   runIntroGate();
+  initCarouselTimelineFusion();
+  initMatrix();
 });
 
 function initFluid() {
@@ -13,12 +12,12 @@ function initFluid() {
   const fluid = window.WebGLFluid(canvas, {
     SIM_RESOLUTION: 128,
     DYE_RESOLUTION: 1024,
-    DENSITY_DISSIPATION: 0.995,
-    VELOCITY_DISSIPATION: 0.995,
+    DENSITY_DISSIPATION: 0.998,
+    VELOCITY_DISSIPATION: 0.996,
     PRESSURE: 0.8,
-    CURL: 64,
-    SPLAT_RADIUS: 0.34,
-    SPLAT_FORCE: 5800,
+    CURL: 84,
+    SPLAT_RADIUS: 0.32,
+    SPLAT_FORCE: 6200,
     SHADING: true,
     COLORFUL: false,
     BACK_COLOR: { r: 0, g: 0, b: 0 },
@@ -29,32 +28,34 @@ function initFluid() {
   const splat = (x, y, dx, dy, color) => {
     if (fluid && typeof fluid.splat === 'function') fluid.splat(x, y, dx, dy, color);
   };
-
   window.__splat = splat;
 
-  for (let i = 0; i < 8; i += 1) {
+  // muted initial ignition
+  for (let i = 0; i < 6; i += 1) {
     setTimeout(() => {
-      splat(0.5, 0.5, (Math.random() - 0.5) * 80, (Math.random() - 0.5) * 80, { r: 0.44, g: 0.16, b: 0.02 });
-    }, i * 120);
+      splat(0.5, 0.5, (Math.random() - 0.5) * 90, (Math.random() - 0.5) * 90, { r: 0.46, g: 0.18, b: 0.03 });
+    }, i * 130);
   }
 
-  (function heartbeat() {
-    splat(Math.random(), Math.random(), (Math.random() - 0.5) * 22, (Math.random() - 0.5) * 22, { r: 0.54, g: 0.19, b: 0.02 });
-    setTimeout(heartbeat, 900);
-  })();
+  // constant background flow
+  setInterval(() => {
+    splat(Math.random(), Math.random(), (Math.random() - 0.5) * 24, (Math.random() - 0.5) * 24, { r: 0.56, g: 0.2, b: 0.03 });
+  }, 850);
 
-  (function sustain() {
-    const cx = 0.5 + (Math.random() - 0.5) * 0.5;
-    const cy = 0.5 + (Math.random() - 0.5) * 0.5;
-    splat(cx, cy, (Math.random() - 0.5) * 28, (Math.random() - 0.5) * 28, { r: 0.6, g: 0.22, b: 0.03 });
-    setTimeout(sustain, 1400);
-  })();
+  // edge bounces keep vortices alive
+  setInterval(() => {
+    const t = (Date.now() / 1000) % 4;
+    if (t < 1) splat(0.02, Math.random(), 60, (Math.random() - 0.5) * 30, { r: 0.5, g: 0.18, b: 0.02 });
+    else if (t < 2) splat(0.98, Math.random(), -60, (Math.random() - 0.5) * 30, { r: 0.5, g: 0.18, b: 0.02 });
+    else if (t < 3) splat(Math.random(), 0.02, (Math.random() - 0.5) * 30, 60, { r: 0.5, g: 0.18, b: 0.02 });
+    else splat(Math.random(), 0.98, (Math.random() - 0.5) * 30, -60, { r: 0.5, g: 0.18, b: 0.02 });
+  }, 620);
 
   let lastScroll = window.scrollY;
   window.addEventListener('scroll', () => {
     const dy = window.scrollY - lastScroll;
     if (Math.abs(dy) > 1) {
-      splat(Math.random(), 0.5, (Math.random() - 0.5) * 24, -dy * 9, { r: 0.62, g: 0.22, b: 0.03 });
+      splat(Math.random(), 0.5, (Math.random() - 0.5) * 28, -dy * 10, { r: 0.62, g: 0.22, b: 0.03 });
     }
     lastScroll = window.scrollY;
   });
@@ -65,13 +66,10 @@ function runIntroGate() {
   const welcome = document.getElementById('introWelcome');
   const intro = document.getElementById('introSequence');
   const topHeader = document.getElementById('topHeader');
-
   const splat = window.__splat || (() => {});
 
-  hi.style.opacity = '1';
-
   setTimeout(() => {
-    splat(0.5, 0.52, (Math.random() - 0.5) * 100, (Math.random() - 0.5) * 100, { r: 0.56, g: 0.2, b: 0.03 });
+    splat(0.5, 0.52, (Math.random() - 0.5) * 90, (Math.random() - 0.5) * 90, { r: 0.56, g: 0.2, b: 0.03 });
     hi.style.opacity = '0';
     hi.style.filter = 'blur(12px)';
     hi.style.transform = 'scale(0.93)';
@@ -80,64 +78,71 @@ function runIntroGate() {
   setTimeout(() => {
     welcome.style.opacity = '1';
     welcome.style.transform = 'scale(1.02)';
-  }, 1700);
+  }, 1600);
 
   setTimeout(() => {
     intro.classList.add('hidden');
     topHeader.classList.add('ready');
     document.body.classList.add('intro-complete');
     document.body.classList.remove('lock-scroll');
-  }, 3600);
+  }, 3500);
 }
 
-function initCarousel() {
-  const container = document.getElementById('carousel3d');
-  if (!container) return;
-  const cards = [...container.querySelectorAll('.orbit-card')];
-  const count = cards.length;
-  let angle = 0;
+function initCarouselTimelineFusion() {
+  const carousel = document.getElementById('carousel3d');
+  const cards = [...document.querySelectorAll('.timeline-card')];
+  const projectSec = document.getElementById('projects');
+  if (!carousel || !cards.length || !projectSec) return;
 
-  const layout = () => {
-    const radius = Math.min(330, Math.max(200, window.innerWidth * 0.22));
-    cards.forEach((card, i) => {
-      const a = ((360 / count) * i + angle) * (Math.PI / 180);
-      const x = Math.sin(a) * radius;
-      const z = Math.cos(a) * radius;
-      const scale = 0.72 + ((z + radius) / (2 * radius)) * 0.34;
-      card.style.transform = `translate3d(calc(-50% + ${x}px), calc(-50% + ${Math.sin(a * 1.2) * 20}px), ${z}px) scale(${scale})`;
-      card.style.zIndex = `${Math.floor(z + radius)}`;
-      card.style.opacity = `${0.45 + (z + radius) / (2 * radius) * 0.55}`;
-    });
-  };
+  let orbitTime = 0;
 
-  const tick = () => {
-    angle += 0.14;
-    layout();
-    requestAnimationFrame(tick);
-  };
+  const animate = () => {
+    orbitTime += 0.008;
+    const rect = projectSec.getBoundingClientRect();
+    const progressRaw = (window.innerHeight * 0.6 - rect.top) / (rect.height - window.innerHeight);
+    const progress = Math.max(0, Math.min(1, progressRaw));
 
-  layout();
-  requestAnimationFrame(tick);
-  window.addEventListener('resize', layout);
-}
-
-function initTimelineTransition() {
-  const projects = document.getElementById('projects');
-  if (!projects) return;
-
-  const onScroll = () => {
-    const y = projects.getBoundingClientRect().top;
-    if (y < window.innerHeight * 0.75) document.body.classList.add('timeline-mode');
+    if (progress > 0.05) document.body.classList.add('timeline-mode');
     else document.body.classList.remove('timeline-mode');
+
+    cards.forEach((card, i) => {
+      const n = cards.length;
+      const angle = (i / n) * Math.PI * 2 + orbitTime;
+      const revRadius = Math.min(420, window.innerWidth * 0.28);
+
+      // start in carousel orbit
+      const orbitX = Math.cos(angle) * revRadius;
+      const orbitY = Math.sin(angle * 1.4) * 50;
+      const orbitZ = Math.sin(angle) * revRadius;
+
+      const idx = Number(card.dataset.index || i);
+      const fork = card.dataset.fork || 'center';
+      const baseY = idx * 360 - 520;
+      let targetX = 0;
+      if (fork === 'left') targetX = -Math.min(300, window.innerWidth * 0.24);
+      if (fork === 'right') targetX = Math.min(300, window.innerWidth * 0.24);
+
+      const cardProgress = Math.max(0, Math.min(1, (progress - idx * 0.12) / 0.34));
+
+      const x = orbitX * (1 - cardProgress) + targetX * cardProgress;
+      const y = orbitY * (1 - cardProgress) + baseY * cardProgress;
+      const z = orbitZ * (1 - cardProgress);
+      const rotY = angle * (1 - cardProgress);
+      const scale = 0.82 + 0.18 * cardProgress;
+
+      card.style.opacity = String(0.35 + 0.65 * Math.max(cardProgress, 0.15));
+      card.style.transform = `translate3d(${x}px, ${y}px, ${z}px) rotateY(${rotY}rad) scale(${scale})`;
+    });
+
+    requestAnimationFrame(animate);
   };
 
-  onScroll();
-  window.addEventListener('scroll', onScroll, { passive: true });
+  requestAnimationFrame(animate);
 }
 
 function initMatrix() {
   const canvases = document.querySelectorAll('.matrix-bg');
-  const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ$+-*/=%';
+  const chars = '10CFDMLDL0123456789';
 
   canvases.forEach((canvas) => {
     const ctx = canvas.getContext('2d');
@@ -159,11 +164,9 @@ function initMatrix() {
 
       cols.forEach((y, i) => {
         const c = chars[Math.floor(Math.random() * chars.length)];
-        const x = i * size;
-        ctx.fillText(c, x, y);
+        ctx.fillText(c, i * size, y);
         cols[i] = y > canvas.height + Math.random() * 700 ? 0 : y + size;
       });
-
       requestAnimationFrame(draw);
     };
 

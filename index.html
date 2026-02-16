@@ -22,7 +22,7 @@
     </section>
 
     <header class="top-header" id="topHeader">
-      <h1 id="headerTitle">Welcome to my portfolio.</h1>
+      <h1>Welcome to my portfolio.</h1>
     </header>
 
     <section class="stage" id="top">
@@ -45,44 +45,45 @@
 
       <section class="projects" id="projects">
         <div class="vline"></div>
+        <div class="cards-viewport" id="cardsViewport">
+          <article class="timeline-card" data-index="0" data-fork="left">
+            <img src="assets/projects/combustion.svg" alt="Combustion research" />
+            <div>
+              <span>2024 - 2025</span>
+              <h3>NH₃ / H₂ Reacting Flow</h3>
+              <p>LES + FGM pipeline for emissions prediction and combustion performance mapping.</p>
+            </div>
+          </article>
 
-        <article class="timeline-card left">
-          <img src="assets/projects/combustion.svg" alt="Combustion research" />
-          <div>
-            <span>2024 - 2025</span>
-            <h3>NH₃ / H₂ Reacting Flow</h3>
-            <p>LES + FGM pipeline for emissions prediction and combustion performance mapping.</p>
-          </div>
-        </article>
+          <article class="timeline-card" data-index="1" data-fork="right">
+            <img src="assets/projects/supply.svg" alt="Supply chain" />
+            <div>
+              <span>2024 - Present</span>
+              <h3>Supply Chain Vulnerability</h3>
+              <p>Network concentration analysis and resilience modeling for aerospace materials.</p>
+            </div>
+          </article>
 
-        <article class="timeline-card right">
-          <img src="assets/projects/supply.svg" alt="Supply chain" />
-          <div>
-            <span>2024 - Present</span>
-            <h3>Supply Chain Vulnerability</h3>
-            <p>Network concentration analysis and resilience modeling for aerospace materials.</p>
-          </div>
-        </article>
+          <article class="timeline-card matrix-card" data-index="2" data-fork="center">
+            <canvas class="matrix-bg"></canvas>
+            <img src="assets/projects/f1.svg" alt="F1 ML" />
+            <div>
+              <span>ML / DL</span>
+              <h3>F1 Strategy Modeling</h3>
+              <p>Telemetry-driven race strategy forecasting and adaptive pit-window inference.</p>
+            </div>
+          </article>
 
-        <article class="timeline-card left matrix-card">
-          <canvas class="matrix-bg"></canvas>
-          <img src="assets/projects/f1.svg" alt="F1 ML" />
-          <div>
-            <span>ML / DL</span>
-            <h3>F1 Strategy Modeling</h3>
-            <p>Telemetry-driven race strategy forecasting and adaptive pit-window inference.</p>
-          </div>
-        </article>
-
-        <article class="timeline-card right matrix-card">
-          <canvas class="matrix-bg"></canvas>
-          <img src="assets/projects/llm.svg" alt="Scientific DL" />
-          <div>
-            <span>Scientific ML</span>
-            <h3>Deep Learning Pipeline</h3>
-            <p>Simulation-to-inference workflow for deployable scientific decision support.</p>
-          </div>
-        </article>
+          <article class="timeline-card matrix-card" data-index="3" data-fork="right">
+            <canvas class="matrix-bg"></canvas>
+            <img src="assets/projects/llm.svg" alt="Scientific DL" />
+            <div>
+              <span>Scientific ML</span>
+              <h3>Deep Learning Pipeline</h3>
+              <p>Simulation-to-inference workflow for deployable scientific decision support.</p>
+            </div>
+          </article>
+        </div>
       </section>
     </main>
   </body>
