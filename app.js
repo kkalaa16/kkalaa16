@@ -7,6 +7,7 @@ window.addEventListener('load', () => {
   initEducationAxis();
   initHeaderAndTopState();
   initSectionNavHighlight();
+  initTimelineStageVisibility();
 });
 
 function initFluid() {
@@ -149,6 +150,8 @@ function initUnravel(ccEls, staticCards) {
 }
 
 function flyToTimeline(ccEls, staticCards) {
+  const stage = document.getElementById('carouselStage');
+  stage?.classList.add('fade-out');
   const n = Math.min(ccEls.length, staticCards.length);
 
   ccEls.forEach((cc,i)=>{
@@ -174,6 +177,19 @@ function flyToTimeline(ccEls, staticCards) {
     });
     setTimeout(()=>cc.style.display='none', 380+delay*2+300);
   });
+}
+
+function initTimelineStageVisibility() {
+  const stage = document.getElementById('carouselStage');
+  const timeline = document.getElementById('timelineZone');
+  if (!stage || !timeline) return;
+
+  const io = new IntersectionObserver((entries) => {
+    const visible = entries.some((e) => e.isIntersecting);
+    stage.classList.toggle('fade-out', visible);
+  }, { threshold: 0.08 });
+
+  io.observe(timeline);
 }
 
 function buildSandSpine() {
