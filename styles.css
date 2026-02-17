@@ -229,6 +229,7 @@ body.intro-complete.title-landed .intro-scroll-cue { opacity: 0; }
 .tl-card--matrix { border-color:rgba(0,255,65,.18); }
 .tl-card--matrix:hover { border-color:rgba(0,255,65,.55); box-shadow:0 12px 40px rgba(0,0,0,.6),0 0 22px rgba(0,255,65,.09); }
 .tl-card--solo { width:min(480px,78vw); }
+.tl-card--quad { width:min(195px,20vw); }
 .tl-date { display:block; font-family:'Space Mono',monospace; font-size:.57rem; letter-spacing:.14em; color:var(--accent); text-transform:uppercase; margin-bottom:.6rem; }
 .matrix-date { color:var(--green); }
 .tl-card h3 { font-size:.92rem; font-weight:700; text-transform:uppercase; line-height:1.2; margin-bottom:.6rem; letter-spacing:.02em; }
@@ -481,6 +482,7 @@ body.path-active .timeline-svg { opacity: 0.92; }
   .tl-row { gap:.8rem; }
   .year-stamp { left:calc(-1 * var(--year-w) - 1vw); }
   .tl-card--solo { width:min(420px,88vw); }
+  .tl-card--quad { width:min(150px,34vw); }
   .edu-journey { grid-template-columns: 1fr; gap: 1.6rem; }
   .edu-axis-line { width: min(420px, 90%); transition: none; }
   .edu-cat { left: 100%; opacity: 1; animation: none; transform: translateX(-50%); }
