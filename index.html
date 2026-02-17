@@ -36,15 +36,20 @@
 
     <!-- One shared card set: revolves first, then flies down to timeline -->
     <div class="cards-layer" id="cardsLayer">
-      <div class="timeline-path" aria-hidden="true">
-        <div class="path-main"></div>
-        <div class="path-join top"></div>
-        <div class="path-branch left"></div>
-        <div class="path-branch right"></div>
-        <div class="path-join bottom"></div>
-      </div>
+      <svg class="timeline-svg" id="timelineSvg" viewBox="0 0 1000 100" preserveAspectRatio="xMidYMin meet" aria-hidden="true">
+        <defs>
+          <linearGradient id="timelineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:rgba(255,255,255,0.15)" />
+            <stop offset="100%" style="stop-color:rgba(255,255,255,0.85)" />
+          </linearGradient>
+          <linearGradient id="matrixGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:rgba(0,255,65,0.15)" />
+            <stop offset="100%" style="stop-color:rgba(0,255,65,0.85)" />
+          </linearGradient>
+        </defs>
+      </svg>
 
-      <article class="timeline-card" data-index="0" data-fork="left">
+      <article class="timeline-card" data-index="0" data-slot="0" data-fork="left">
         <div class="card-content">
           <span class="date">2025 - CURRENT // JUN</span>
           <h2 class="card-title">BEN T. ZINN LAB</h2>
@@ -56,7 +61,7 @@
         </div>
       </article>
 
-      <article class="timeline-card" data-index="1" data-fork="right">
+      <article class="timeline-card" data-index="1" data-slot="0" data-fork="right">
         <div class="card-content">
           <span class="date">2025 - CURRENT // AUG</span>
           <h2 class="card-title">XV-15 ROTOR SYSTEMS</h2>
@@ -68,7 +73,7 @@
         </div>
       </article>
 
-      <article class="timeline-card" data-index="2" data-fork="left">
+      <article class="timeline-card" data-index="2" data-slot="1" data-fork="left">
         <div class="card-content">
           <span class="date">2025 // AUG - DEC</span>
           <h2 class="card-title">GEORGIA TECH AEROSPACE (GTA)</h2>
@@ -80,7 +85,7 @@
         </div>
       </article>
 
-      <article class="timeline-card" data-index="3" data-fork="right">
+      <article class="timeline-card" data-index="3" data-slot="1" data-fork="right">
         <div class="card-content">
           <span class="date">2025 // AUG - DEC</span>
           <h2 class="card-title">GAS TURBINE CYCLE DESIGN</h2>
@@ -92,7 +97,7 @@
         </div>
       </article>
 
-      <article class="timeline-card matrix-card" data-index="4" data-fork="center">
+      <article class="timeline-card matrix-card" data-index="4" data-slot="1" data-fork="center">
         <canvas class="matrix-bg"></canvas>
         <div class="card-content">
           <span class="date matrix-date">2025 // MAY - AUG</span>
@@ -105,7 +110,7 @@
         </div>
       </article>
 
-      <article class="timeline-card" data-index="5" data-fork="center">
+      <article class="timeline-card" data-index="5" data-slot="1" data-fork="center">
         <div class="card-content">
           <span class="date">2025 // MAY - AUG</span>
           <h2 class="card-title">DEEP LEARNING SYSTEMS</h2>
@@ -117,7 +122,7 @@
         </div>
       </article>
 
-      <article class="timeline-card" data-index="6" data-fork="left">
+      <article class="timeline-card" data-index="6" data-slot="1" data-fork="left">
         <div class="card-content">
           <span class="date">2025 // JAN - MAY</span>
           <h2 class="card-title">TRAJECTORY OPTIMIZATION</h2>
@@ -129,7 +134,7 @@
         </div>
       </article>
 
-      <article class="timeline-card" data-index="7" data-fork="right">
+      <article class="timeline-card" data-index="7" data-slot="2" data-fork="right">
         <div class="card-content">
           <span class="date">2024 - 2025 // AUG - MAY</span>
           <h2 class="card-title">TACTICAL MOBILITY AIRCRAFT</h2>
@@ -141,7 +146,7 @@
         </div>
       </article>
 
-      <article class="timeline-card" data-index="8" data-fork="left">
+      <article class="timeline-card" data-index="8" data-slot="2" data-fork="left">
         <div class="card-content">
           <span class="date">2024 - 2025 // AUG - MAY</span>
           <h2 class="card-title">STRATEGIC MATERIALS @ BOEING</h2>
@@ -153,7 +158,7 @@
         </div>
       </article>
 
-      <article class="timeline-card" data-index="9" data-fork="right">
+      <article class="timeline-card" data-index="9" data-slot="3" data-fork="right">
         <div class="card-content">
           <span class="date">2024 // AUG - DEC</span>
           <h2 class="card-title">NASA BWB</h2>
@@ -165,7 +170,7 @@
         </div>
       </article>
 
-      <article class="timeline-card" data-index="10" data-fork="left">
+      <article class="timeline-card" data-index="10" data-slot="4" data-fork="left">
         <div class="card-content">
           <span class="date">2023 - 2024 // AUG - AUG</span>
           <h2 class="card-title">NH₃/H₂ REACTING FLOW</h2>
@@ -177,7 +182,7 @@
         </div>
       </article>
 
-      <article class="timeline-card" data-index="11" data-fork="right">
+      <article class="timeline-card" data-index="11" data-slot="4" data-fork="right">
         <div class="card-content">
           <span class="date">2023 - 2024</span>
           <h2 class="card-title">IIT BOMBAY</h2>
@@ -189,7 +194,7 @@
         </div>
       </article>
 
-      <article class="timeline-card" data-index="12" data-fork="left">
+      <article class="timeline-card" data-index="12" data-slot="5" data-fork="left">
         <div class="card-content">
           <span class="date">2022 - 2023 // AUG - MAY</span>
           <h2 class="card-title">FLOW OVER DRONE BLADE</h2>
@@ -201,7 +206,7 @@
         </div>
       </article>
 
-      <article class="timeline-card" data-index="13" data-fork="right">
+      <article class="timeline-card" data-index="13" data-slot="6" data-fork="right">
         <div class="card-content">
           <span class="date">2022 // AUG - DEC</span>
           <h2 class="card-title">3D FSI</h2>
@@ -213,7 +218,7 @@
         </div>
       </article>
 
-      <article class="timeline-card" data-index="14" data-fork="left">
+      <article class="timeline-card" data-index="14" data-slot="6" data-fork="left">
         <div class="card-content">
           <span class="date">2022 // AUG</span>
           <h2 class="card-title">ARDC INTERNSHIP</h2>
@@ -225,7 +230,7 @@
         </div>
       </article>
 
-      <article class="timeline-card" data-index="15" data-fork="right">
+      <article class="timeline-card" data-index="15" data-slot="6" data-fork="right">
         <div class="card-content">
           <span class="date">2022 // JUN - JUL</span>
           <h2 class="card-title">DRDO INTERNSHIP</h2>
@@ -237,7 +242,7 @@
         </div>
       </article>
 
-      <article class="timeline-card" data-index="16" data-fork="left">
+      <article class="timeline-card" data-index="16" data-slot="6" data-fork="left">
         <div class="card-content">
           <span class="date">2022 // JUN - OCT</span>
           <h2 class="card-title">CAVITATION @ TCNJ</h2>
@@ -249,7 +254,7 @@
         </div>
       </article>
 
-      <article class="timeline-card" data-index="17" data-fork="right">
+      <article class="timeline-card" data-index="17" data-slot="7" data-fork="right">
         <div class="card-content">
           <span class="date">2021 - 2022 // JUL - JUN</span>
           <h2 class="card-title">DESIGN HYPERLOOP</h2>
@@ -261,7 +266,7 @@
         </div>
       </article>
 
-      <article class="timeline-card" data-index="18" data-fork="left">
+      <article class="timeline-card" data-index="18" data-slot="7" data-fork="left">
         <div class="card-content">
           <span class="date">2021 - 2022 // JUL - MAY</span>
           <h2 class="card-title">VAWT WIND TURBINE</h2>
@@ -273,7 +278,7 @@
         </div>
       </article>
 
-      <article class="timeline-card" data-index="19" data-fork="right">
+      <article class="timeline-card" data-index="19" data-slot="8" data-fork="right">
         <div class="card-content">
           <span class="date">2021 // AUG - DEC</span>
           <h2 class="card-title">INLET NOZZLE SCRAMJET</h2>
@@ -285,7 +290,7 @@
         </div>
       </article>
 
-      <article class="timeline-card" data-index="20" data-fork="left">
+      <article class="timeline-card" data-index="20" data-slot="8" data-fork="left">
         <div class="card-content">
           <span class="date">2021 // MAY - AUG</span>
           <h2 class="card-title">PROJECT INTERN @ CCS</h2>

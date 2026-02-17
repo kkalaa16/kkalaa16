@@ -40,6 +40,7 @@ function initFluid() {
   }
 
   const edge = { x: 0.2, y: 0.2, vx: 0.0038, vy: 0.0029 };
+  const edge2 = { x: 0.78, y: 0.68, vx: -0.0031, vy: 0.0024 };
   let frame = 0;
 
   const loop = () => {
@@ -51,11 +52,21 @@ function initFluid() {
 
     edge.x += edge.vx;
     edge.y += edge.vy;
+    edge2.x += edge2.vx;
+    edge2.y += edge2.vy;
     if (edge.x < 0.02 || edge.x > 0.98) edge.vx *= -1;
     if (edge.y < 0.02 || edge.y > 0.98) edge.vy *= -1;
+    if (edge2.x < 0.02 || edge2.x > 0.98) edge2.vx *= -1;
+    if (edge2.y < 0.02 || edge2.y > 0.98) edge2.vy *= -1;
 
     if (frame % 3 === 0) {
       splat(edge.x, edge.y, edge.vx * 14500, edge.vy * 14500, { r: 0.52, g: 0.19, b: 0.02 });
+      splat(edge2.x, edge2.y, edge2.vx * 14000, edge2.vy * 14000, { r: 0.45, g: 0.17, b: 0.02 });
+    }
+
+    if (frame % 120 === 0) {
+      splat(0.06, Math.random(), 34, (Math.random() - 0.5) * 30, { r: 0.48, g: 0.18, b: 0.03 });
+      splat(0.94, Math.random(), -34, (Math.random() - 0.5) * 30, { r: 0.48, g: 0.18, b: 0.03 });
     }
 
     requestAnimationFrame(loop);
@@ -103,77 +114,50 @@ function runIntroGate() {
 function initSingleSetCarouselToTimeline() {
   const cards = [...document.querySelectorAll('.timeline-card')];
   const projects = document.getElementById('projects');
-  const path = document.querySelector('.timeline-path');
+  const svg = document.getElementById('timelineSvg');
   if (!cards.length || !projects) return;
 
+  const pathRegistry = generateTimelinePaths(cards, svg);
   let t = 0;
 
   const animate = () => {
     t += 0.009;
 
     const rect = projects.getBoundingClientRect();
-    const startOffset = window.innerHeight * 0.08;
-    const progressRaw = (startOffset - rect.top) / (rect.height - window.innerHeight * 0.75);
-    const progress = Math.max(0, Math.min(1, progressRaw));
+    const scrollable = rect.height - window.innerHeight * 0.75;
+    const rawProgress = (window.innerHeight * 0.08 - rect.top) / scrollable;
+    const progress = Math.max(0, Math.min(1, rawProgress));
+    document.body.classList.toggle('path-active', progress > 0.06);
 
-    if (path) {
-      const pMain = Math.max(0, Math.min(1, (progress - 0.05) / 0.55));
-      const pBranch = Math.max(0, Math.min(1, (progress - 0.22) / 0.22));
-      const pBottom = Math.max(0, Math.min(1, (progress - 0.52) / 0.2));
-      const firstCardProgress = Math.max(0, Math.min(1, progress / 0.31));
-      const pathActive = firstCardProgress > 0.14;
-
-      path.style.setProperty('--p-main', pMain.toFixed(4));
-      path.style.setProperty('--p-branch', pBranch.toFixed(4));
-      path.style.setProperty('--p-bottom', pBottom.toFixed(4));
-
-      const tail = pathActive ? Math.max(0, Math.min(1, (progress - 0.04) / 0.72)) : 0;
-      const head = pathActive ? Math.max(0, Math.min(1, (progress - 0.28) / 0.66)) : 0;
-      document.body.style.setProperty('--timeline-tail', tail.toFixed(4));
-      document.body.style.setProperty('--timeline-head', head.toFixed(4));
-
-      if (pathActive) document.body.classList.add('path-active');
-      else document.body.classList.remove('path-active');
-    }
+    animatePaths(pathRegistry, svg, progress);
 
     cards.forEach((card, i) => {
+      const idx = Number(card.dataset.index ?? i);
+      const slot = Number(card.dataset.slot ?? idx);
+      const fork = card.dataset.fork ?? 'center';
       const n = cards.length;
-      const angle = (i / n) * Math.PI * 2 + t;
-      const orbitRadius = Math.min(300, Math.max(170, window.innerWidth * 0.19));
+      const angle = (idx / n) * Math.PI * 2 + t;
 
-      // SAME cards in carousel first
-      const orbitX = Math.cos(angle) * orbitRadius;
-      const orbitY = Math.sin(angle * 1.35) * 24;
-      const orbitZ = Math.sin(angle) * orbitRadius;
+      const orbit = Math.min(260, Math.max(140, window.innerWidth * 0.17));
+      const ox = Math.cos(angle) * orbit;
+      const oy = Math.sin(angle * 1.3) * 22;
+      const oz = Math.sin(angle) * orbit;
 
-      // then SAME cards become timeline anchors
-      const idx = Number(card.dataset.index || i);
-      const fork = card.dataset.fork || 'center';
-      const spacing = Math.max(145, Math.min(195, window.innerHeight * 0.2));
-      const baseY = window.innerHeight * 0.36;
-      const targetY = idx * spacing + baseY;
-      const timelineTravel = progress * (cards.length * spacing * 0.82 + window.innerHeight * 0.42);
-      const timelineY = targetY - timelineTravel;
+      const cardProgress = Math.max(0, Math.min(1, (progress - idx * 0.032) / 0.21));
+      const targetY = computeSlotY(slot, cards);
+      const targetX = forkX(fork);
 
-      let targetX = 0;
-      if (fork === 'left') targetX = -Math.min(265, window.innerWidth * 0.22);
-      if (fork === 'right') targetX = Math.min(265, window.innerWidth * 0.22);
-
-      const cardProgress = Math.max(0, Math.min(1, (progress - idx * 0.024) / 0.24));
-
-      const x = orbitX * (1 - cardProgress) + targetX * cardProgress;
-      const y = orbitY * (1 - cardProgress) + timelineY * cardProgress;
-      const z = orbitZ * (1 - cardProgress);
+      const x = ox * (1 - cardProgress) + targetX * cardProgress;
+      const y = oy * (1 - cardProgress) + targetY * cardProgress;
+      const z = oz * (1 - cardProgress);
       const rotY = angle * (1 - cardProgress);
-      const scale = 0.8 + 0.2 * cardProgress;
+      const scale = 0.82 + 0.18 * cardProgress;
 
-      const appearFromBottom = Math.max(0, Math.min(1, (window.innerHeight * 0.72 - y) / 250));
-      const fadeAtTop = Math.max(0, Math.min(1, (y + window.innerHeight * 0.48) / 260));
-      const scrollVisibility = appearFromBottom * fadeAtTop;
-      const timelineOpacity = Math.max(0, Math.min(1, scrollVisibility));
-
-      card.style.opacity = progress <= 0 ? '1' : String(timelineOpacity);
+      card.style.opacity = String(Math.max(0.2, Math.min(1, cardProgress * 1.25)));
       card.style.transform = `translate3d(calc(-50% + ${x}px), calc(-50% + ${y}px), ${z}px) rotateY(${rotY}rad) scale(${scale})`;
+
+      if (cardProgress >= 0.95) card.classList.add('placed');
+      else card.classList.remove('placed');
     });
 
     requestAnimationFrame(animate);
@@ -181,6 +165,118 @@ function initSingleSetCarouselToTimeline() {
 
   requestAnimationFrame(animate);
 }
+
+function computeSlotY(slot, cards) {
+  const slots = [...new Set(cards.map((c) => Number(c.dataset.slot ?? 0)))].sort((a, b) => a - b);
+  const total = slots.length;
+  const spacing = 330;
+  return (slot - (total - 1) / 2) * spacing;
+}
+
+function forkX(fork) {
+  const w = window.innerWidth;
+  const clamp = (v, max) => Math.min(v, max);
+  switch (fork) {
+    case 'left': return -clamp(w * 0.23, 300);
+    case 'right': return clamp(w * 0.23, 300);
+    case 'left-outer': return -clamp(w * 0.38, 460);
+    case 'left-inner': return -clamp(w * 0.18, 220);
+    case 'right-inner': return clamp(w * 0.18, 220);
+    case 'right-outer': return clamp(w * 0.38, 460);
+    default: return 0;
+  }
+}
+
+function generateTimelinePaths(cards, svg) {
+  if (!svg) return [];
+
+  const groups = {};
+  cards.forEach((card) => {
+    const slot = card.dataset.slot ?? '0';
+    if (!groups[slot]) groups[slot] = [];
+    groups[slot].push(card);
+  });
+
+  const slotKeys = Object.keys(groups).sort((a, b) => +a - +b);
+  const CX = 500;
+  const SVGW = 1000;
+  let y = 50;
+  let html = '';
+  const registry = [];
+
+  slotKeys.forEach((slotKey, si) => {
+    const slotCards = groups[slotKey];
+    const n = slotCards.length;
+    const startY = y;
+
+    if (n === 1) {
+      const len = 300;
+      const id = `p${si}-single`;
+      html += path(id, `M ${CX} ${startY} L ${CX} ${startY + len}`, len);
+      registry.push(id);
+      y += len + 40;
+    } else {
+      const forks = slotCards.map((c) => forkX(c.dataset.fork ?? 'center'));
+      const minX = Math.min(...forks) + CX;
+      const maxX = Math.max(...forks) + CX;
+      const prep = 50;
+      const branchH = 230;
+      const joinH = 65;
+      let cy = startY;
+
+      const idPrep = `p${si}-prep`;
+      html += path(idPrep, `M ${CX} ${cy} L ${CX} ${cy + prep}`, prep);
+      registry.push(idPrep);
+      cy += prep;
+
+      slotCards.forEach((card, i) => {
+        const tx = CX + forkX(card.dataset.fork ?? 'center');
+        const idSplit = `p${si}-sp${i}`;
+        html += path(idSplit, `M ${CX} ${cy} Q ${(CX + tx) / 2} ${cy + 30} ${tx} ${cy + prep}`, 220);
+        registry.push(idSplit);
+      });
+      cy += prep;
+
+      slotCards.forEach((card, i) => {
+        const tx = CX + forkX(card.dataset.fork ?? 'center');
+        const idBranch = `p${si}-br${i}`;
+        html += path(idBranch, `M ${tx} ${cy} L ${tx} ${cy + branchH}`, branchH);
+        registry.push(idBranch);
+      });
+      cy += branchH;
+
+      const idJoin = `p${si}-join`;
+      html += path(idJoin, `M ${minX} ${cy} Q ${CX} ${cy + joinH} ${maxX} ${cy}`, 320);
+      registry.push(idJoin);
+
+      y = cy + joinH + 45;
+    }
+  });
+
+  svg.setAttribute('viewBox', `0 0 ${SVGW} ${y + 30}`);
+  svg.style.height = `${y + 30}px`;
+  svg.innerHTML = svg.querySelector('defs').outerHTML + html;
+
+  return registry;
+
+  function path(id, d, len) {
+    return `<path class="${id}" d="${d}" stroke="url(#timelineGradient)" stroke-width="2" fill="none" stroke-dasharray="${len}" stroke-dashoffset="${len}" stroke-linecap="round"/>`;
+  }
+}
+
+function animatePaths(registry, svg, progress) {
+  if (!svg || !registry.length) return;
+  registry.forEach((cls, i) => {
+    const el = svg.querySelector('.' + CSS.escape(cls));
+    if (!el) return;
+    const len = parseFloat(el.getAttribute('stroke-dasharray'));
+    const start = i * 0.02;
+    const dur = 0.12;
+    const p = Math.max(0, Math.min(1, (progress - start) / dur));
+    el.style.strokeDashoffset = String(len * (1 - p));
+  });
+}
+
 
 
 function initEducationAxis() {
