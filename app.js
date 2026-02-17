@@ -136,7 +136,7 @@ function initSingleSetCarouselToTimeline() {
     const slots = [...new Set(cards.map((c) => Number(c.dataset.slot ?? 0)))].sort((a, b) => a - b);
     const totalSlots = slots.length;
     const slotIndex = new Map(slots.map((slot, i) => [slot, i]));
-    const spacing = Math.max(145, Math.min(180, window.innerHeight * 0.18));
+    const spacing = Math.max(170, Math.min(210, window.innerHeight * 0.22));
     const baseY = window.innerHeight * 0.52;
     const travel = progress * (totalSlots * spacing + window.innerHeight * 0.95);
 
@@ -196,12 +196,12 @@ function forkX(fork) {
   const w = window.innerWidth;
   const clamp = (v, max) => Math.min(v, max);
   switch (fork) {
-    case 'left': return -clamp(w * 0.18, 220);
-    case 'right': return clamp(w * 0.18, 220);
-    case 'left-outer': return -clamp(w * 0.28, 330);
-    case 'left-inner': return -clamp(w * 0.13, 160);
-    case 'right-inner': return clamp(w * 0.13, 160);
-    case 'right-outer': return clamp(w * 0.28, 330);
+    case 'left': return -clamp(w * 0.23, 300);
+    case 'right': return clamp(w * 0.23, 300);
+    case 'left-outer': return -clamp(w * 0.36, 450);
+    case 'left-inner': return -clamp(w * 0.18, 230);
+    case 'right-inner': return clamp(w * 0.18, 230);
+    case 'right-outer': return clamp(w * 0.36, 450);
     default: return 0;
   }
 }
