@@ -221,8 +221,13 @@ function initHeaderAndTopState() {
   const topHeader = document.getElementById('topHeader');
   const onScroll = () => {
     const y = window.scrollY;
-    document.body.classList.toggle('at-top', y < 40);
-    if (topHeader) topHeader.classList.toggle('scrolled', y > 140);
+    const atTop = y < 40;
+    const fly = y > 120;
+
+    document.body.classList.toggle('at-top', atTop);
+    document.body.classList.toggle('title-fly', fly);
+
+    if (topHeader) topHeader.classList.toggle('scrolled', y > 220);
   };
 
   onScroll();

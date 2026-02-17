@@ -11,7 +11,7 @@ body { background: var(--bg); color: var(--text); font-family: Inter, sans-serif
 body.lock-scroll { height: 100vh; overflow: hidden; }
 #fluid-canvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -3; pointer-events: none; }
 
-.intro-sequence { position: fixed; inset: 0; display: grid; place-items: center; background: radial-gradient(circle at center, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.82)); z-index: 40; transition: opacity 1000ms ease; }
+.intro-sequence { position: fixed; inset: 0; display: grid; place-items: center; background: radial-gradient(circle at center, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.82)); z-index: 40; transition: opacity 1000ms ease, transform 700ms ease; }
 .intro-sequence.hidden { opacity: 0; pointer-events: none; }
 .intro-hi, .intro-welcome { position: absolute; font-weight: 800; letter-spacing: -0.02em; text-transform: uppercase; transition: opacity 1300ms ease, transform 1300ms ease, filter 1300ms ease; }
 .intro-hi { font-size: clamp(4.6rem, 16vw, 11rem); opacity: 1; }
@@ -35,9 +35,18 @@ body.intro-complete.at-top .intro-welcome {
   opacity: 1;
   transform: translateY(0);
 }
+body.intro-complete.title-fly .intro-sequence.hidden {
+  opacity: 0;
+  transform: translateY(-26vh) scale(0.9);
+}
+body.intro-complete.title-fly .intro-welcome {
+  transform: translateY(-24vh) scale(0.56);
+  opacity: 0;
+}
 
-.top-header { position: sticky; top: 0; z-index: 18; display: flex; justify-content: center; background: linear-gradient(to bottom, rgba(0,0,0,.92), rgba(0,0,0,.45), transparent); padding: .8rem 1rem; opacity: 0; transform: translateY(-18px) scale(1.04); transition: opacity 500ms ease, transform 650ms ease; }
-.top-header.ready { opacity: 1; transform: translateY(0) scale(1); }
+.top-header { position: sticky; top: 0; z-index: 18; display: flex; justify-content: center; background: linear-gradient(to bottom, rgba(0,0,0,.92), rgba(0,0,0,.45), transparent); padding: .8rem 1rem; opacity: 0; transform: translateY(-18px) scale(1.04); transition: opacity 500ms ease, transform 650ms ease; pointer-events: none; }
+.top-header.ready { opacity: 0; transform: translateY(-10px) scale(1.02); }
+body.intro-complete.title-fly .top-header.ready { opacity: 1; transform: translateY(0) scale(1); }
 .top-header h1 { display: inline-flex; align-items: center; gap: .5rem; font-size: clamp(0.95rem, 2.4vw, 1.4rem); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
 .header-name { opacity: .9; transform: translateY(0); transition: transform 460ms ease, opacity 420ms ease; }
 .header-portfolio { opacity: 0; transform: translateY(12px); transition: transform 460ms ease, opacity 420ms ease; }
