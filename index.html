@@ -1,422 +1,483 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KRTIN KALA | SYSTEMS & CFD PORTFOLIO</title>
-    
-    <!-- Design Assets -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Space+Mono&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Fluid Engine Library -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KRTIN KALA | PORTFOLIO</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/webgl-fluid"></script>
 
-    <style>
-        :root {
-            --bg: #010101;
-            --card-bg: rgba(10, 10, 10, 0.95);
-            --accent: #ff4d00;
-            --tech-blue: #00d4ff;
-            --text-main: #ffffff;
-            --text-dim: #888888;
-            --mono: 'Space Mono', monospace;
-            --border: rgba(255, 255, 255, 0.1);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            background-color: var(--bg);
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-            scroll-snap-type: y mandatory;
-            height: 100vh;
-        }
-
-        /* --- FLUID BACKGROUND --- */
-        #fluid-canvas {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        /* --- NAVIGATION --- */
-        nav {
-            position: fixed;
-            top: 0; width: 100%;
-            padding: 1.5rem 5%;
-            z-index: 100;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-family: var(--mono);
-            font-size: 0.7rem;
-            letter-spacing: 2px;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.98), transparent);
-        }
-
-        .nav-links { display: flex; gap: 2rem; }
-        .nav-links a { color: var(--text-dim); text-decoration: none; transition: 0.3s; position: relative; }
-        .nav-links a:hover { color: var(--accent); }
-
-        /* --- SECTION BASE --- */
-        section {
-            height: 100vh;
-            width: 100%;
-            scroll-snap-align: start;
-            display: flex;
-            align-items: center;
-            padding: 0 8%;
-            position: relative;
-        }
-
-        .container {
-            max-width: 1300px;
-            width: 100%;
-            z-index: 10;
-        }
-
-        /* --- MODULAR CARDS (F1 STYLE) --- */
-        .module-grid {
-            display: grid;
-            grid-template-columns: 1fr 1.1fr;
-            gap: 2rem;
-            width: 100%;
-        }
-
-        .feature-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(40px);
-            border: 1px solid var(--border);
-            padding: 3.5rem;
-            position: relative;
-            transition: 0.4s ease;
-        }
-
-        .feature-card:hover {
-            border-color: var(--accent);
-            background: rgba(15, 15, 15, 1);
-            box-shadow: 0 50px 100px rgba(0,0,0,1);
-        }
-
-        .tag {
-            font-family: var(--mono);
-            color: var(--accent);
-            font-size: 0.6rem;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            margin-bottom: 1.5rem;
-            display: block;
-        }
-
-        h1 { font-size: clamp(3rem, 10vw, 7rem); font-weight: 900; line-height: 0.8; text-transform: uppercase; margin-bottom: 2rem; letter-spacing: -2px; }
-        h2 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; text-transform: uppercase; line-height: 0.95; margin-bottom: 1.5rem; }
-
-        /* --- DATA TELEMETRY --- */
-        .metric-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-top: 2.5rem;
-            font-family: var(--mono);
-        }
-
-        .metric { border-left: 1px solid var(--accent); padding-left: 1.5rem; }
-        .metric.blue { border-color: var(--tech-blue); }
-        .m-label { font-size: 0.55rem; color: var(--text-dim); text-transform: uppercase; display: block; margin-bottom: 0.3rem; }
-        .m-val { font-size: 0.95rem; font-weight: bold; color: #fff; }
-
-        /* --- BUTTONS --- */
-        .btn {
-            display: inline-block;
-            margin-top: 2rem;
-            padding: 1.2rem 3rem;
-            border: 1px solid var(--accent);
-            color: var(--accent);
-            text-decoration: none;
-            font-family: var(--mono);
-            font-size: 0.7rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            transition: 0.4s;
-            cursor: pointer;
-            background: transparent;
-        }
-
-        .btn:hover {
-            background: var(--accent);
-            color: #000;
-            box-shadow: 0 0 30px var(--accent);
-        }
-
-        /* --- ARCHIVE GRID --- */
-        .nodes-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
-
-        .node-small {
-            padding: 2.5rem;
-            background: rgba(12, 12, 12, 0.7);
-            border: 1px solid var(--border);
-            transition: 0.4s;
-        }
-        .node-small:hover { border-color: var(--accent); transform: translateY(-10px); background: #000; }
-        .node-title { font-family: var(--mono); font-size: 0.7rem; color: var(--accent); margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 2px; }
-        .node-text { font-size: 0.8rem; color: var(--text-dim); line-height: 1.7; }
-
-        @media (max-width: 1100px) {
-            .module-grid, .nodes-grid { grid-template-columns: 1fr; }
-            section { height: auto; padding: 6rem 5%; scroll-snap-align: none; }
-            .feature-card { padding: 2.5rem; }
-        }
-    </style>
-</head>
-<body>
-
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body class="lock-scroll">
     <canvas id="fluid-canvas"></canvas>
 
-    <nav>
-        <div class="logo">KRTIN KALA // PERSONNEL_ID: 903916172</div>
-        <div class="nav-links">
-            <a href="#hero">OVERVIEW</a>
-            <a href="#physics">PHYSICS</a>
-            <a href="#systems">SYSTEMS</a>
-            <a href="#f1-project">F1_ML</a>
-            <a href="#nodes">ARCHIVE</a>
-        </div>
-    </nav>
-
-    <!-- 01: HERO -->
-    <section id="hero">
-        <div class="container">
-            <span class="tag">Aerospace Systems & Propulsion Architecture</span>
-            <h1>FROM MOLECULES<br>TO <span style="color:var(--accent)">MISSIONS</span></h1>
-            <p style="max-width: 650px; color: var(--text-dim); font-size: 1.3rem; line-height: 1.8;">
-                Bridging <strong>High-Fidelity Reacting Flows</strong> with <strong>Multidisciplinary Optimization</strong>. Graduate researcher at Georgia Tech's ASDL / Ben T. Zinn Lab.
-            </p>
-            <div class="metric-row" style="max-width: 600px;">
-                <div class="metric"><span class="m-label">Primary Node</span><span class="m-val">Combustion CFD</span></div>
-                <div class="metric"><span class="m-label">Affiliation</span><span class="m-val">Georgia Tech / TU/e</span></div>
-            </div>
-        </div>
+    <section class="intro-sequence" id="introSequence">
+      <div class="intro-hi" id="introHi">Hi.</div>
+      <div class="intro-welcome" id="introWelcome">
+        <span class="welcome-title"><span class="intro-static">I'M </span><span class="accent intro-name-word" id="introNameWord">KRTIN KALA</span><span class="intro-static">.</span></span>
+        <span class="welcome-name"><span class="intro-static">THIS IS MY </span><span class="intro-portfolio-word" id="introPortfolioWord">PORTFOLIO</span><span class="intro-static">.</span></span>
+        <span class="welcome-sub">[ SYSTEMS DESIGN // REACTING FLOWS // ML ARCHITECT ]</span>
+      </div>
+      <div class="intro-scroll-cue" id="introScrollCue">
+        <span>SCROLL DOWN</span>
+        <span class="cue-arrow"></span>
+      </div>
     </section>
 
-    <!-- 02: PHYSICS MODULE -->
-    <section id="physics">
-        <div class="container">
-            <div class="module-grid">
-                <div class="feature-card">
-                    <span class="tag">Technical Chapter 01 // Physics</span>
-                    <h2>Reactive Flow<br>Simulations</h2>
-                    <p style="color: var(--text-dim); line-height: 1.8;">
-                        Numerical investigation of green H₂/NH₃ blends using <strong>Flamelet Generated Manifold (FGM)</strong>. Predicting NOx mechanism pathways in gas turbine environments with high-fidelity LES.
-                    </p>
-                    <div class="metric-row">
-                        <div class="metric"><span class="m-label">Accuracy</span><span class="m-val">92.6% F1-Score</span></div>
-                        <div class="metric"><span class="m-label">Efficiency</span><span class="m-val">86.7% Time Gain</span></div>
-                    </div>
-                </div>
-                <div class="feature-card" style="border-color: rgba(255,255,255,0.05);">
-                    <span class="tag" style="color: #fff;">Sandia-D Research</span>
-                    <p style="color: var(--text-dim); font-size: 0.9rem; line-height: 1.8;">
-                        Developing an entropy-generation analysis framework to quantify irreversibility in reacting shear layers. Quantifying local entropy production to optimize thermal management for carbon-neutral propulsion.
-                    </p>
-                    <div class="metric-row">
-                        <div class="metric"><span class="m-label">Domain</span><span class="m-val">Turbulent Flames</span></div>
-                        <div class="metric"><span class="m-label">Validation</span><span class="m-val">OH* Chemilum.</span></div>
-                    </div>
-                </div>
-            </div>
+    <header class="top-header" id="topHeader">
+      <h1>
+        <span class="header-name" id="headerNameWord">KRTIN KALA'S</span>
+        <span class="header-portfolio" id="headerPortfolioWord">PORTFOLIO</span>
+      </h1>
+      <nav class="top-nav-links" aria-label="Section navigation">
+        <a href="#education">Education</a>
+        <a href="#work">Work &amp; Projects</a>
+        <a href="#skills">Skills</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </header>
+
+    <section class="stage" id="top"></section>
+
+    <!-- One shared card set: revolves first, then flies down to timeline -->
+    <div class="cards-layer" id="cardsLayer">
+      <svg class="timeline-svg" id="timelineSvg" viewBox="0 0 1000 100" preserveAspectRatio="xMidYMin meet" aria-hidden="true">
+        <defs>
+          <linearGradient id="timelineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:rgba(255,255,255,0.15)" />
+            <stop offset="100%" style="stop-color:rgba(255,255,255,0.85)" />
+          </linearGradient>
+          <linearGradient id="matrixGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:rgba(0,255,65,0.15)" />
+            <stop offset="100%" style="stop-color:rgba(0,255,65,0.85)" />
+          </linearGradient>
+        </defs>
+      </svg>
+
+      <article class="timeline-card" data-index="0" data-slot="0" data-fork="left">
+        <div class="card-content">
+          <span class="date">2025 - CURRENT // JUN</span>
+          <h2 class="card-title">BEN T. ZINN LAB</h2>
+          <p>Entropy-generation analysis in turbulent diffusion flames and reacting-flow modeling.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">Thermodynamics</span></div>
+            <div class="stat"><span class="s-val">LES Modeling</span></div>
+          </div>
         </div>
-    </section>
+      </article>
 
-    <!-- 03: SYSTEMS MODULE -->
-    <section id="systems">
-        <div class="container">
-            <div class="module-grid">
-                <div class="feature-card">
-                    <span class="tag">Technical Chapter 02 // MDAO</span>
-                    <h2>Supply Chain<br>Vulnerability</h2>
-                    <p style="color: var(--text-dim); line-height: 1.8;">
-                        Quantifying US aerospace supply chain resilience using <strong>Graph Theory</strong>. Visualizing Tier 0-4 material dependencies for strategic mitigation of Titanium and Vanadium disruptions.
-                    </p>
-                    <div class="metric-row">
-                        <div class="metric blue"><span class="m-label">Methodology</span><span class="m-val">HHI Market Index</span></div>
-                        <div class="metric blue"><span class="m-label">Prototype</span><span class="m-val">SOVERN Tool</span></div>
-                    </div>
-                </div>
-                <div class="feature-card">
-                    <span class="tag" style="color: var(--tech-blue);">Tactical Mobility</span>
-                    <p style="color: var(--text-dim); font-size: 0.9rem; line-height: 1.8;">
-                        Executing Multi-Disciplinary Analysis for Tactical Airlift aircraft. Integrating OpenMDAO with NPSS and FLOPS to evaluate propulsion-airframe trade-offs for hybrid-electric tiltrotors.
-                    </p>
-                    <div class="metric-row">
-                        <div class="metric blue"><span class="m-label">Framework</span><span class="m-val">OpenMDAO / SysML</span></div>
-                        <div class="metric blue"><span class="m-label">Focus</span><span class="m-val">Mission Trade-offs</span></div>
-                    </div>
-                </div>
-            </div>
+      <article class="timeline-card" data-index="1" data-slot="0" data-fork="right">
+        <div class="card-content">
+          <span class="date">2025 - CURRENT // AUG</span>
+          <h2 class="card-title">XV-15 ROTOR SYSTEMS</h2>
+          <p>Tiltrotor performance modeling and mission-level aerodynamic system studies.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">Rotorcraft</span></div>
+            <div class="stat"><span class="s-val">System Dynamics</span></div>
+          </div>
         </div>
-    </section>
+      </article>
 
-    <!-- 04: FEATURED F1 ML -->
-    <section id="f1-project">
-        <div class="container">
-            <div class="feature-card" style="grid-template-columns: 1fr; border-left: 5px solid var(--accent);">
-                <span class="tag">High-Speed Data // F1 Strategy Node</span>
-                <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 4rem; align-items: center;">
-                    <div>
-                        <h2 style="font-size: 4rem;">F1 Race Strategy<br><span style="color:var(--accent)">ML Modeling</span></h2>
-                        <p style="color: var(--text-dim); font-size: 1.15rem; margin-top: 1rem; line-height: 1.6;">
-                            End-to-end Machine Learning pipeline analyzing telemetry to optimize pit-stop strategy and race predictions. Modeled on the sleek modularity of the F1 UI.
-                        </p>
-                        <div class="metric-row">
-                            <div class="metric"><span class="m-label">Stack</span><span class="m-val">Python / Scikit-Learn</span></div>
-                            <div class="metric"><span class="m-label">Deployment</span><span class="m-val">F1 Modular Dashboard</span></div>
-                        </div>
-                        <a href="https://kkalaa16.github.io/ML_Project_F1/" target="_blank" class="btn">Launch Project Site</a>
-                    </div>
-                    <div style="text-align: center; opacity: 0.05;">
-                        <i class="fas fa-car" style="font-size: 15rem;"></i>
-                    </div>
-                </div>
-            </div>
+      <article class="timeline-card" data-index="2" data-slot="1" data-fork="left">
+        <div class="card-content">
+          <span class="date">2025 // AUG - DEC</span>
+          <h2 class="card-title">GEORGIA TECH AEROSPACE (GTA)</h2>
+          <p>Graduate aerospace project cluster focused on advanced systems integration.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">Aerospace</span></div>
+            <div class="stat"><span class="s-val">Design Studio</span></div>
+          </div>
         </div>
-    </section>
+      </article>
 
-    <!-- 05: ARCHIVE NODES -->
-    <section id="nodes">
-        <div class="container">
-            <span class="tag">Technical Project Archive</span>
-            <div class="nodes-grid">
-                <div class="node-small">
-                    <div class="node-title">Drone Aerodynamics</div>
-                    <p class="node-text">RANS study of rotor downwash. 51.7% upthrust gain via optimized fixed-pitch 3-blade configurations.</p>
-                </div>
-                <div class="node-small">
-                    <div class="node-title">Scramjet Inlets</div>
-                    <p class="node-text">CFD validation of external compression at Mach 5 and Mach 8. Analyzed shock-on-lip efficiency.</p>
-                </div>
-                <div class="node-small">
-                    <div class="node-title">HVAC Pathogens</div>
-                    <p class="node-text">Redesigned ventilation at IIT Bombay to reduce viral exposure by 23.7% via thermal stratification.</p>
-                </div>
-                <div class="node-small">
-                    <div class="node-title">Savonius VAWT</div>
-                    <p class="node-text">72% improvement in power output through optimized multi-blade helical turbine geometry.</p>
-                </div>
-                <div class="node-small">
-                    <div class="node-title">Hyperloop India</div>
-                    <p class="node-text">Propulsion integration and CAD DFM for high-speed pod architecture competition.</p>
-                </div>
-                <div class="node-small">
-                    <div class="node-title">Turbofan Cycles</div>
-                    <p class="node-text">MATLAB framework for variable-gamma cycle analysis evaluating real-gas effects on TSFC.</p>
-                </div>
-            </div>
+      <article class="timeline-card" data-index="3" data-slot="1" data-fork="right">
+        <div class="card-content">
+          <span class="date">2025 // AUG - DEC</span>
+          <h2 class="card-title">GAS TURBINE CYCLE DESIGN</h2>
+          <p>Cycle-level optimization and trade studies for gas-turbine architecture decisions.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">Cycle Analysis</span></div>
+            <div class="stat"><span class="s-val">Optimization</span></div>
+          </div>
         </div>
-    </section>
+      </article>
 
-    <!-- 06: CONTACT -->
-    <section id="contact">
-        <div class="container" style="text-align: center;">
-            <span class="tag" style="justify-content: center;">Link established // Terminal Ready</span>
-            <h1 style="font-size: clamp(3rem, 12vw, 6rem);">INITIATE<br><span style="color:var(--accent)">FORGE</span></h1>
-            <div style="display: flex; gap: 2rem; justify-content: center; margin-top: 3rem;">
-                <a href="mailto:kkala6@gatech.edu" class="btn">Email_Engineer</a>
-                <a href="https://linkedin.com/in/krtin-kala-07a682198" target="_blank" class="btn" style="border-color:#333; color:#fff;">LinkedIn_Profile</a>
-            </div>
-            <p style="margin-top: 6rem; font-family: var(--mono); font-size: 0.65rem; color: #222; letter-spacing: 5px;">
-                GEORGIA INSTITUTE OF TECHNOLOGY // SYSTEMS & PROPULSION
-            </p>
+      <article class="timeline-card matrix-card" data-index="4" data-slot="2" data-fork="left">
+        <canvas class="matrix-bg"></canvas>
+        <div class="card-content">
+          <span class="date matrix-date">2025 // MAY - AUG</span>
+          <h2 class="card-title matrix-title">F1 STRATEGY AI</h2>
+          <p>Race strategy ML pipeline from high-frequency telemetry and stint simulation.</p>
+          <div class="stats">
+            <div class="stat matrix-stat"><span class="s-val">Python / SKL</span></div>
+            <div class="stat matrix-stat"><span class="s-val">Predictive Strategy</span></div>
+          </div>
         </div>
-    </section>
+      </article>
 
-    <script>
-        window.onload = function() {
-            const canvas = document.getElementById('fluid-canvas');
-            
-            // Initialization for webgl-fluid
-            // Some CDN versions require a direct function call, others may return a controller.
-            const fluidOptions = {
-                SIM_RESOLUTION: 128,
-                DYE_RESOLUTION: 1024,
-                DENSITY_DISSIPATION: 0.99, // Persistent swirls (closer to 1.0 = lasts longer)
-                VELOCITY_DISSIPATION: 0.992,
-                PRESSURE: 0.8,
-                CURL: 75, // Extreme vorticity for heavy spirals
-                SPLAT_RADIUS: 0.35,
-                SPLAT_FORCE: 7000,
-                SHADING: true,
-                COLORFUL: false, // Technical Orange/Black theme
-                PAUSED: false,
-                BACK_COLOR: { r: 0, g: 0, b: 0 },
-                BLOOM: false,
-                TRANSPARENT: true,
-            };
+      <article class="timeline-card" data-index="5" data-slot="2" data-fork="right">
+        <div class="card-content">
+          <span class="date">2025 // MAY - AUG</span>
+          <h2 class="card-title">DEEP LEARNING SYSTEMS</h2>
+          <p>Neural surrogate workflows for rapid engineering prediction and control.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">Deep Learning</span></div>
+            <div class="stat"><span class="s-val">Surrogates</span></div>
+          </div>
+        </div>
+      </article>
 
-            // Call the library initialization
-            const fluid = WebGLFluid(canvas, fluidOptions);
+      <article class="timeline-card" data-index="6" data-slot="3" data-fork="center">
+        <div class="card-content">
+          <span class="date">2025 // JAN - MAY</span>
+          <h2 class="card-title">TRAJECTORY OPTIMIZATION</h2>
+          <p>Optimal control trajectories under mission constraints and nonlinear dynamics.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">Optimal Control</span></div>
+            <div class="stat"><span class="s-val">Trajectory</span></div>
+          </div>
+        </div>
+      </article>
 
-            // Robust Splat Helper - handles cases where fluid object might be differently structured
-            function triggerSplat(x, y, dx, dy, color) {
-                if (fluid && typeof fluid.splat === 'function') {
-                    fluid.splat(x, y, dx, dy, color);
-                } else if (window.fluid && typeof window.fluid.splat === 'function') {
-                    window.fluid.splat(x, y, dx, dy, color);
-                }
-            }
+      <article class="timeline-card" data-index="7" data-slot="4" data-fork="left">
+        <div class="card-content">
+          <span class="date">2024 - 2025 // AUG - MAY</span>
+          <h2 class="card-title">TACTICAL MOBILITY AIRCRAFT</h2>
+          <p>Concept-to-analysis workflow for tactical mobility aircraft and mission envelopes.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">Aircraft Design</span></div>
+            <div class="stat"><span class="s-val">Mission Analysis</span></div>
+          </div>
+        </div>
+      </article>
 
-            // --- PERSISTENCE HEARTBEAT ---
-            // Automatically fires random "combustion" pulses every second to keep background iterative
-            function heartbeat() {
-                const x = Math.random();
-                const y = Math.random();
-                const dx = (Math.random() - 0.5) * 20;
-                const dy = (Math.random() - 0.5) * 20;
-                triggerSplat(x, y, dx, dy, { r: 0.8, g: 0.3, b: 0 });
-                
-                setTimeout(heartbeat, 1000); // Continuous loop
-            }
-            heartbeat();
+      <article class="timeline-card" data-index="8" data-slot="4" data-fork="right">
+        <div class="card-content">
+          <span class="date">2024 - 2025 // AUG - MAY</span>
+          <h2 class="card-title">STRATEGIC MATERIALS @ BOEING</h2>
+          <p>Strategic materials assessment for aerospace applications and structural trade-offs.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">Materials</span></div>
+            <div class="stat"><span class="s-val">Aviation</span></div>
+          </div>
+        </div>
+      </article>
 
-            // --- INITIAL IGNITION BLAST ---
-            function ignition() {
-                for(let i=0; i<10; i++) {
-                    setTimeout(() => {
-                        triggerSplat(0.5, 0.5, (Math.random()-0.5)*200, (Math.random()-0.5)*200, { r: 1, g: 0.4, b: 0 });
-                    }, i * 120);
-                }
-            }
-            ignition();
+      <article class="timeline-card" data-index="9" data-slot="5" data-fork="center">
+        <div class="card-content">
+          <span class="date">2024 // AUG - DEC</span>
+          <h2 class="card-title">NASA BWB</h2>
+          <p>Blended-wing-body concept evaluation and stability/performance assessment.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">BWB Concept</span></div>
+            <div class="stat"><span class="s-val">Aero Design</span></div>
+          </div>
+        </div>
+      </article>
 
-            // --- SCROLL SLOSH REACTIVITY ---
-            let lastScrollY = window.scrollY;
-            window.addEventListener('scroll', () => {
-                const currentScrollY = window.scrollY;
-                const delta = currentScrollY - lastScrollY;
-                
-                if (Math.abs(delta) > 2) {
-                    // Create a directional "wake" of swirls
-                    for (let i = 0; i < 4; i++) {
-                        const x = Math.random();
-                        const y = 0.5;
-                        const dx = (Math.random() - 0.5) * 30;
-                        const dy = -delta * 15; // Vertical directional slosh
-                        triggerSplat(x, y, dx, dy, { r: 0.9, g: 0.3, b: 0 });
-                    }
-                }
-                lastScrollY = currentScrollY;
-            });
-        };
-    </script>
-</body>
+      <article class="timeline-card" data-index="10" data-slot="6" data-fork="left">
+        <div class="card-content">
+          <span class="date">2023 - 2024 // AUG - AUG</span>
+          <h2 class="card-title">NH₃/H₂ REACTING FLOW</h2>
+          <p>High-fidelity CFD optimization for carbon-neutral turbines at TU/e & Baker Hughes.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">FGM / LES</span></div>
+            <div class="stat"><span class="s-val">Reacting CFD</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="timeline-card" data-index="11" data-slot="6" data-fork="right">
+        <div class="card-content">
+          <span class="date">2023 - 2024</span>
+          <h2 class="card-title">IIT BOMBAY</h2>
+          <p>Research collaboration and technical development in aerospace/fluid systems.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">Research</span></div>
+            <div class="stat"><span class="s-val">Collaboration</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="timeline-card" data-index="12" data-slot="7" data-fork="center">
+        <div class="card-content">
+          <span class="date">2022 - 2023 // AUG - MAY</span>
+          <h2 class="card-title">FLOW OVER DRONE BLADE</h2>
+          <p>Analysis of flow over drone blades with aerodynamic performance characterization.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">Rotor Aerodynamics</span></div>
+            <div class="stat"><span class="s-val">CFD</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="timeline-card" data-index="13" data-slot="8" data-fork="left-outer">
+        <div class="card-content">
+          <span class="date">2022 // AUG - DEC</span>
+          <h2 class="card-title">3D FSI</h2>
+          <p>3D fluid-structure interaction simulations and coupled-response studies.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">FSI</span></div>
+            <div class="stat"><span class="s-val">3D Simulation</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="timeline-card" data-index="14" data-slot="8" data-fork="left-inner">
+        <div class="card-content">
+          <span class="date">2022 // AUG</span>
+          <h2 class="card-title">ARDC INTERNSHIP</h2>
+          <p>One-month internship focused on applied aerospace design and validation tasks.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">1-Month Intern</span></div>
+            <div class="stat"><span class="s-val">ARDC</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="timeline-card" data-index="15" data-slot="8" data-fork="right-inner">
+        <div class="card-content">
+          <span class="date">2022 // JUN - JUL</span>
+          <h2 class="card-title">DRDO INTERNSHIP</h2>
+          <p>Defense research internship on propulsion/aerospace engineering workflows.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">Defense R&D</span></div>
+            <div class="stat"><span class="s-val">Internship</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="timeline-card" data-index="16" data-slot="8" data-fork="right-outer">
+        <div class="card-content">
+          <span class="date">2022 // JUN - OCT</span>
+          <h2 class="card-title">CAVITATION @ TCNJ</h2>
+          <p>Cavitation investigations with computational and experimental comparisons.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">Cavitation</span></div>
+            <div class="stat"><span class="s-val">Hydrodynamics</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="timeline-card" data-index="17" data-slot="9" data-fork="left">
+        <div class="card-content">
+          <span class="date">2021 - 2022 // JUL - JUN</span>
+          <h2 class="card-title">DESIGN HYPERLOOP</h2>
+          <p>Hyperloop subsystem design and integration across mechanical/aero constraints.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">Systems Design</span></div>
+            <div class="stat"><span class="s-val">Transport</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="timeline-card" data-index="18" data-slot="9" data-fork="right">
+        <div class="card-content">
+          <span class="date">2021 - 2022 // JUL - MAY</span>
+          <h2 class="card-title">VAWT WIND TURBINE</h2>
+          <p>VAWT performance optimization using CFD and geometric design iterations.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">Wind Energy</span></div>
+            <div class="stat"><span class="s-val">CFD</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="timeline-card" data-index="19" data-slot="10" data-fork="left">
+        <div class="card-content">
+          <span class="date">2021 // AUG - DEC</span>
+          <h2 class="card-title">INLET NOZZLE SCRAMJET</h2>
+          <p>Inlet/nozzle design studies for high-speed propulsion configurations.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">Scramjet</span></div>
+            <div class="stat"><span class="s-val">Propulsion</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="timeline-card" data-index="20" data-slot="10" data-fork="right">
+        <div class="card-content">
+          <span class="date">2021 // MAY - AUG</span>
+          <h2 class="card-title">PROJECT INTERN @ CCS</h2>
+          <p>Engineering internship delivering analysis and design support.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">Internship</span></div>
+            <div class="stat"><span class="s-val">Applied Engineering</span></div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <main class="content">
+      <section id="work" class="section-anchor" aria-hidden="true"></section>
+
+
+      <section class="work-trigger" id="work-section">
+        <div class="wt-text">
+          <p class="wt-eyebrow">Work Experience</p>
+          <h2 class="wt-heading">From carousel to <em>parallel timeline</em></h2>
+          <p class="wt-hint">SCROLL TO UNRAVEL</p>
+        </div>
+        <div class="carousel-stage" id="carouselStage"></div>
+      </section>
+
+      <section class="timeline-zone" id="timelineZone" aria-label="Work experience timeline">
+        <canvas class="spine-canvas" id="spineCanvas"></canvas>
+
+        <div class="tl-row">
+          <span class="year-stamp">JUN 2025 – PRESENT</span>
+          <article class="tl-card"><span class="tl-date">JUN 2025 – PRESENT</span><h3>BEN ZINN COMBUSTION LAB</h3><p>Entropy-generation analysis for turbulent diffusion flames, Sandia-D benchmark.</p><div class="tl-tags"><span>Thermodynamics</span><span>LES / ANSYS</span></div></article>
+          <article class="tl-card"><span class="tl-date">AUG 2025 – PRESENT · VFS</span><h3>HYBRIDIZED XV-15</h3><p>Battery sizing tool for tiltrotor with mission analysis and momentum-theory hover.</p><div class="tl-tags"><span>Hybrid Ratio</span><span>MATLAB Model</span></div></article>
+        </div>
+
+        <div class="tl-row">
+          <span class="year-stamp">AUG 2025 – DEC 2025</span>
+          <article class="tl-card"><span class="tl-date">AUG – DEC 2025</span><h3>GTA · AE 3330</h3><p>Teaching assistant for aerospace vehicle performance and propulsion.</p><div class="tl-tags"><span>Mentorship</span><span>Curriculum</span></div></article>
+          <article class="tl-card"><span class="tl-date">AUG – DEC 2025</span><h3>GAS TURBINE CYCLE DESIGN</h3><p>1D turbojet/turbofan with variable γ(T), NASA polynomials, design-space sweep.</p><div class="tl-tags"><span>Variable γ(T)</span><span>DOE Sweep</span></div></article>
+        </div>
+
+        <div class="tl-row">
+          <span class="year-stamp">MAY 2025 – AUG 2025</span>
+          <article class="tl-card tl-card--matrix"><canvas class="matrix-bg"></canvas><span class="tl-date matrix-date">MAY – AUG 2025</span><h3 class="matrix-title">F1 STRATEGY AI</h3><p>Track DNA clustering, driver profiling, and pit-stop optimization pipeline.</p><div class="tl-tags"><span>DBSCAN / GMM</span><span>Dashboard</span></div></article>
+          <article class="tl-card tl-card--matrix"><canvas class="matrix-bg"></canvas><span class="tl-date matrix-date">MAY – AUG 2025</span><h3 class="matrix-title">DEEP LEARNING SYSTEMS</h3><p>Physics-informed ROM + neural operators for rapid surrogate inference.</p><div class="tl-tags"><span>DL</span><span>Surrogates</span></div></article>
+        </div>
+
+        <div class="tl-row">
+          <span class="year-stamp">JAN 2025 – MAY 2025</span>
+          <article class="tl-card tl-card--solo"><span class="tl-date">JAN – MAY 2025</span><h3>MIN-TIME CLIMB TRAJECTORY</h3><p>NLP optimization with surrogate models and adjoint-based gradient verification.</p><div class="tl-tags"><span>R² &gt; 0.99</span><span>Adjoint Grad</span></div></article>
+        </div>
+
+        <div class="tl-row">
+          <span class="year-stamp">AUG 2024 – MAY 2025</span>
+          <article class="tl-card"><span class="tl-date">AUG 2024 – MAY 2025</span><h3>TACTICAL MOBILITY AIRCRAFT</h3><p>Hybrid-electric propulsion with NPSS/FLOPS inside OpenMDAO framework.</p><div class="tl-tags"><span>Range +15.7%</span><span>STOL</span></div></article>
+          <article class="tl-card"><span class="tl-date">AUG 2024 – MAY 2025</span><h3>STRATEGIC MATERIALS</h3><p>Ti-6Al-4V supply chain vulnerability via DES and graph-theory metrics.</p><div class="tl-tags"><span>Network</span><span>SOVERN</span></div></article>
+        </div>
+
+        <div class="tl-row">
+          <span class="year-stamp">AUG 2024 – DEC 2024</span>
+          <article class="tl-card tl-card--solo"><span class="tl-date">AUG – DEC 2024</span><h3>H₂-POWERED BWB AIRCRAFT</h3><p>Blended Wing Body conceptual design — MBSE, SysML, QFD, TOPSIS ranking.</p><div class="tl-tags"><span>MBSE</span><span>TOPSIS</span></div></article>
+        </div>
+
+        <div class="tl-row">
+          <span class="year-stamp">JUL 2023 – AUG 2024</span>
+          <article class="tl-card"><span class="tl-date">AUG 2023 – AUG 2024</span><h3>NH₃/H₂ REACTING FLOW</h3><p>FGM methodology for turbulent ammonia-hydrogen combustion with Baker Hughes.</p><div class="tl-tags"><span>86.7% Faster</span><span>FGM / LES</span></div></article>
+          <article class="tl-card"><span class="tl-date">JUL 2023 – JAN 2024</span><h3>CLASSROOM VENTILATION CFD</h3><p>Thermal stratification and HVAC redesign to mitigate airborne pathogen spread.</p><div class="tl-tags"><span>23.7% ACH +</span><span>IoT Integration</span></div></article>
+        </div>
+
+        <div class="tl-row">
+          <span class="year-stamp">AUG 2022 – MAY 2023</span>
+          <article class="tl-card tl-card--solo"><span class="tl-date">AUG 2022 – MAY 2023</span><h3>DRONE DOWNWASH ANALYSIS</h3><p>Experimental + CFD study; Raspberry Pi anemometer rig, OpenFOAM RANS k-ω SST.</p><div class="tl-tags"><span>+51.7% Upthrust</span><span>k-ω SST</span></div></article>
+        </div>
+
+        <div class="tl-row">
+          <span class="year-stamp">JUN 2022 – OCT 2022</span>
+          <article class="tl-card"><span class="tl-date">JUN – JUL 2022</span><h3>NON-LINEAR DYNAMICS</h3><p>Lotka-Volterra modelling, Jacobian stability, linearisation for airborne platforms.</p><div class="tl-tags"><span>Phase Portraits</span><span>MATLAB Sims</span></div></article>
+          <article class="tl-card"><span class="tl-date">JUN – OCT 2022</span><h3>CAVITATION DETECTION</h3><p>Incipient cavitation in centrifugal pump via FW-H acoustics and FFT vibration analysis.</p><div class="tl-tags"><span>VOF / ZGB</span><span>FFT Analysis</span></div></article>
+        </div>
+
+        <div class="tl-row">
+          <span class="year-stamp">AUG 2022 – DEC 2022</span>
+          <article class="tl-card"><span class="tl-date">AUG – DEC 2022</span><h3>3D FLUID-STRUCTURE INTERACTION</h3><p>Elastic wave propagation — OpenFOAM + CalculiX coupled via preCICE.</p><div class="tl-tags"><span>38% Pressure ↓</span><span>pimpleDyMFoam</span></div></article>
+          <article class="tl-card"><span class="tl-date">AUG 2022</span><h3>AIRCRAFT SUBSYSTEMS · HAL</h3><p>Subsystem integration across propulsion, structural, thermal, and avionics domains.</p><div class="tl-tags"><span>System Design</span><span>Integration</span></div></article>
+        </div>
+
+        <div class="tl-row">
+          <span class="year-stamp">JUL 2021 – JUN 2022</span>
+          <article class="tl-card"><span class="tl-date">JUL 2021 – JUN 2022</span><h3>HYPERLOOP POD DESIGN</h3><p>Propulsion system architecture and GD&amp;T analysis for Hyperloop India competition pod.</p><div class="tl-tags"><span>50+ Components</span><span>GD&amp;T / DFM</span></div></article>
+          <article class="tl-card"><span class="tl-date">JUL 2021 – JUN 2022</span><h3>HELICAL VAWT OPTIMIZATION</h3><p>Parametric CFD of Savonius turbine — Coandă effect, helical twist, blade count sweep.</p><div class="tl-tags"><span>72% Power +</span><span>Torque Optimized</span></div></article>
+        </div>
+
+        <div class="tl-row">
+          <span class="year-stamp">MAY 2021 – DEC 2021</span>
+          <article class="tl-card"><span class="tl-date">AUG – DEC 2021</span><h3>SCRAMJET INLET VALIDATION</h3><p>CFD validation of 3-ramp and 4-ramp external compression at Mach 5 and Mach 8.</p><div class="tl-tags"><span>Hypersonic</span><span>Oblique Shocks</span></div></article>
+          <article class="tl-card"><span class="tl-date">MAY – AUG 2021</span><h3>SUPPLY CHAIN OPTIMIZATION</h3><p>FlexSim simulation and Lean restructuring of client supply chain at CCS Strategy.</p><div class="tl-tags"><span>40% Efficiency +</span><span>FlexSim / Lean</span></div></article>
+        </div>
+      </section>
+      <section class="education" id="education">
+        <h2>Education</h2>
+        <div class="edu-journey" aria-label="Education journey from BITS Pilani to Georgia Tech">
+          <article class="edu-node left" id="edu-bits">
+            <img src="assets/edu/bits-pilani-badge.svg" alt="BITS Pilani badge" class="edu-logo" />
+            <span class="edu-degree">Bachelor's · BITS Pilani</span>
+            <span class="edu-sub">BE Mechanical Engineering · 2019–2023</span>
+          </article>
+
+          <div class="edu-axis-container">
+            <div class="edu-axis-line" id="laminar-axis">
+              <div class="edu-cat" id="eduCat" aria-hidden="true">
+                <div class="cat-silhouette">
+                  <span class="cat-tail"></span>
+                  <span class="cat-body"></span>
+                  <span class="cat-head"></span>
+                  <span class="cat-ear ear-left"></span>
+                  <span class="cat-ear ear-right"></span>
+                  <span class="cat-leg leg-front"></span>
+                  <span class="cat-leg leg-front-back"></span>
+                  <span class="cat-leg leg-rear"></span>
+                  <span class="cat-leg leg-rear-back"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <article class="edu-node right" id="edu-gatech">
+            <img src="assets/edu/georgia-tech-badge.svg" alt="Georgia Tech badge" class="edu-logo" />
+            <span class="edu-degree">Master's · Georgia Tech</span>
+            <span class="edu-sub">MS Aerospace Engineering · 2024–Present</span>
+          </article>
+        </div>
+      </section>
+
+      <section class="projects" id="projects">
+        <div class="vline"></div>
+      </section>
+
+      <section class="skills" id="skills">
+        <h2>Skills</h2>
+        <div class="skills-groups">
+          <div>
+            <h3>Simulation</h3>
+            <div class="skills-chips">
+              <span>OpenFOAM</span><span>ANSYS Fluent</span><span>LES / RANS</span><span>FGM</span>
+            </div>
+          </div>
+          <div>
+            <h3>Systems + Optimization</h3>
+            <div class="skills-chips">
+              <span>OpenMDAO</span><span>NPSS</span><span>FLOPS</span><span>MBSE / SysML</span>
+            </div>
+          </div>
+          <div>
+            <h3>Code + Data</h3>
+            <div class="skills-chips">
+              <span>Python</span><span>MATLAB</span><span>ML / DL</span><span>Surrogate Models</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="contact" id="contact">
+        <h2>Contact</h2>
+        <p>Email: <a href="mailto:kkala6@gatech.edu">kkala6@gatech.edu</a></p>
+        <p>LinkedIn: <a href="https://linkedin.com/in/krtin-kala-07a682198" target="_blank" rel="noreferrer">krtin-kala-07a682198</a></p>
+      </section>
+
+      <div class="card-overlay" id="cardOverlay" aria-hidden="true">
+        <article class="card-modal" id="cardModal" role="dialog" aria-modal="true" aria-label="Project details dialog">
+          <button class="card-close" id="cardClose" aria-label="Close details">×</button>
+          <div class="card-tabs" role="tablist" aria-label="Card details tabs">
+            <button class="tab-btn active" data-tab="details" role="tab" aria-selected="true">Details</button>
+            <button class="tab-btn" data-tab="skills" role="tab" aria-selected="false">Skills</button>
+          </div>
+          <div class="tab-panel active" id="tab-details" role="tabpanel"></div>
+          <div class="tab-panel" id="tab-skills" role="tabpanel"></div>
+        </article>
+      </div>
+    </main>
+  </body>
 </html>
