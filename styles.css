@@ -98,7 +98,7 @@ body.intro-complete.title-fly .top-header.ready { opacity: 1; transform: transla
   opacity: 0;
   transition: opacity 500ms ease;
 }
-body.intro-complete .cards-layer { opacity: 1; }
+body.projects-active .cards-layer { opacity: 1; }
 
 .timeline-path {
   position: absolute;

@@ -5,6 +5,7 @@ window.addEventListener('load', () => {
   initMatrix();
   initEducationAxis();
   initHeaderAndTopState();
+  initProjectsStageVisibility();
 });
 
 function initFluid() {
@@ -235,6 +236,19 @@ function initMatrix() {
 }
 
 
+
+function initProjectsStageVisibility() {
+  const projects = document.getElementById('projects');
+  if (!projects) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    const visible = entries.some((entry) => entry.isIntersecting);
+    document.body.classList.toggle('projects-active', visible);
+  }, { threshold: 0.02 });
+
+  observer.observe(projects);
+}
+
 function initHeaderAndTopState() {
   const topHeader = document.getElementById('topHeader');
   const introName = document.getElementById('introNameWord');
@@ -278,5 +292,6 @@ function initHeaderAndTopState() {
   onScroll();
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', updateTitleFlightVectors);
-  window.addEventListener('scroll', updateTitleFlightVectors, { passive: true });
+  setTimeout(updateTitleFlightVectors, 900);
 }
+
