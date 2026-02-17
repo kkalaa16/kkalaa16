@@ -1,552 +1,348 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KRTIN KALA | SYSTEMS & CFD</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=Space+Mono&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KRTIN KALA | PORTFOLIO</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/webgl-fluid"></script>
 
-    <style>
-        :root {
-            --bg: #000000;
-            --card-bg: rgba(10, 11, 18, 0.98);
-            --accent: #ff4d00;
-            --tech-blue: #00d4ff;
-            --matrix: #00ff41;
-            --text: #ffffff;
-            --text-dim: #888888;
-            --mono: 'Space Mono', monospace;
-            --timeline-white: #ffffff;
-            --glass: rgba(175, 214, 255, 0.08);
-            --line: rgba(255, 255, 255, 0.4);
-        }
-
-        html, body {
-            margin: 0; padding: 0;
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-        }
-
-        body.is-locked {
-            overflow: hidden !important;
-            height: 100vh;
-        }
-
-        #fluid-canvas {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        /* --- 01: CINEMATIC INTRO (Slower Easing) --- */
-        #intro-overlay {
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: fixed;
-            width: 100%;
-            top: 0; left: 0;
-            z-index: 1000;
-            background: #000;
-            pointer-events: none;
-        }
-
-        .intro-msg {
-            position: absolute;
-            text-align: center;
-            width: 85%;
-            transition: opacity 2s cubic-bezier(0.4, 0, 0.2, 1), transform 2s cubic-bezier(0.4, 0, 0.2, 1), filter 2s ease;
-        }
-
-        #hi-text { font-size: clamp(5rem, 20vw, 12rem); font-weight: 900; opacity: 1; letter-spacing: -5px; }
-        
-        #welcome-text { 
-            opacity: 0; 
-            transform: translateY(40px);
-            max-width: 1000px;
-        }
-
-        .welcome-title {
-            font-size: clamp(1.2rem, 3vw, 2.2rem);
-            font-weight: 300;
-            letter-spacing: 8px;
-            text-transform: uppercase;
-            color: var(--text-dim);
-            margin-bottom: 1.5rem;
-            display: block;
-        }
-
-        .welcome-name {
-            font-size: clamp(2.5rem, 8vw, 5.5rem);
-            font-weight: 900;
-            line-height: 1;
-            display: block;
-        }
-
-        .welcome-sub {
-            font-family: var(--mono);
-            font-size: 0.85rem;
-            color: var(--accent);
-            margin-top: 3rem;
-            display: block;
-            letter-spacing: 4px;
-        }
-
-        /* --- 02: TECHNICAL BIO --- */
-        .bio-section {
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            padding: 0 15%;
-            opacity: 0;
-            transition: opacity 2.5s ease;
-        }
-        .bio-text { font-size: clamp(1.6rem, 3.8vw, 3rem); font-weight: 700; line-height: 1.3; max-width: 900px; }
-
-        /* --- 03: EDUCATION (Laminar Draw) --- */
-        .edu-section {
-            height: 60vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 0 10%;
-        }
-
-        .edu-axis-container { width: 100%; max-width: 1100px; position: relative; }
-        
-        .edu-axis-line {
-            height: 1px;
-            background: #fff;
-            width: 0%; 
-            margin: 0 auto;
-            position: relative;
-            transition: width 1.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .edu-tick {
-            position: absolute;
-            width: 1px; height: 35px;
-            background: #fff;
-            top: -17px;
-            opacity: 0;
-            transition: opacity 1s ease;
-        }
-        .edu-tick.left { left: 0; }
-        .edu-tick.right { right: 0; }
-
-        .edu-tick-label {
-            position: absolute; top: 45px; left: 50%; transform: translateX(-50%);
-            font-family: var(--mono); font-size: 0.8rem; white-space: nowrap; color: #fff;
-        }
-        .edu-tick-year {
-            position: absolute; bottom: 45px; left: 50%; transform: translateX(-50%);
-            font-family: var(--mono); font-size: 0.75rem; color: var(--accent);
-        }
-
-        /* --- 04: PROJECT TIMELINE (Split Parallel Logic) --- */
-        .project-section {
-            position: relative;
-            min-height: 900vh;
-            opacity: 0;
-            transition: opacity 2s ease;
-        }
-
-        /* Timeline Graphics Layer */
-        .timeline-background {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .timeline-svg {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0; left: 0;
-        }
-
-        .timeline-path {
-            fill: none;
-            stroke: var(--timeline-white);
-            stroke-width: 2px;
-            stroke-dasharray: 0; /* Solid line */
-            opacity: 0.8;
-            transition: stroke-dashoffset 0.5s ease;
-        }
-
-        .cards-viewport {
-            position: sticky;
-            top: 0;
-            height: 100vh;
-            perspective: 3000px;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .card {
-            position: absolute;
-            width: 420px;
-            background: var(--card-bg);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            padding: 2.8rem;
-            backdrop-filter: blur(60px);
-            transform-style: preserve-3d;
-            transition: transform 0.1s linear, opacity 0.8s ease;
-            box-shadow: 0 24px 64px rgba(0,0,0,0.5);
-            opacity: 0;
-        }
-
-        .card.matrix-card { border-color: var(--matrix); box-shadow: 0 0 30px rgba(0, 255, 65, 0.1); }
-        .matrix-bg { position: absolute; inset: 0; opacity: 0.25; z-index: 0; pointer-events: none; }
-        .card-content { position: relative; z-index: 2; }
-
-        .date { font-family: var(--mono); color: var(--accent); font-size: 0.7rem; display: block; margin-bottom: 1.2rem; letter-spacing: 2px; }
-        h2 { font-size: 1.6rem; font-weight: 900; text-transform: uppercase; margin-bottom: 1rem; line-height: 1.1; color: #fff; }
-        p { color: var(--text-dim); font-size: 0.95rem; line-height: 1.7; }
-
-        .stats {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
-            margin-top: 1.8rem; padding-top: 1.5rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            font-family: var(--mono);
-        }
-        .stat { border-left: 2px solid var(--accent); padding-left: 1rem; }
-        .s-val { font-size: 0.9rem; font-weight: bold; }
-
-        @media (max-width: 1100px) {
-            .card { width: 85%; }
-            .timeline-path { opacity: 0.2; } /* Hide complex lines on mobile */
-        }
-    </style>
-</head>
-<body class="is-locked">
-
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body class="lock-scroll">
     <canvas id="fluid-canvas"></canvas>
 
-    <!-- INTRO SEQUENCE -->
-    <section id="intro-overlay">
-        <div id="hi-text" class="intro-msg">HI.</div>
-        <div id="welcome-text" class="intro-msg">
-            <span class="welcome-title">Welcome to my Portfolio</span>
-            <span class="welcome-name">I AM <span style="color:var(--accent)">KRTIN KALA</span></span>
-            <span class="welcome-sub">[ SYSTEMS DESIGN // REACTING FLOWS // ML ARCHITECT ]</span>
-        </div>
+    <section class="intro-sequence" id="introSequence">
+      <div class="intro-hi" id="introHi">Hi.</div>
+      <div class="intro-welcome" id="introWelcome">
+        <span class="welcome-title"><span class="intro-static">I'M </span><span class="accent intro-name-word" id="introNameWord">KRTIN KALA</span><span class="intro-static">.</span></span>
+        <span class="welcome-name"><span class="intro-static">THIS IS MY </span><span class="intro-portfolio-word" id="introPortfolioWord">PORTFOLIO</span><span class="intro-static">.</span></span>
+        <span class="welcome-sub">[ SYSTEMS DESIGN // REACTING FLOWS // ML ARCHITECT ]</span>
+      </div>
     </section>
 
-    <!-- BIO -->
-    <section class="bio-section" id="bio-block">
-        <div class="bio-text">
-            Architecting high-performance systems through <span style="color:var(--accent)">atomic-fidelity physics</span> and automated design workflows.
-        </div>
-    </section>
+    <header class="top-header" id="topHeader">
+      <h1>
+        <span class="header-name" id="headerNameWord">KRTIN KALA'S</span>
+        <span class="header-portfolio" id="headerPortfolioWord">PORTFOLIO</span>
+      </h1>
+    </header>
 
-    <!-- EDUCATION -->
-    <section class="edu-section" id="edu-trigger">
+    <section class="stage" id="top"></section>
+
+    <!-- Cards layer -->
+    <div class="cards-layer" id="cardsLayer">
+      <!-- Dynamic SVG Timeline -->
+      <svg class="timeline-svg" viewBox="0 0 1000 4600" preserveAspectRatio="xMidYMin meet">
+        <defs>
+          <linearGradient id="timelineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:rgba(255,255,255,0.2);stop-opacity:1" />
+            <stop offset="100%" style="stop-color:rgba(255,255,255,0.9);stop-opacity:1" />
+          </linearGradient>
+          <linearGradient id="matrixGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:rgba(0,255,65,0.2);stop-opacity:1" />
+            <stop offset="100%" style="stop-color:rgba(0,255,65,0.9);stop-opacity:1" />
+          </linearGradient>
+        </defs>
+
+        <!-- Timeline paths will be animated via JavaScript -->
+        <!-- See app.js for path definitions and animations -->
+      </svg>
+
+      <!-- PROJECT CARDS (21 total) - organized chronologically -->
+      
+      <!-- 2025 CURRENT: Ben Zinn + XV-15 -->
+      <article class="timeline-card" data-index="0" data-slot="0" data-fork="left" data-year="2025-current">
+        <div class="card-content">
+          <span class="date">JUN 2025 - PRESENT</span>
+          <h2 class="card-title">BEN ZINN COMBUSTION LAB</h2>
+          <p>Entropy-generation analysis for turbulent diffusion flames using Sandia-D benchmark.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">Thermodynamics</span></div>
+            <div class="stat"><span class="s-val">LES / ANSYS</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="timeline-card" data-index="1" data-slot="0" data-fork="right" data-year="2025-current">
+        <div class="card-content">
+          <span class="date">AUG 2025 - PRESENT // VFS</span>
+          <h2 class="card-title">HYBRIDIZED XV-15</h2>
+          <p>Battery sizing tool for XV-15 tiltrotor with momentum-theory hover analysis.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">6% Hybrid Ratio</span></div>
+            <div class="stat"><span class="s-val">MATLAB Model</span></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 2025 ML/DL: 5 projects -->
+      <article class="timeline-card matrix-card" data-index="2" data-slot="1" data-fork="left-outer" data-year="2025-ml">
+        <canvas class="matrix-bg"></canvas>
+        <div class="card-content">
+          <span class="date matrix-date">AUG 2025 - DEC 2025</span>
+          <h2 class="card-title matrix-title">GTA: AE 3330</h2>
+          <p>Teaching assistant for aerospace vehicle performance covering propulsion and flight mechanics.</p>
+          <div class="stats">
+            <div class="stat matrix-stat"><span class="s-val">Mentorship</span></div>
+            <div class="stat matrix-stat"><span class="s-val">Performance</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="timeline-card matrix-card" data-index="3" data-slot="1" data-fork="left-inner" data-year="2025-ml">
+        <canvas class="matrix-bg"></canvas>
+        <div class="card-content">
+          <span class="date matrix-date">AUG 2025 - DEC 2025</span>
+          <h2 class="card-title matrix-title">GAS TURBINE CYCLE DESIGN</h2>
+          <p>1D turbojet/turbofan model with variable γ(T) thermodynamics and design optimization.</p>
+          <div class="stats">
+            <div class="stat matrix-stat"><span class="s-val">NASA Polynomials</span></div>
+            <div class="stat matrix-stat"><span class="s-val">DOE Sweep</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="timeline-card matrix-card" data-index="4" data-slot="1" data-fork="center" data-year="2025-ml">
+        <canvas class="matrix-bg"></canvas>
+        <div class="card-content">
+          <span class="date matrix-date">JAN 2025 - MAY 2025</span>
+          <h2 class="card-title matrix-title">MIN-TIME CLIMB TRAJECTORY</h2>
+          <p>NLP optimization with high-fidelity surrogates and adjoint-based gradients.</p>
+          <div class="stats">
+            <div class="stat matrix-stat"><span class="s-val">R² > 0.99</span></div>
+            <div class="stat matrix-stat"><span class="s-val">Adjoint Grad</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="timeline-card matrix-card" data-index="5" data-slot="1" data-fork="right-inner" data-year="2025-ml">
+        <canvas class="matrix-bg"></canvas>
+        <div class="card-content">
+          <span class="date matrix-date">MAY 2025 - AUG 2025</span>
+          <h2 class="card-title matrix-title">F1 STRATEGY AI</h2>
+          <p>ML pipeline: track DNA clustering, driver profiling, and pit-stop optimization.</p>
+          <div class="stats">
+            <div class="stat matrix-stat"><span class="s-val">DBSCAN / GMM</span></div>
+            <div class="stat matrix-stat"><span class="s-val">Web Dashboard</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="timeline-card matrix-card" data-index="6" data-slot="1" data-fork="right-outer" data-year="2025-ml">
+        <canvas class="matrix-bg"></canvas>
+        <div class="card-content">
+          <span class="date matrix-date">MAY 2025 - AUG 2025 // DL</span>
+          <h2 class="card-title matrix-title">OPTION PRICING FNO</h2>
+          <p>Hybrid surrogate: physics-informed ROM + Fourier Neural Operator for Heston model.</p>
+          <div class="stats">
+            <div class="stat matrix-stat"><span class="s-val">77% Error Cut</span></div>
+            <div class="stat matrix-stat"><span class="s-val">0.3ms Inference</span></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 2024-2025: AFRL + Boeing -->
+      <article class="timeline-card" data-index="7" data-slot="2" data-fork="left" data-year="2024-2025">
+        <div class="card-content">
+          <span class="date">AUG 2024 - MAY 2025 // AFRL</span>
+          <h2 class="card-title">TACTICAL MOBILITY AIRCRAFT</h2>
+          <p>Hybrid-electric propulsion architecture with NPSS/FLOPS in OpenMDAO.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">15.7% Range+</span></div>
+            <div class="stat"><span class="s-val">STOL Optimized</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="timeline-card" data-index="8" data-slot="2" data-fork="right" data-year="2024-2025">
+        <div class="card-content">
+          <span class="date">AUG 2024 - MAY 2025 // BOEING</span>
+          <h2 class="card-title">STRATEGIC MATERIALS</h2>
+          <p>Ti-6Al-4V supply chain vulnerability using DES and graph-theory modeling.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">Network Analysis</span></div>
+            <div class="stat"><span class="s-val">SOVERN Tool</span></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 2024: NASA BWB -->
+      <article class="timeline-card" data-index="9" data-slot="3" data-fork="center" data-year="2024">
+        <div class="card-content">
+          <span class="date">AUG 2024 - DEC 2024 // NASA</span>
+          <h2 class="card-title">H₂-POWERED BWB AIRCRAFT</h2>
+          <p>Blended Wing Body conceptual design with MBSE architecture and SysML.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">20% CO₂ Cut</span></div>
+            <div class="stat"><span class="s-val">QFD / TOPSIS</span></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 2023-2024: NH3/H2 + IIT Bombay -->
+      <article class="timeline-card" data-index="10" data-slot="4" data-fork="left" data-year="2023-2024">
+        <div class="card-content">
+          <span class="date">AUG 2023 - AUG 2024 // TU/e</span>
+          <h2 class="card-title">NH₃/H₂ REACTING FLOW</h2>
+          <p>FGM methodology for turbulent combustion with Baker Hughes collaboration.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">86.7% Faster</span></div>
+            <div class="stat"><span class="s-val">FGM / LES</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="timeline-card" data-index="11" data-slot="4" data-fork="right" data-year="2023-2024">
+        <div class="card-content">
+          <span class="date">JUL 2023 - JAN 2024 // IIT-B</span>
+          <h2 class="card-title">CLASSROOM VENTILATION CFD</h2>
+          <p>Thermal stratification and HVAC redesign for airborne pathogen mitigation.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">23.7% ACH+</span></div>
+            <div class="stat"><span class="s-val">IoT Integration</span></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 2022-2023: Drone Thesis -->
+      <article class="timeline-card" data-index="12" data-slot="5" data-fork="center" data-year="2022-2023">
+        <div class="card-content">
+          <span class="date">AUG 2022 - MAY 2023 // THESIS</span>
+          <h2 class="card-title">DRONE DOWNWASH ANALYSIS</h2>
+          <p>Experimental-computational study with Raspberry Pi anemometer and OpenFOAM RANS.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">+51.7% Upthrust</span></div>
+            <div class="stat"><span class="s-val">k-ω SST</span></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 2022: 4 projects -->
+      <article class="timeline-card" data-index="13" data-slot="6" data-fork="left-outer" data-year="2022">
+        <div class="card-content">
+          <span class="date">AUG 2022 - DEC 2022 // FSI</span>
+          <h2 class="card-title">3D FLUID-STRUCTURE INTERACTION</h2>
+          <p>Elastic wave propagation via OpenFOAM-CalculiX coupling with preCICE.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">38% Pressure↓</span></div>
+            <div class="stat"><span class="s-val">pimpleDyMFoam</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="timeline-card" data-index="14" data-slot="6" data-fork="left-inner" data-year="2022">
+        <div class="card-content">
+          <span class="date">AUG 2022 // HAL ARDC</span>
+          <h2 class="card-title">AIRCRAFT SUBSYSTEMS</h2>
+          <p>Subsystem integration analysis at HAL Aircraft Research and Design Centre.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">System Design</span></div>
+            <div class="stat"><span class="s-val">Integration</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="timeline-card" data-index="15" data-slot="6" data-fork="right-inner" data-year="2022">
+        <div class="card-content">
+          <span class="date">JUN 2022 - JUL 2022 // DRDO</span>
+          <h2 class="card-title">NON-LINEAR DYNAMICS</h2>
+          <p>Mathematical foundations of dynamical systems for airborne platforms.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">Lotka-Volterra</span></div>
+            <div class="stat"><span class="s-val">MATLAB Sims</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="timeline-card" data-index="16" data-slot="6" data-fork="right-outer" data-year="2022">
+        <div class="card-content">
+          <span class="date">JUN 2022 - OCT 2022 // TCNJ</span>
+          <h2 class="card-title">CAVITATION DETECTION</h2>
+          <p>Vibration signature analysis using FW-H acoustics and FFT.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">VOF Model</span></div>
+            <div class="stat"><span class="s-val">FFT Analysis</span></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 2021-2022: Hyperloop + VAWT -->
+      <article class="timeline-card" data-index="17" data-slot="7" data-fork="left" data-year="2021-2022">
+        <div class="card-content">
+          <span class="date">JUL 2021 - JUN 2022</span>
+          <h2 class="card-title">HYPERLOOP POD DESIGN</h2>
+          <p>Mechanical integration and propulsion architecture for Hyperloop India.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">22% Learning↑</span></div>
+            <div class="stat"><span class="s-val">GD&T / DFM</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="timeline-card" data-index="18" data-slot="7" data-fork="right" data-year="2021-2022">
+        <div class="card-content">
+          <span class="date">JUL 2021 - JUN 2022 // ENERGY</span>
+          <h2 class="card-title">HELICAL VAWT OPTIMIZATION</h2>
+          <p>Parametric CFD of Savonius turbine with Coandă effect enhancement.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">72% Power+</span></div>
+            <div class="stat"><span class="s-val">Torque Optimized</span></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 2021: Scramjet + CCS -->
+      <article class="timeline-card" data-index="19" data-slot="8" data-fork="left" data-year="2021">
+        <div class="card-content">
+          <span class="date">AUG 2021 - DEC 2021 // CFD</span>
+          <h2 class="card-title">SCRAMJET INLET VALIDATION</h2>
+          <p>CFD validation at Mach 5 and Mach 8 hypersonic conditions.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">Hypersonic Flow</span></div>
+            <div class="stat"><span class="s-val">Oblique Shocks</span></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="timeline-card" data-index="20" data-slot="8" data-fork="right" data-year="2021">
+        <div class="card-content">
+          <span class="date">MAY 2021 - AUG 2021</span>
+          <h2 class="card-title">SUPPLY CHAIN OPTIMIZATION</h2>
+          <p>FlexSim simulation and Lean principles at CCS Strategy Solutions.</p>
+          <div class="stats">
+            <div class="stat"><span class="s-val">40% Efficiency+</span></div>
+            <div class="stat"><span class="s-val">FlexSim / Lean</span></div>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+    <main class="content">
+      <section class="education" id="education">
+        <h2>Education</h2>
         <div class="edu-axis-container">
-            <div class="edu-axis-line" id="laminar-axis">
-                <div class="edu-tick left" id="tick-1">
-                    <span class="edu-tick-year">2019 - 2023</span>
-                    <span class="edu-tick-label">BITS PILANI // MECHANICAL</span>
-                </div>
-                <div class="edu-tick right" id="tick-2">
-                    <span class="edu-tick-year">2024 - PRESENT</span>
-                    <span class="edu-tick-label">GEORGIA TECH // AEROSPACE</span>
-                </div>
+          <div class="edu-axis-line" id="laminar-axis">
+            <div class="edu-tick left" id="tick-1">
+              <span class="edu-tick-year">2019 - 2023</span>
+              <span class="edu-tick-label">BITS Pilani · BE Mechanical</span>
             </div>
+            <div class="edu-tick right" id="tick-2">
+              <span class="edu-tick-year">2024 - Present</span>
+              <span class="edu-tick-label">Georgia Tech · MS Aerospace</span>
+            </div>
+          </div>
         </div>
-    </section>
+      </section>
 
-    <!-- PROJECTS -->
-    <section class="project-section" id="project-anchor">
-        <div class="timeline-background">
-            <svg class="timeline-svg" id="timeline-svg">
-                <!-- Single track top -->
-                <line class="timeline-path" id="line-top" x1="50%" y1="0" x2="50%" y2="10%"></line>
-                <!-- Split track -->
-                <path class="timeline-path" id="line-fork" d=""></path>
-                <!-- Parallel tracks -->
-                <line class="timeline-path fork-line" id="line-left" x1="22%" y1="15%" x2="22%" y2="40%"></line>
-                <line class="timeline-path fork-line" id="line-right" x1="78%" y1="15%" x2="78%" y2="40%"></line>
-                <!-- Re-convergence -->
-                <path class="timeline-path" id="line-merge" d=""></path>
-                <!-- Single track middle -->
-                <line class="timeline-path" id="line-mid" x1="50%" y1="45%" x2="50%" y2="70%"></line>
-                <!-- Single track end -->
-                <line class="timeline-path" id="line-bottom" x1="50%" y1="70%" x2="50%" y2="100%"></line>
-            </svg>
-        </div>
-        
-        <div class="cards-viewport">
-            <!-- 0: TU/e (Left Parallel) -->
-            <div class="card interact-card" data-index="0" data-fork="left">
-                <div class="card-content">
-                    <span class="date">2024 - 2025 // RESEARCH</span>
-                    <h2>NH₃/H₂ REACTING FLOW</h2>
-                    <p>Optimization of green hydrogen-ammonia blends using high-fidelity LES and FGM for carbon-neutral turbines.</p>
-                    <div class="stats">
-                        <div class="stat"><span class="s-val">86.7% Gain</span></div>
-                        <div class="stat"><span class="s-val">FGM / LES</span></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 1: Ben Zinn (Right Parallel) -->
-            <div class="card interact-card" data-index="1" data-fork="right">
-                <div class="card-content">
-                    <span class="date">PRESENT // ATLANTA</span>
-                    <h2>BEN ZINN LAB</h2>
-                    <p>Developing entropy-generation analysis frameworks to quantify irreversibility in reacting shear layers.</p>
-                    <div class="stats">
-                        <div class="stat"><span class="s-val">Thermodynamics</span></div>
-                        <div class="stat"><span class="s-val">GT Aerospace</span></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 2: F1 ML (Center) -->
-            <div class="card interact-card matrix-card" data-index="2" data-fork="center">
-                <canvas class="matrix-bg"></canvas>
-                <div class="card-content">
-                    <span class="date" style="color:var(--matrix)">ML // DATA SCIENCE</span>
-                    <h2 style="color:var(--matrix)">F1 STRATEGY AI</h2>
-                    <p>Machine Learning pipeline for pit-stop optimization and predictive timing using telemetry.</p>
-                    <div class="stats">
-                        <div class="stat" style="border-color:var(--matrix)"><span class="s-val">Python / SKL</span></div>
-                        <div class="stat" style="border-color:var(--matrix)"><span class="s-val">Decision Support</span></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 3: Drone Thesis (Center) -->
-            <div class="card interact-card" data-index="3" data-fork="center">
-                <div class="card-content">
-                    <span class="date">2023 THESIS</span>
-                    <h2>DRONE DOWNWASH</h2>
-                    <p>Computational study of rotor aerodynamics using RANS study validated with anemometer rigs.</p>
-                    <div class="stats">
-                        <div class="stat"><span class="s-val">+51.7% Upthrust</span></div>
-                        <div class="stat"><span class="s-val">OpenFOAM</span></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 4: VAWT (Right Parallel track - solo for now) -->
-            <div class="card interact-card" data-index="4" data-fork="right">
-                <div class="card-content">
-                    <span class="date">2021 // ENERGY</span>
-                    <h2>HELICAL VAWT</h2>
-                    <p>Optimizing vertical axis wind turbines via parametric CFD and flow attachment analysis.</p>
-                    <div class="stats">
-                        <div class="stat"><span class="s-val">72% Gain</span></div>
-                        <div class="stat"><span class="s-val">Torque Analysis</span></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section style="height: 100vh; display: flex; align-items: center; justify-content: center;">
-        <h2 style="font-size: 5rem; font-weight: 900; text-align: center;">INITIATE<br><span style="color:var(--accent)">FORGE</span></h2>
-    </section>
-
-    <script>
-        window.onload = function() {
-            // --- 1. FLUID ENGINE ---
-            const canvas = document.getElementById('fluid-canvas');
-            const fluid = WebGLFluid(canvas, {
-                SIM_RESOLUTION: 128, CURL: 95, DENSITY_DISSIPATION: 0.98,
-                COLORFUL: false, BACK_COLOR: {r:0, g:0, b:0}, TRANSPARENT: true
-            });
-
-            const safeSplat = (x, y, dx, dy, color) => {
-                if (fluid && typeof fluid.splat === 'function') fluid.splat(x, y, dx, dy, color);
-            };
-
-            const hi = document.getElementById('hi-text');
-            const welcome = document.getElementById('welcome-text');
-            const overlay = document.getElementById('intro-overlay');
-            const bio = document.getElementById('bio-block');
-            const axisLine = document.getElementById('laminar-axis');
-            const ticks = document.querySelectorAll('.edu-tick');
-            const cards = document.querySelectorAll('.card');
-            const projectSec = document.getElementById('project-anchor');
-            
-            let isReady = false;
-            let revolvingTime = 0;
-
-            // Update SVG paths for the fork
-            function setupTimelineSVG() {
-                const svg = document.getElementById('timeline-svg');
-                const fork = document.getElementById('line-fork');
-                const merge = document.getElementById('line-merge');
-                const w = window.innerWidth;
-                const h = projectSec.offsetHeight;
-
-                // Fork from center (50%) to 22% and 78%
-                const forkTop = 0.10 * h;
-                const forkEnd = 0.15 * h;
-                fork.setAttribute('d', `M ${w*0.5} ${forkTop} L ${w*0.22} ${forkEnd} M ${w*0.5} ${forkTop} L ${w*0.78} ${forkEnd}`);
-                
-                // Merge from 22%/78% back to center
-                const mergeTop = 0.40 * h;
-                const mergeEnd = 0.45 * h;
-                merge.setAttribute('d', `M ${w*0.22} ${mergeTop} L ${w*0.5} ${mergeEnd} M ${w*0.78} ${mergeTop} L ${w*0.5} ${mergeEnd}`);
-            }
-            setupTimelineSVG();
-
-            // --- 2. CINEMATIC INTRO SEQUENCE (Significantly Slower) ---
-            setTimeout(() => {
-                // VIOLENT INITIAL BURST
-                for(let i=0; i<15; i++) {
-                    setTimeout(() => safeSplat(0.5, 0.5, (Math.random()-0.5)*350, (Math.random()-0.5)*350, {r:1, g:0.4, b:0}), i * 120);
-                }
-                
-                setTimeout(() => {
-                    // Dissolve Hi (Slowly)
-                    hi.style.opacity = "0";
-                    hi.style.filter = "blur(40px)";
-                    
-                    setTimeout(() => {
-                        // Reveal Welcome (Cinematic delay)
-                        welcome.style.opacity = "1";
-                        welcome.style.transform = "translateY(0)";
-                        safeSplat(0.5, 0.5, 250, 250, {r:0, g:0.6, b:1}); // Reveal splat
-                        
-                        setTimeout(() => {
-                            // Phase out intro and reveal technical content
-                            overlay.style.opacity = "0";
-                            setTimeout(() => {
-                                overlay.style.display = "none";
-                                document.body.classList.remove('is-locked');
-                                bio.style.opacity = "1";
-                                isReady = true;
-                                animateLoop();
-                            }, 1500);
-                        }, 4500); // WELCOME STAYS LONGER
-                    }, 1500);
-                }, 2200);
-            }, 600);
-
-            // --- 3. SCROLL OBSERVERS ---
-            const eduObserver = new IntersectionObserver((entries) => {
-                if(entries[0].isIntersecting) {
-                    axisLine.style.width = "100%";
-                    setTimeout(() => ticks.forEach(t => t.style.opacity = "1"), 1200);
-                }
-            }, { threshold: 0.5 });
-            eduObserver.observe(document.getElementById('edu-trigger'));
-
-            const projectObserver = new IntersectionObserver((entries) => {
-                if(entries[0].isIntersecting) projectSec.style.opacity = "1";
-            }, { threshold: 0.1 });
-            projectObserver.observe(projectSec);
-
-            // --- 4. REVOLVING & TIMELINE ANIMATION ---
-            function animateLoop() {
-                revolvingTime += 0.005; 
-                updateVisuals();
-                requestAnimationFrame(animateLoop);
-            }
-
-            function updateVisuals() {
-                if (!isReady) return;
-
-                const scrollY = window.scrollY;
-                const sectionTop = projectSec.offsetTop;
-                const sectionHeight = projectSec.offsetHeight;
-                
-                // Sensitive progress mapping
-                const totalProgress = Math.max(0, Math.min(1, (scrollY - sectionTop + window.innerHeight/2) / (sectionHeight - window.innerHeight)));
-
-                cards.forEach((card, i) => {
-                    card.style.opacity = "1";
-                    const index = parseInt(card.dataset.index);
-                    const fork = card.dataset.fork;
-
-                    // Carousel Params (Orbital Rotation)
-                    const angle = (i / cards.length) * Math.PI * 2 + revolvingTime + (scrollY * 0.0004);
-                    const revRadius = Math.min(650, window.innerWidth * 0.45);
-                    
-                    // Timeline Params (The Anchored Tracks)
-                    const lineY = (index * 620) - 250;
-                    let lineX = 0;
-                    // Connect directly to the visual timeline paths
-                    if(fork === 'left') lineX = -window.innerWidth * 0.28;
-                    if(fork === 'right') lineX = window.innerWidth * 0.28;
-                    if(fork === 'center') lineX = 0;
-
-                    // Interpolation (Revolving Door -> Static Timeline Anchor)
-                    const cardProgress = Math.max(0, Math.min(1, (totalProgress - (index * 0.12)) / 0.3));
-
-                    const curX = (Math.cos(angle) * revRadius * (1-cardProgress)) + (lineX * cardProgress);
-                    const curY = (0 * (1-cardProgress)) + (lineY * cardProgress);
-                    const curZ = (Math.sin(angle) * revRadius * (1-cardProgress)) + (0 * cardProgress);
-                    const rotY = (angle * (1-cardProgress)) + (0 * cardProgress);
-
-                    card.style.transform = `translate3d(${curX}px, ${curY}px, ${curZ}px) rotateY(${rotY}rad)`;
-
-                    // Fluid Wake Effect
-                    if (Math.abs(scrollDelta) > 1 && cardProgress > 0) {
-                        const r = card.getBoundingClientRect();
-                        if(r.top > 0 && r.top < window.innerHeight) {
-                            safeSplat(r.left/window.innerWidth, 1 - (r.top/window.innerHeight), 1.4, -scrollDelta*12, {r:1, g:0.3, b:0});
-                        }
-                    }
-                });
-            }
-
-            let lastScroll = 0;
-            let scrollDelta = 0;
-            window.addEventListener('scroll', () => {
-                scrollDelta = window.scrollY - lastScroll;
-                lastScroll = window.scrollY;
-            });
-
-            // --- 5. MATRIX LOCAL ENGINE ---
-            document.querySelectorAll('.matrix-bg').forEach(mCanvas => {
-                const ctx = mCanvas.getContext('2d');
-                let drops;
-                const resize = () => {
-                    mCanvas.width = mCanvas.parentElement.offsetWidth;
-                    mCanvas.height = mCanvas.parentElement.offsetHeight;
-                    drops = Array(Math.floor(mCanvas.width / 18)).fill(1);
-                };
-                resize();
-                const draw = () => {
-                    ctx.fillStyle = 'rgba(0,0,0,0.15)';
-                    ctx.fillRect(0,0,mCanvas.width, mCanvas.height);
-                    ctx.fillStyle = '#0F0';
-                    ctx.font = '13px Space Mono';
-                    drops.forEach((y, i) => {
-                        ctx.fillText("01CFDML"[Math.floor(Math.random()*7)], i*18, y*18);
-                        if(y*18 > mCanvas.height && Math.random() > 0.98) drops[i] = 0;
-                        drops[i]++;
-                    });
-                };
-                setInterval(draw, 60); // Matrix rain speed
-                window.addEventListener('resize', resize);
-            });
-
-            // Persistent Fluid Swirl
-            setInterval(() => safeSplat(Math.random(), Math.random(), 5, 5, {r:0.4, g:0.1, b:0}), 1800);
-            window.addEventListener('resize', setupTimelineSVG);
-        };
-    </script>
-</body>
+      <section class="projects" id="projects">
+        <div class="vline"></div>
+      </section>
+    </main>
+  </body>
 </html>
