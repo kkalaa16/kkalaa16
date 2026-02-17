@@ -219,10 +219,34 @@ function initMatrix() {
 
 function initHeaderAndTopState() {
   const topHeader = document.getElementById('topHeader');
+  const introName = document.getElementById('introNameWord');
+  const introPortfolio = document.getElementById('introPortfolioWord');
+  const headerName = document.getElementById('headerNameWord');
+  const headerPortfolio = document.getElementById('headerPortfolioWord');
+
+  const updateTitleFlightVectors = () => {
+    if (!introName || !introPortfolio || !headerName || !headerPortfolio) return;
+
+    const nameA = introName.getBoundingClientRect();
+    const nameB = headerName.getBoundingClientRect();
+    const portA = introPortfolio.getBoundingClientRect();
+    const portB = headerPortfolio.getBoundingClientRect();
+
+    const nameDx = (nameB.left + nameB.width / 2) - (nameA.left + nameA.width / 2);
+    const nameDy = (nameB.top + nameB.height / 2) - (nameA.top + nameA.height / 2);
+    const portDx = (portB.left + portB.width / 2) - (portA.left + portA.width / 2);
+    const portDy = (portB.top + portB.height / 2) - (portA.top + portA.height / 2);
+
+    document.body.style.setProperty('--name-fx', `${nameDx.toFixed(2)}px`);
+    document.body.style.setProperty('--name-fy', `${nameDy.toFixed(2)}px`);
+    document.body.style.setProperty('--portfolio-fx', `${portDx.toFixed(2)}px`);
+    document.body.style.setProperty('--portfolio-fy', `${portDy.toFixed(2)}px`);
+  };
+
   const onScroll = () => {
     const y = window.scrollY;
     const atTop = y < 40;
-    const fly = y > 120;
+    const fly = y > 95;
 
     document.body.classList.toggle('at-top', atTop);
     document.body.classList.toggle('title-fly', fly);
@@ -230,6 +254,9 @@ function initHeaderAndTopState() {
     if (topHeader) topHeader.classList.toggle('scrolled', y > 220);
   };
 
+  updateTitleFlightVectors();
   onScroll();
   window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', updateTitleFlightVectors);
+  window.addEventListener('scroll', updateTitleFlightVectors, { passive: true });
 }
