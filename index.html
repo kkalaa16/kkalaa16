@@ -342,17 +342,24 @@
 
       <section class="education" id="education">
         <h2>Education</h2>
-        <div class="edu-axis-container">
-          <div class="edu-axis-line" id="laminar-axis">
-            <div class="edu-tick left" id="tick-1">
-              <span class="edu-tick-year">2019 - 2023</span>
-              <span class="edu-tick-label">BITS Pilani · BE Mechanical</span>
-            </div>
-            <div class="edu-tick right" id="tick-2">
-              <span class="edu-tick-year">2024 - Present</span>
-              <span class="edu-tick-label">Georgia Tech · MS Aerospace</span>
+        <div class="edu-journey" aria-label="Education journey from BITS Pilani to Georgia Tech">
+          <article class="edu-node left" id="edu-bits">
+            <img src="assets/edu/bits-pilani-badge.svg" alt="BITS Pilani badge" class="edu-logo" />
+            <span class="edu-degree">Bachelor's · BITS Pilani</span>
+            <span class="edu-sub">BE Mechanical Engineering · 2019–2023</span>
+          </article>
+
+          <div class="edu-axis-container">
+            <div class="edu-axis-line" id="laminar-axis">
+              <span class="edu-cat" id="eduCat" aria-hidden="true">🐈</span>
             </div>
           </div>
+
+          <article class="edu-node right" id="edu-gatech">
+            <img src="assets/edu/georgia-tech-badge.svg" alt="Georgia Tech badge" class="edu-logo" />
+            <span class="edu-degree">Master's · Georgia Tech</span>
+            <span class="edu-sub">MS Aerospace Engineering · 2024–Present</span>
+          </article>
         </div>
       </section>
 

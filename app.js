@@ -298,13 +298,15 @@ function animatePaths(registry, svg, progress) {
 function initEducationAxis() {
   const section = document.getElementById('education');
   const axis = document.getElementById('laminar-axis');
-  const ticks = document.querySelectorAll('.edu-tick');
-  if (!section || !axis || !ticks.length) return;
+  const cat = document.getElementById('eduCat');
+  const nodes = document.querySelectorAll('.edu-node');
+  if (!section || !axis || !cat || !nodes.length) return;
 
   const observer = new IntersectionObserver((entries) => {
     if (!entries[0].isIntersecting) return;
     axis.style.width = '100%';
-    setTimeout(() => ticks.forEach((t) => (t.style.opacity = '1')), 450);
+    cat.classList.add('run');
+    setTimeout(() => nodes.forEach((n) => n.classList.add('show')), 280);
     observer.disconnect();
   }, { threshold: 0.35 });
 
