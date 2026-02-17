@@ -21,6 +21,15 @@ body.lock-scroll { height: 100vh; overflow: hidden; }
 .welcome-sub { font-family: "Space Mono", monospace; font-size: 0.9rem; color: var(--accent); margin-top: 1.8rem; display: block; letter-spacing: 2.4px; }
 .accent { color: var(--accent); }
 
+
+.intro-static {
+  transition: opacity 420ms ease;
+}
+body.intro-complete.title-fly .intro-static,
+body.intro-complete.title-fly .welcome-sub {
+  opacity: 0;
+}
+
 .intro-name-word,
 .intro-portfolio-word {
   display: inline-block;
@@ -29,11 +38,11 @@ body.lock-scroll { height: 100vh; overflow: hidden; }
 }
 body.intro-complete.title-fly .intro-name-word {
   transform: translate(var(--name-fx, 0px), var(--name-fy, -180px)) scale(0.32);
-  opacity: 0.08;
+  opacity: 1;
 }
 body.intro-complete.title-fly .intro-portfolio-word {
   transform: translate(var(--portfolio-fx, 0px), var(--portfolio-fy, -190px)) scale(0.3);
-  opacity: 0.08;
+  opacity: 1;
 }
 
 
@@ -51,20 +60,20 @@ body.intro-complete.at-top .intro-welcome {
   transform: translateY(0);
 }
 body.intro-complete.title-fly .intro-sequence.hidden {
-  opacity: 0.92;
+  opacity: 1;
   transform: translateY(-8vh);
 }
 body.intro-complete.title-fly .intro-welcome {
   transform: translateY(-8vh);
-  opacity: 0.34;
+  opacity: 1;
 }
 
 .top-header { position: sticky; top: 0; z-index: 18; display: flex; justify-content: center; background: linear-gradient(to bottom, rgba(0,0,0,.92), rgba(0,0,0,.45), transparent); padding: .8rem 1rem; opacity: 0; transform: translateY(-18px) scale(1.04); transition: opacity 500ms ease, transform 650ms ease; pointer-events: none; }
 .top-header.ready { opacity: 0; transform: translateY(-10px) scale(1.02); }
 body.intro-complete.title-fly .top-header.ready { opacity: 1; transform: translateY(0) scale(1); }
 .top-header h1 { display: inline-flex; align-items: center; gap: .4rem; font-size: clamp(1rem, 2.5vw, 1.45rem); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
-.header-name { opacity: .9; transform: translateY(0); transition: transform 460ms ease, opacity 420ms ease; }
-.header-portfolio { opacity: 0; transform: translateY(12px); transition: transform 460ms ease, opacity 420ms ease; }
+.header-name { color: var(--accent); opacity: 1; transform: translateY(0); transition: transform 460ms ease, opacity 420ms ease; }
+.header-portfolio { color: #fff; opacity: 0; transform: translateY(12px); transition: transform 460ms ease, opacity 420ms ease; }
 .top-header.scrolled .header-name { transform: translateY(0); opacity: 1; }
 .top-header.scrolled .header-portfolio { transform: translateY(0); opacity: 1; }
 
