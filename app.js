@@ -182,13 +182,24 @@ function flyToTimeline(ccEls, staticCards) {
 
 function initTimelineStageVisibility() {
   const stage = document.getElementById('carouselStage');
+  const trigger = document.getElementById('work-section');
   const timeline = document.getElementById('timelineZone');
   if (!stage || !timeline) return;
+
+  stage.classList.remove('fade-out');
+
+  if (trigger) {
+    const triggerObserver = new IntersectionObserver((entries) => {
+      const inWork = entries.some((e) => e.isIntersecting);
+      if (inWork) stage.classList.remove('fade-out');
+    }, { threshold: 0.25 });
+    triggerObserver.observe(trigger);
+  }
 
   const io = new IntersectionObserver((entries) => {
     const visible = entries.some((e) => e.isIntersecting);
     stage.classList.toggle('fade-out', visible);
-  }, { threshold: 0.08 });
+  }, { threshold: 0.35, rootMargin: '-10% 0px -35% 0px' });
 
   io.observe(timeline);
 }
