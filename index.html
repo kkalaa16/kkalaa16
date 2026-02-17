@@ -4,345 +4,406 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>KRTIN KALA | PORTFOLIO</title>
-
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/webgl-fluid"></script>
-
     <link rel="stylesheet" href="styles.css" />
     <script src="app.js" defer></script>
   </head>
   <body class="lock-scroll">
+
+    <!-- WebGL fluid lives behind everything -->
     <canvas id="fluid-canvas"></canvas>
 
-    <section class="intro-sequence" id="introSequence">
+    <!-- ── INTRO GATE ── shown only during first 6s, then removed from DOM -->
+    <section class="intro-gate" id="introGate">
       <div class="intro-hi" id="introHi">Hi.</div>
       <div class="intro-welcome" id="introWelcome">
-        <span class="welcome-title"><span class="intro-static">I'M </span><span class="accent intro-name-word" id="introNameWord">KRTIN KALA</span><span class="intro-static">.</span></span>
-        <span class="welcome-name"><span class="intro-static">THIS IS MY </span><span class="intro-portfolio-word" id="introPortfolioWord">PORTFOLIO</span><span class="intro-static">.</span></span>
+        <span class="welcome-line-1">I'M <strong>KRTIN KALA</strong>.</span>
+        <span class="welcome-line-2">THIS IS MY <strong>PORTFOLIO</strong>.</span>
         <span class="welcome-sub">[ SYSTEMS DESIGN // REACTING FLOWS // ML ARCHITECT ]</span>
       </div>
     </section>
 
-    <header class="top-header" id="topHeader">
-      <h1>
-        <span class="header-name" id="headerNameWord">KRTIN KALA'S</span>
-        <span class="header-portfolio" id="headerPortfolioWord">PORTFOLIO</span>
-      </h1>
+    <!-- ── STICKY NAV ── hidden until intro done -->
+    <header class="site-nav" id="siteNav">
+      <div class="nav-brand">KRTIN KALA</div>
+      <nav class="nav-links">
+        <a href="#hero">About</a>
+        <a href="#projects">Projects</a>
+        <a href="#education">Education</a>
+        <a href="mailto:kkala6@gatech.edu">Contact</a>
+      </nav>
     </header>
 
-    <section class="stage" id="top"></section>
+    <!-- ── HERO ── above-fold content after intro clears -->
+    <section class="hero-section" id="hero">
+      <div class="hero-text">
+        <p class="hero-eyebrow">[ MS AEROSPACE · GEORGIA TECH · 2024–PRESENT ]</p>
+        <h1 class="hero-name">KRTIN<br>KALA</h1>
+        <p class="hero-role">Systems Design · Reacting Flows · ML Architecture</p>
+        <p class="hero-bio">
+          MS Aerospace Engineering student at Georgia Tech, with a background in
+          high-fidelity CFD, hybrid-electric propulsion, and applied machine learning.
+          Previously at Baker Hughes / TU/e, IIT Bombay, and BITS Pilani.
+        </p>
+        <div class="hero-tags">
+          <span>OpenFOAM</span><span>ANSYS Fluent</span><span>LES / RANS</span>
+          <span>FGM / Flamelet</span><span>OpenMDAO</span><span>Python / SKL</span>
+          <span>SysML / MBSE</span><span>MATLAB</span>
+        </div>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat-card">
+          <span class="stat-num">21</span>
+          <span class="stat-label">Projects &amp; Roles</span>
+        </div>
+        <div class="hero-stat-card">
+          <span class="stat-num">86.7%</span>
+          <span class="stat-label">Sim Runtime Reduction · NH₃/H₂ FGM</span>
+        </div>
+        <div class="hero-stat-card">
+          <span class="stat-num">15.7%</span>
+          <span class="stat-label">Range Increase · AFRL Hybrid Aircraft</span>
+        </div>
+        <div class="hero-stat-card">
+          <span class="stat-num">51.7%</span>
+          <span class="stat-label">Upthrust Gain · Drone Blade Thesis</span>
+        </div>
+      </div>
+      <div class="scroll-cue" id="scrollCue">
+        <span>SCROLL TO EXPLORE</span>
+        <div class="scroll-arrow"></div>
+      </div>
+    </section>
 
-    <!-- Cards layer -->
+    <!-- ── TIMELINE CARDS LAYER ── fixed, only visible after intro + during projects scroll -->
     <div class="cards-layer" id="cardsLayer">
-      <!-- Dynamic SVG Timeline -->
-      <svg class="timeline-svg" viewBox="0 0 1000 4600" preserveAspectRatio="xMidYMin meet">
+      <svg class="timeline-svg" id="timelineSvg" viewBox="0 0 1000 100" preserveAspectRatio="xMidYMin meet">
         <defs>
           <linearGradient id="timelineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" style="stop-color:rgba(255,255,255,0.2);stop-opacity:1" />
-            <stop offset="100%" style="stop-color:rgba(255,255,255,0.9);stop-opacity:1" />
+            <stop offset="0%" style="stop-color:rgba(255,255,255,0.15)" />
+            <stop offset="100%" style="stop-color:rgba(255,255,255,0.85)" />
           </linearGradient>
           <linearGradient id="matrixGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" style="stop-color:rgba(0,255,65,0.2);stop-opacity:1" />
-            <stop offset="100%" style="stop-color:rgba(0,255,65,0.9);stop-opacity:1" />
+            <stop offset="0%" style="stop-color:rgba(0,255,65,0.15)" />
+            <stop offset="100%" style="stop-color:rgba(0,255,65,0.85)" />
           </linearGradient>
         </defs>
-
-        <!-- Timeline paths will be animated via JavaScript -->
-        <!-- See app.js for path definitions and animations -->
       </svg>
 
-      <!-- PROJECT CARDS (21 total) - organized chronologically -->
-      
-      <!-- 2025 CURRENT: Ben Zinn + XV-15 -->
-      <article class="timeline-card" data-index="0" data-slot="0" data-fork="left" data-year="2025-current">
-        <div class="card-content">
-          <span class="date">JUN 2025 - PRESENT</span>
+      <!-- 21 PROJECT CARDS -->
+
+      <!-- slot 0 · 2025-current · 2 cards -->
+      <article class="timeline-card" data-index="0" data-slot="0" data-fork="left" data-year="2025 – CURRENT">
+        <div class="card-inner">
+          <span class="card-date">JUN 2025 – PRESENT</span>
           <h2 class="card-title">BEN ZINN COMBUSTION LAB</h2>
-          <p>Entropy-generation analysis for turbulent diffusion flames using Sandia-D benchmark.</p>
-          <div class="stats">
-            <div class="stat"><span class="s-val">Thermodynamics</span></div>
-            <div class="stat"><span class="s-val">LES / ANSYS</span></div>
+          <p>Entropy-generation analysis for turbulent diffusion flames, Sandia-D benchmark.</p>
+          <div class="card-stats">
+            <div class="stat"><span>Thermodynamics</span></div>
+            <div class="stat"><span>LES / ANSYS</span></div>
           </div>
         </div>
       </article>
 
-      <article class="timeline-card" data-index="1" data-slot="0" data-fork="right" data-year="2025-current">
-        <div class="card-content">
-          <span class="date">AUG 2025 - PRESENT // VFS</span>
+      <article class="timeline-card" data-index="1" data-slot="0" data-fork="right" data-year="2025 – CURRENT">
+        <div class="card-inner">
+          <span class="card-date">AUG 2025 – PRESENT · VFS</span>
           <h2 class="card-title">HYBRIDIZED XV-15</h2>
-          <p>Battery sizing tool for XV-15 tiltrotor with momentum-theory hover analysis.</p>
-          <div class="stats">
-            <div class="stat"><span class="s-val">6% Hybrid Ratio</span></div>
-            <div class="stat"><span class="s-val">MATLAB Model</span></div>
+          <p>Battery sizing tool for tiltrotor with momentum-theory hover and mission analysis.</p>
+          <div class="card-stats">
+            <div class="stat"><span>6% Hybrid Ratio</span></div>
+            <div class="stat"><span>MATLAB Model</span></div>
           </div>
         </div>
       </article>
 
-      <!-- 2025 ML/DL: 5 projects -->
-      <article class="timeline-card matrix-card" data-index="2" data-slot="1" data-fork="left-outer" data-year="2025-ml">
-        <canvas class="matrix-bg"></canvas>
-        <div class="card-content">
-          <span class="date matrix-date">AUG 2025 - DEC 2025</span>
-          <h2 class="card-title matrix-title">GTA: AE 3330</h2>
-          <p>Teaching assistant for aerospace vehicle performance covering propulsion and flight mechanics.</p>
-          <div class="stats">
-            <div class="stat matrix-stat"><span class="s-val">Mentorship</span></div>
-            <div class="stat matrix-stat"><span class="s-val">Performance</span></div>
+      <!-- slot 1 · 2025-ml · 5 cards (GTA is NOT matrix) -->
+      <article class="timeline-card" data-index="2" data-slot="1" data-fork="left-outer" data-year="2025">
+        <div class="card-inner">
+          <span class="card-date">AUG – DEC 2025 · GEORGIA TECH</span>
+          <h2 class="card-title">GTA · AE 3330</h2>
+          <p>Teaching assistant for aerospace vehicle performance — propulsion, flight mechanics, orbital mechanics.</p>
+          <div class="card-stats">
+            <div class="stat"><span>Mentorship</span></div>
+            <div class="stat"><span>Curriculum</span></div>
           </div>
         </div>
       </article>
 
       <article class="timeline-card matrix-card" data-index="3" data-slot="1" data-fork="left-inner" data-year="2025-ml">
         <canvas class="matrix-bg"></canvas>
-        <div class="card-content">
-          <span class="date matrix-date">AUG 2025 - DEC 2025</span>
+        <div class="card-inner">
+          <span class="card-date matrix-date">AUG – DEC 2025 · COURSE</span>
           <h2 class="card-title matrix-title">GAS TURBINE CYCLE DESIGN</h2>
-          <p>1D turbojet/turbofan model with variable γ(T) thermodynamics and design optimization.</p>
-          <div class="stats">
-            <div class="stat matrix-stat"><span class="s-val">NASA Polynomials</span></div>
-            <div class="stat matrix-stat"><span class="s-val">DOE Sweep</span></div>
+          <p>1D turbojet/turbofan with variable γ(T), NASA polynomials, design-space sweep.</p>
+          <div class="card-stats">
+            <div class="stat matrix-stat"><span>Variable γ(T)</span></div>
+            <div class="stat matrix-stat"><span>DOE Sweep</span></div>
           </div>
         </div>
       </article>
 
       <article class="timeline-card matrix-card" data-index="4" data-slot="1" data-fork="center" data-year="2025-ml">
         <canvas class="matrix-bg"></canvas>
-        <div class="card-content">
-          <span class="date matrix-date">JAN 2025 - MAY 2025</span>
+        <div class="card-inner">
+          <span class="card-date matrix-date">JAN – MAY 2025 · COURSE</span>
           <h2 class="card-title matrix-title">MIN-TIME CLIMB TRAJECTORY</h2>
-          <p>NLP optimization with high-fidelity surrogates and adjoint-based gradients.</p>
-          <div class="stats">
-            <div class="stat matrix-stat"><span class="s-val">R² > 0.99</span></div>
-            <div class="stat matrix-stat"><span class="s-val">Adjoint Grad</span></div>
+          <p>NLP optimization with surrogate models and adjoint-based gradient verification.</p>
+          <div class="card-stats">
+            <div class="stat matrix-stat"><span>R² &gt; 0.99</span></div>
+            <div class="stat matrix-stat"><span>Adjoint Grad</span></div>
           </div>
         </div>
       </article>
 
       <article class="timeline-card matrix-card" data-index="5" data-slot="1" data-fork="right-inner" data-year="2025-ml">
         <canvas class="matrix-bg"></canvas>
-        <div class="card-content">
-          <span class="date matrix-date">MAY 2025 - AUG 2025</span>
+        <div class="card-inner">
+          <span class="card-date matrix-date">MAY – AUG 2025 · ML</span>
           <h2 class="card-title matrix-title">F1 STRATEGY AI</h2>
-          <p>ML pipeline: track DNA clustering, driver profiling, and pit-stop optimization.</p>
-          <div class="stats">
-            <div class="stat matrix-stat"><span class="s-val">DBSCAN / GMM</span></div>
-            <div class="stat matrix-stat"><span class="s-val">Web Dashboard</span></div>
+          <p>Track DNA clustering, driver profiling, and pit-stop optimization pipeline.</p>
+          <div class="card-stats">
+            <div class="stat matrix-stat"><span>DBSCAN / GMM</span></div>
+            <div class="stat matrix-stat"><span>Web Dashboard</span></div>
           </div>
         </div>
       </article>
 
       <article class="timeline-card matrix-card" data-index="6" data-slot="1" data-fork="right-outer" data-year="2025-ml">
         <canvas class="matrix-bg"></canvas>
-        <div class="card-content">
-          <span class="date matrix-date">MAY 2025 - AUG 2025 // DL</span>
-          <h2 class="card-title matrix-title">OPTION PRICING FNO</h2>
-          <p>Hybrid surrogate: physics-informed ROM + Fourier Neural Operator for Heston model.</p>
-          <div class="stats">
-            <div class="stat matrix-stat"><span class="s-val">77% Error Cut</span></div>
-            <div class="stat matrix-stat"><span class="s-val">0.3ms Inference</span></div>
+        <div class="card-inner">
+          <span class="card-date matrix-date">MAY – AUG 2025 · DL</span>
+          <h2 class="card-title matrix-title">OPTION PRICING · FNO</h2>
+          <p>Physics-informed ROM + Fourier Neural Operator for Heston stochastic vol model.</p>
+          <div class="card-stats">
+            <div class="stat matrix-stat"><span>77% Error Cut</span></div>
+            <div class="stat matrix-stat"><span>0.3 ms Inference</span></div>
           </div>
         </div>
       </article>
 
-      <!-- 2024-2025: AFRL + Boeing -->
-      <article class="timeline-card" data-index="7" data-slot="2" data-fork="left" data-year="2024-2025">
-        <div class="card-content">
-          <span class="date">AUG 2024 - MAY 2025 // AFRL</span>
+      <!-- slot 2 · 2024-2025 · 2 cards -->
+      <article class="timeline-card" data-index="7" data-slot="2" data-fork="left" data-year="2024 – 2025">
+        <div class="card-inner">
+          <span class="card-date">AUG 2024 – MAY 2025 · AFRL</span>
           <h2 class="card-title">TACTICAL MOBILITY AIRCRAFT</h2>
-          <p>Hybrid-electric propulsion architecture with NPSS/FLOPS in OpenMDAO.</p>
-          <div class="stats">
-            <div class="stat"><span class="s-val">15.7% Range+</span></div>
-            <div class="stat"><span class="s-val">STOL Optimized</span></div>
+          <p>Hybrid-electric propulsion with NPSS/FLOPS inside OpenMDAO multi-fidelity framework.</p>
+          <div class="card-stats">
+            <div class="stat"><span>15.7% Range +</span></div>
+            <div class="stat"><span>STOL Optimized</span></div>
           </div>
         </div>
       </article>
 
-      <article class="timeline-card" data-index="8" data-slot="2" data-fork="right" data-year="2024-2025">
-        <div class="card-content">
-          <span class="date">AUG 2024 - MAY 2025 // BOEING</span>
+      <article class="timeline-card" data-index="8" data-slot="2" data-fork="right" data-year="2024 – 2025">
+        <div class="card-inner">
+          <span class="card-date">AUG 2024 – MAY 2025 · BOEING</span>
           <h2 class="card-title">STRATEGIC MATERIALS</h2>
-          <p>Ti-6Al-4V supply chain vulnerability using DES and graph-theory modeling.</p>
-          <div class="stats">
-            <div class="stat"><span class="s-val">Network Analysis</span></div>
-            <div class="stat"><span class="s-val">SOVERN Tool</span></div>
+          <p>Ti-6Al-4V supply chain vulnerability — DES, graph-theory, HHI concentration metrics.</p>
+          <div class="card-stats">
+            <div class="stat"><span>Network Analysis</span></div>
+            <div class="stat"><span>SOVERN Tool</span></div>
           </div>
         </div>
       </article>
 
-      <!-- 2024: NASA BWB -->
+      <!-- slot 3 · 2024 · 1 card -->
       <article class="timeline-card" data-index="9" data-slot="3" data-fork="center" data-year="2024">
-        <div class="card-content">
-          <span class="date">AUG 2024 - DEC 2024 // NASA</span>
+        <div class="card-inner">
+          <span class="card-date">AUG – DEC 2024 · NASA</span>
           <h2 class="card-title">H₂-POWERED BWB AIRCRAFT</h2>
-          <p>Blended Wing Body conceptual design with MBSE architecture and SysML.</p>
-          <div class="stats">
-            <div class="stat"><span class="s-val">20% CO₂ Cut</span></div>
-            <div class="stat"><span class="s-val">QFD / TOPSIS</span></div>
+          <p>Blended Wing Body conceptual design — MBSE, SysML, QFD, TOPSIS ranking.</p>
+          <div class="card-stats">
+            <div class="stat"><span>20% CO₂ Cut</span></div>
+            <div class="stat"><span>QFD / TOPSIS</span></div>
           </div>
         </div>
       </article>
 
-      <!-- 2023-2024: NH3/H2 + IIT Bombay -->
-      <article class="timeline-card" data-index="10" data-slot="4" data-fork="left" data-year="2023-2024">
-        <div class="card-content">
-          <span class="date">AUG 2023 - AUG 2024 // TU/e</span>
+      <!-- slot 4 · 2023-2024 · 2 cards -->
+      <article class="timeline-card" data-index="10" data-slot="4" data-fork="left" data-year="2023 – 2024">
+        <div class="card-inner">
+          <span class="card-date">AUG 2023 – AUG 2024 · TU/e</span>
           <h2 class="card-title">NH₃/H₂ REACTING FLOW</h2>
-          <p>FGM methodology for turbulent combustion with Baker Hughes collaboration.</p>
-          <div class="stats">
-            <div class="stat"><span class="s-val">86.7% Faster</span></div>
-            <div class="stat"><span class="s-val">FGM / LES</span></div>
+          <p>FGM methodology for turbulent ammonia-hydrogen combustion with Baker Hughes.</p>
+          <div class="card-stats">
+            <div class="stat"><span>86.7% Faster</span></div>
+            <div class="stat"><span>FGM / LES</span></div>
           </div>
         </div>
       </article>
 
-      <article class="timeline-card" data-index="11" data-slot="4" data-fork="right" data-year="2023-2024">
-        <div class="card-content">
-          <span class="date">JUL 2023 - JAN 2024 // IIT-B</span>
+      <article class="timeline-card" data-index="11" data-slot="4" data-fork="right" data-year="2023 – 2024">
+        <div class="card-inner">
+          <span class="card-date">JUL 2023 – JAN 2024 · IIT-B</span>
           <h2 class="card-title">CLASSROOM VENTILATION CFD</h2>
-          <p>Thermal stratification and HVAC redesign for airborne pathogen mitigation.</p>
-          <div class="stats">
-            <div class="stat"><span class="s-val">23.7% ACH+</span></div>
-            <div class="stat"><span class="s-val">IoT Integration</span></div>
+          <p>Thermal stratification and HVAC redesign to mitigate airborne pathogen spread.</p>
+          <div class="card-stats">
+            <div class="stat"><span>23.7% ACH +</span></div>
+            <div class="stat"><span>IoT Integration</span></div>
           </div>
         </div>
       </article>
 
-      <!-- 2022-2023: Drone Thesis -->
-      <article class="timeline-card" data-index="12" data-slot="5" data-fork="center" data-year="2022-2023">
-        <div class="card-content">
-          <span class="date">AUG 2022 - MAY 2023 // THESIS</span>
+      <!-- slot 5 · 2022-2023 · 1 card -->
+      <article class="timeline-card" data-index="12" data-slot="5" data-fork="center" data-year="2022 – 2023">
+        <div class="card-inner">
+          <span class="card-date">AUG 2022 – MAY 2023 · THESIS</span>
           <h2 class="card-title">DRONE DOWNWASH ANALYSIS</h2>
-          <p>Experimental-computational study with Raspberry Pi anemometer and OpenFOAM RANS.</p>
-          <div class="stats">
-            <div class="stat"><span class="s-val">+51.7% Upthrust</span></div>
-            <div class="stat"><span class="s-val">k-ω SST</span></div>
+          <p>Experimental + CFD study; Raspberry Pi anemometer rig, OpenFOAM RANS k-ω SST.</p>
+          <div class="card-stats">
+            <div class="stat"><span>+51.7% Upthrust</span></div>
+            <div class="stat"><span>k-ω SST</span></div>
           </div>
         </div>
       </article>
 
-      <!-- 2022: 4 projects -->
+      <!-- slot 6 · 2022 · 4 cards -->
       <article class="timeline-card" data-index="13" data-slot="6" data-fork="left-outer" data-year="2022">
-        <div class="card-content">
-          <span class="date">AUG 2022 - DEC 2022 // FSI</span>
+        <div class="card-inner">
+          <span class="card-date">AUG – DEC 2022 · COURSE</span>
           <h2 class="card-title">3D FLUID-STRUCTURE INTERACTION</h2>
-          <p>Elastic wave propagation via OpenFOAM-CalculiX coupling with preCICE.</p>
-          <div class="stats">
-            <div class="stat"><span class="s-val">38% Pressure↓</span></div>
-            <div class="stat"><span class="s-val">pimpleDyMFoam</span></div>
+          <p>Elastic wave propagation — OpenFOAM + CalculiX coupled via preCICE.</p>
+          <div class="card-stats">
+            <div class="stat"><span>38% Pressure ↓</span></div>
+            <div class="stat"><span>pimpleDyMFoam</span></div>
           </div>
         </div>
       </article>
 
       <article class="timeline-card" data-index="14" data-slot="6" data-fork="left-inner" data-year="2022">
-        <div class="card-content">
-          <span class="date">AUG 2022 // HAL ARDC</span>
-          <h2 class="card-title">AIRCRAFT SUBSYSTEMS</h2>
-          <p>Subsystem integration analysis at HAL Aircraft Research and Design Centre.</p>
-          <div class="stats">
-            <div class="stat"><span class="s-val">System Design</span></div>
-            <div class="stat"><span class="s-val">Integration</span></div>
+        <div class="card-inner">
+          <span class="card-date">AUG 2022 · HAL ARDC</span>
+          <h2 class="card-title">AIRCRAFT SUBSYSTEMS · HAL</h2>
+          <p>Subsystem integration across propulsion, structural, thermal, and avionics domains.</p>
+          <div class="card-stats">
+            <div class="stat"><span>System Design</span></div>
+            <div class="stat"><span>Integration</span></div>
           </div>
         </div>
       </article>
 
       <article class="timeline-card" data-index="15" data-slot="6" data-fork="right-inner" data-year="2022">
-        <div class="card-content">
-          <span class="date">JUN 2022 - JUL 2022 // DRDO</span>
+        <div class="card-inner">
+          <span class="card-date">JUN – JUL 2022 · DRDO CABS</span>
           <h2 class="card-title">NON-LINEAR DYNAMICS</h2>
-          <p>Mathematical foundations of dynamical systems for airborne platforms.</p>
-          <div class="stats">
-            <div class="stat"><span class="s-val">Lotka-Volterra</span></div>
-            <div class="stat"><span class="s-val">MATLAB Sims</span></div>
+          <p>Lotka-Volterra modelling, Jacobian stability, linearisation for airborne platforms.</p>
+          <div class="card-stats">
+            <div class="stat"><span>Phase Portraits</span></div>
+            <div class="stat"><span>MATLAB Sims</span></div>
           </div>
         </div>
       </article>
 
       <article class="timeline-card" data-index="16" data-slot="6" data-fork="right-outer" data-year="2022">
-        <div class="card-content">
-          <span class="date">JUN 2022 - OCT 2022 // TCNJ</span>
+        <div class="card-inner">
+          <span class="card-date">JUN – OCT 2022 · TCNJ</span>
           <h2 class="card-title">CAVITATION DETECTION</h2>
-          <p>Vibration signature analysis using FW-H acoustics and FFT.</p>
-          <div class="stats">
-            <div class="stat"><span class="s-val">VOF Model</span></div>
-            <div class="stat"><span class="s-val">FFT Analysis</span></div>
+          <p>Incipient cavitation in centrifugal pump via FW-H acoustics and FFT vibration analysis.</p>
+          <div class="card-stats">
+            <div class="stat"><span>VOF / ZGB Model</span></div>
+            <div class="stat"><span>FFT Analysis</span></div>
           </div>
         </div>
       </article>
 
-      <!-- 2021-2022: Hyperloop + VAWT -->
-      <article class="timeline-card" data-index="17" data-slot="7" data-fork="left" data-year="2021-2022">
-        <div class="card-content">
-          <span class="date">JUL 2021 - JUN 2022</span>
+      <!-- slot 7 · 2021-2022 · 2 cards -->
+      <article class="timeline-card" data-index="17" data-slot="7" data-fork="left" data-year="2021 – 2022">
+        <div class="card-inner">
+          <span class="card-date">JUL 2021 – JUN 2022</span>
           <h2 class="card-title">HYPERLOOP POD DESIGN</h2>
-          <p>Mechanical integration and propulsion architecture for Hyperloop India.</p>
-          <div class="stats">
-            <div class="stat"><span class="s-val">22% Learning↑</span></div>
-            <div class="stat"><span class="s-val">GD&T / DFM</span></div>
+          <p>Propulsion system architecture and GD&amp;T analysis for Hyperloop India competition pod.</p>
+          <div class="card-stats">
+            <div class="stat"><span>50+ Components</span></div>
+            <div class="stat"><span>GD&T / DFM</span></div>
           </div>
         </div>
       </article>
 
-      <article class="timeline-card" data-index="18" data-slot="7" data-fork="right" data-year="2021-2022">
-        <div class="card-content">
-          <span class="date">JUL 2021 - JUN 2022 // ENERGY</span>
+      <article class="timeline-card" data-index="18" data-slot="7" data-fork="right" data-year="2021 – 2022">
+        <div class="card-inner">
+          <span class="card-date">JUL 2021 – JUN 2022 · ENERGY</span>
           <h2 class="card-title">HELICAL VAWT OPTIMIZATION</h2>
-          <p>Parametric CFD of Savonius turbine with Coandă effect enhancement.</p>
-          <div class="stats">
-            <div class="stat"><span class="s-val">72% Power+</span></div>
-            <div class="stat"><span class="s-val">Torque Optimized</span></div>
+          <p>Parametric CFD of Savonius turbine — Coandă effect, helical twist, blade count sweep.</p>
+          <div class="card-stats">
+            <div class="stat"><span>72% Power +</span></div>
+            <div class="stat"><span>Torque Optimized</span></div>
           </div>
         </div>
       </article>
 
-      <!-- 2021: Scramjet + CCS -->
+      <!-- slot 8 · 2021 · 2 cards -->
       <article class="timeline-card" data-index="19" data-slot="8" data-fork="left" data-year="2021">
-        <div class="card-content">
-          <span class="date">AUG 2021 - DEC 2021 // CFD</span>
+        <div class="card-inner">
+          <span class="card-date">AUG – DEC 2021 · COURSE</span>
           <h2 class="card-title">SCRAMJET INLET VALIDATION</h2>
-          <p>CFD validation at Mach 5 and Mach 8 hypersonic conditions.</p>
-          <div class="stats">
-            <div class="stat"><span class="s-val">Hypersonic Flow</span></div>
-            <div class="stat"><span class="s-val">Oblique Shocks</span></div>
+          <p>CFD validation of 3-ramp and 4-ramp external compression at Mach 5 and Mach 8.</p>
+          <div class="card-stats">
+            <div class="stat"><span>Hypersonic Flow</span></div>
+            <div class="stat"><span>Oblique Shocks</span></div>
           </div>
         </div>
       </article>
 
       <article class="timeline-card" data-index="20" data-slot="8" data-fork="right" data-year="2021">
-        <div class="card-content">
-          <span class="date">MAY 2021 - AUG 2021</span>
+        <div class="card-inner">
+          <span class="card-date">MAY – AUG 2021 · CCS</span>
           <h2 class="card-title">SUPPLY CHAIN OPTIMIZATION</h2>
-          <p>FlexSim simulation and Lean principles at CCS Strategy Solutions.</p>
-          <div class="stats">
-            <div class="stat"><span class="s-val">40% Efficiency+</span></div>
-            <div class="stat"><span class="s-val">FlexSim / Lean</span></div>
+          <p>FlexSim simulation and Lean restructuring of client supply chain at CCS Strategy.</p>
+          <div class="card-stats">
+            <div class="stat"><span>40% Efficiency +</span></div>
+            <div class="stat"><span>FlexSim / Lean</span></div>
           </div>
         </div>
       </article>
-
     </div>
 
-    <main class="content">
-      <section class="education" id="education">
-        <h2>Education</h2>
-        <div class="edu-axis-container">
-          <div class="edu-axis-line" id="laminar-axis">
-            <div class="edu-tick left" id="tick-1">
-              <span class="edu-tick-year">2019 - 2023</span>
-              <span class="edu-tick-label">BITS Pilani · BE Mechanical</span>
+    <!-- ── MAIN CONTENT ── scrollable sections below hero -->
+    <main class="page-content">
+
+      <!-- spacer so the hero fills first viewport -->
+      <div class="hero-spacer"></div>
+
+      <!-- Projects scroll region — cards animate as this enters viewport -->
+      <section class="projects-scroll" id="projects">
+        <div class="section-label">TIMELINE · 2021 – 2025</div>
+      </section>
+
+      <!-- Education -->
+      <section class="education-section" id="education">
+        <h2 class="section-heading">EDUCATION</h2>
+        <div class="edu-track">
+          <div class="edu-axis" id="laminar-axis">
+            <div class="edu-tick left">
+              <span class="tick-year">2019 – 2023</span>
+              <span class="tick-label">BITS Pilani · BE Mechanical Engineering</span>
             </div>
-            <div class="edu-tick right" id="tick-2">
-              <span class="edu-tick-year">2024 - Present</span>
-              <span class="edu-tick-label">Georgia Tech · MS Aerospace</span>
+            <div class="edu-tick right">
+              <span class="tick-year">2024 – Present</span>
+              <span class="tick-label">Georgia Tech · MS Aerospace Engineering</span>
             </div>
           </div>
         </div>
       </section>
 
-      <section class="projects" id="projects">
-        <div class="vline"></div>
-      </section>
+      <!-- Footer -->
+      <footer class="site-footer">
+        <div class="footer-inner">
+          <div class="footer-left">
+            <span class="footer-name">KRTIN KALA</span>
+            <span class="footer-sub">Atlanta, GA · <a href="mailto:kkala6@gatech.edu">kkala6@gatech.edu</a> · <a href="https://linkedin.com/in/krtin-kala-07a682198" target="_blank">LinkedIn</a></span>
+          </div>
+          <div class="footer-right">
+            <span>GRE 332 · TOEFL 112</span>
+            <span>Patent Pending · 2023</span>
+          </div>
+        </div>
+      </footer>
+
     </main>
+
   </body>
 </html>

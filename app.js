@@ -1,396 +1,451 @@
+'use strict';
+
+/* ─────────────────────────────────────────────────────────
+   BOOT
+   ───────────────────────────────────────────────────────── */
 window.addEventListener('load', () => {
   initFluid();
-  runIntroGate();
-  generateTimelineSVG();
-  initSingleSetCarouselToTimeline();
+  runIntroSequence();
   initMatrix();
   initEducationAxis();
-  initHeaderAndTopState();
+  initNav();
 });
 
+/* ─────────────────────────────────────────────────────────
+   FLUID BACKGROUND  (continuous — never stops)
+   ───────────────────────────────────────────────────────── */
 function initFluid() {
   const canvas = document.getElementById('fluid-canvas');
   if (!canvas || typeof window.WebGLFluid !== 'function') return;
 
   const fluid = window.WebGLFluid(canvas, {
-    SIM_RESOLUTION: 128,
-    DYE_RESOLUTION: 1024,
+    SIM_RESOLUTION:      128,
+    DYE_RESOLUTION:      1024,
     DENSITY_DISSIPATION: 0.997,
-    VELOCITY_DISSIPATION: 0.995,
-    PRESSURE: 0.8,
-    CURL: 88,
-    SPLAT_RADIUS: 0.33,
-    SPLAT_FORCE: 6500,
-    SHADING: true,
-    COLORFUL: false,
-    BACK_COLOR: { r: 0, g: 0, b: 0 },
-    BLOOM: false,
-    TRANSPARENT: true
+    VELOCITY_DISSIPATION:0.995,
+    PRESSURE:            0.8,
+    CURL:                88,
+    SPLAT_RADIUS:        0.30,
+    SPLAT_FORCE:         6000,
+    SHADING:             true,
+    COLORFUL:            false,
+    BACK_COLOR:          { r: 0, g: 0, b: 0 },
+    BLOOM:               false,
+    TRANSPARENT:         true,
   });
 
   const splat = (x, y, dx, dy, color) => {
-    if (fluid && typeof fluid.splat === 'function') fluid.splat(x, y, dx, dy, color);
+    if (fluid?.splat) fluid.splat(x, y, dx, dy, color);
   };
   window.__splat = splat;
 
-  // Initial splats
-  for (let i = 0; i < 6; i += 1) {
-    setTimeout(() => {
-      splat(0.5, 0.5, (Math.random() - 0.5) * 88, (Math.random() - 0.5) * 88, { r: 0.46, g: 0.18, b: 0.03 });
-    }, i * 130);
+  // Initial burst
+  for (let i = 0; i < 5; i++) {
+    setTimeout(() => splat(0.5, 0.5,
+      (Math.random() - 0.5) * 80,
+      (Math.random() - 0.5) * 80,
+      { r: 0.44, g: 0.17, b: 0.02 }
+    ), i * 140);
   }
 
-  // Continuous animation
-  const edge = { x: 0.2, y: 0.2, vx: 0.0038, vy: 0.0029 };
+  // Perpetual wandering particle
+  const wanderer = { x: 0.2, y: 0.3, vx: 0.0036, vy: 0.0027 };
   let frame = 0;
 
-  const loop = () => {
-    frame += 1;
-    if (frame % 120 === 0) {
-      splat(Math.random(), Math.random(), (Math.random() - 0.5) * 18, (Math.random() - 0.5) * 18, { r: 0.56, g: 0.2, b: 0.03 });
-    }
-    edge.x += edge.vx;
-    edge.y += edge.vy;
-    if (edge.x < 0.02 || edge.x > 0.98) edge.vx *= -1;
-    if (edge.y < 0.02 || edge.y > 0.98) edge.vy *= -1;
+  (function loop() {
+    frame++;
+
+    wanderer.x += wanderer.vx;
+    wanderer.y += wanderer.vy;
+    if (wanderer.x < 0.02 || wanderer.x > 0.98) wanderer.vx *= -1;
+    if (wanderer.y < 0.02 || wanderer.y > 0.98) wanderer.vy *= -1;
+
     if (frame % 3 === 0) {
-      splat(edge.x, edge.y, edge.vx * 14500, edge.vy * 14500, { r: 0.52, g: 0.19, b: 0.02 });
+      splat(wanderer.x, wanderer.y,
+        wanderer.vx * 13000, wanderer.vy * 13000,
+        { r: 0.50, g: 0.18, b: 0.02 });
     }
-    if (frame % 240 === 0) {
-      splat(0.2 + Math.random() * 0.6, 0.2 + Math.random() * 0.6, (Math.random() - 0.5) * 35, (Math.random() - 0.5) * 35, { r: 0.62, g: 0.22, b: 0.03 });
+    // Occasional ambient puff
+    if (frame % 150 === 0) {
+      splat(Math.random(), Math.random(),
+        (Math.random() - 0.5) * 20,
+        (Math.random() - 0.5) * 20,
+        { r: 0.55, g: 0.20, b: 0.03 });
+    }
+    // Rare big burst
+    if (frame % 360 === 0) {
+      splat(0.2 + Math.random() * 0.6, 0.2 + Math.random() * 0.6,
+        (Math.random() - 0.5) * 40,
+        (Math.random() - 0.5) * 40,
+        { r: 0.60, g: 0.22, b: 0.03 });
     }
     requestAnimationFrame(loop);
-  };
-  requestAnimationFrame(loop);
+  })();
 
-  // Scroll interaction
-  let lastScroll = window.scrollY;
+  // React to scroll
+  let lastY = window.scrollY;
   window.addEventListener('scroll', () => {
-    const dy = window.scrollY - lastScroll;
+    const dy = window.scrollY - lastY;
     if (Math.abs(dy) > 1) {
-      splat(Math.random(), 0.5, (Math.random() - 0.5) * 24, -dy * 9, { r: 0.62, g: 0.22, b: 0.03 });
+      splat(Math.random(), 0.5,
+        (Math.random() - 0.5) * 20,
+        -dy * 8,
+        { r: 0.60, g: 0.22, b: 0.03 });
     }
-    lastScroll = window.scrollY;
-  });
+    lastY = window.scrollY;
+  }, { passive: true });
 }
 
-function runIntroGate() {
-  const hi = document.getElementById('introHi');
-  const welcome = document.getElementById('introWelcome');
-  const intro = document.getElementById('introSequence');
-  const topHeader = document.getElementById('topHeader');
-  const splat = window.__splat || (() => {});
+/* ─────────────────────────────────────────────────────────
+   INTRO SEQUENCE
+   Phase 1 (0–1.2s):  "Hi." appears with fluid
+   Phase 2 (1.2–2.9s): "Hi." dissolves
+   Phase 3 (2.9–6.2s): "I'M KRTIN KALA..." appears
+   Phase 4 (6.2s):     Gate fades out, hero + nav reveal
+   ───────────────────────────────────────────────────────── */
+function runIntroSequence() {
+  const gate      = document.getElementById('introGate');
+  const hi        = document.getElementById('introHi');
+  const welcome   = document.getElementById('introWelcome');
+  const hero      = document.querySelector('.hero-section');
+  const nav       = document.getElementById('siteNav');
+  const cardsLayer= document.getElementById('cardsLayer');
+  const splat     = window.__splat || (() => {});
 
+  // Phase 2: dissolve "Hi."
   setTimeout(() => {
-    splat(0.5, 0.52, (Math.random() - 0.5) * 90, (Math.random() - 0.5) * 90, { r: 0.56, g: 0.2, b: 0.03 });
-    hi.style.opacity = '0';
-    hi.style.filter = 'blur(12px)';
-    hi.style.transform = 'scale(0.93)';
+    splat(0.5, 0.52,
+      (Math.random() - 0.5) * 85,
+      (Math.random() - 0.5) * 85,
+      { r: 0.54, g: 0.20, b: 0.03 });
+    hi.classList.add('out');
   }, 1200);
 
+  // Phase 3: show welcome text
   setTimeout(() => {
-    welcome.style.opacity = '1';
-    welcome.style.transform = 'translateY(0)';
+    welcome.classList.add('show');
   }, 2900);
 
+  // Phase 4: tear down gate, reveal page
   setTimeout(() => {
-    intro.classList.add('hidden');
-    topHeader.classList.add('ready');
-    document.body.classList.add('intro-complete');
-    document.body.classList.add('at-top');
-    document.body.classList.remove('lock-scroll');
+    gate.classList.add('fade-out');
+
+    // After fade, remove gate from layout entirely
+    gate.addEventListener('transitionend', () => {
+      gate.classList.add('gone');
+      document.body.classList.remove('lock-scroll');
+    }, { once: true });
+
+    // Reveal hero and nav
+    hero.classList.add('visible');
+    nav.classList.add('visible');
+
+    // Start the timeline/carousel system
+    initCarouselToTimeline();
+
   }, 6200);
 }
 
-function generateTimelineSVG() {
-  const svg = document.querySelector('.timeline-svg');
-  const cards = [...document.querySelectorAll('.timeline-card')];
-  if (!svg || !cards.length) return;
-
-  // Group cards by year/slot
-  const groups = {};
-  cards.forEach(card => {
-    const slot = card.dataset.slot;
-    const year = card.dataset.year;
-    if (!groups[slot]) groups[slot] = { cards: [], year };
-    groups[slot].cards.push(card);
-  });
-
-  // Build timeline paths dynamically
-  let y = 100;
-  const centerX = 500;
-  let pathHTML = '';
-  let markerHTML = '';
-  const pathRegistry = [];
-
-  Object.keys(groups).sort((a, b) => a - b).forEach((slotKey, slotIdx) => {
-    const group = groups[slotKey];
-    const numCards = group.cards.length;
-    const yearLabel = group.year;
-    
-    // Determine if this is ML section
-    const isML = yearLabel && yearLabel.includes('ml');
-    const gradient = isML ? 'matrixGradient' : 'timelineGradient';
-    const markerColor = isML ? '#00ff41' : '#ff4d00';
-    
-    // Year marker
-    const yearText = yearLabel ? yearLabel.toUpperCase().replace(/-/g, ' - ') : `SLOT ${slotKey}`;
-    markerHTML += `<text class="year-marker ${isML ? 'matrix-year' : ''}" x="500" y="${y - 20}" text-anchor="middle" fill="${markerColor}" font-size="18" font-weight="700" font-family="Space Mono">${yearText}</text>`;
-
-    // Start point
-    const startY = y;
-    y += 120;
-
-    // Single card - straight line
-    if (numCards === 1) {
-      const pathId = `path-${slotIdx}-single`;
-      pathHTML += `<path class="${pathId}" d="M ${centerX} ${startY} L ${centerX} ${y + 280}" stroke="url(#${gradient})" stroke-width="2.5" fill="none" stroke-dasharray="400" stroke-dashoffset="400"/>`;
-      pathRegistry.push(pathId);
-      y += 300;
-    }
-    // Two cards - split left/right
-    else if (numCards === 2) {
-      const leftX = 340;
-      const rightX = 660;
-      
-      pathHTML += `<path class="path-${slotIdx}-prep" d="M ${centerX} ${startY} L ${centerX} ${y}" stroke="url(#${gradient})" stroke-width="2.5" fill="none" stroke-dasharray="120" stroke-dashoffset="120"/>`;
-      pathRegistry.push(`path-${slotIdx}-prep`);
-      
-      const splitY = y;
-      y += 60;
-      
-      pathHTML += `<path class="path-${slotIdx}-split-left" d="M ${centerX} ${splitY} Q 425 ${splitY + 40} ${leftX} ${y}" stroke="url(#${gradient})" stroke-width="2.5" fill="none" stroke-dasharray="220" stroke-dashoffset="220"/>`;
-      pathHTML += `<path class="path-${slotIdx}-split-right" d="M ${centerX} ${splitY} Q 575 ${splitY + 40} ${rightX} ${y}" stroke="url(#${gradient})" stroke-width="2.5" fill="none" stroke-dasharray="220" stroke-dashoffset="220"/>`;
-      pathRegistry.push(`path-${slotIdx}-split-left`, `path-${slotIdx}-split-right`);
-      
-      const branchY = y;
-      y += 240;
-      
-      pathHTML += `<path class="path-${slotIdx}-branch-left" d="M ${leftX} ${branchY} L ${leftX} ${y}" stroke="url(#${gradient})" stroke-width="2.5" fill="none" stroke-dasharray="240" stroke-dashoffset="240"/>`;
-      pathHTML += `<path class="path-${slotIdx}-branch-right" d="M ${rightX} ${branchY} L ${rightX} ${y}" stroke="url(#${gradient})" stroke-width="2.5" fill="none" stroke-dasharray="240" stroke-dashoffset="240"/>`;
-      pathRegistry.push(`path-${slotIdx}-branch-left`, `path-${slotIdx}-branch-right`);
-      
-      const joinStartY = y;
-      y += 70;
-      
-      pathHTML += `<path class="path-${slotIdx}-join" d="M ${leftX} ${joinStartY} Q 420 ${joinStartY + 50} ${centerX} ${y} Q 580 ${joinStartY + 50} ${rightX} ${joinStartY}" stroke="url(#${gradient})" stroke-width="2.5" fill="none" stroke-dasharray="380" stroke-dashoffset="380"/>`;
-      pathRegistry.push(`path-${slotIdx}-join`);
-    }
-    // 4 cards - quad split
-    else if (numCards === 4) {
-      const positions = [240, 380, 620, 760];
-      
-      pathHTML += `<path class="path-${slotIdx}-prep" d="M ${centerX} ${startY} L ${centerX} ${y}" stroke="url(#${gradient})" stroke-width="2.5" fill="none" stroke-dasharray="120" stroke-dashoffset="120"/>`;
-      pathRegistry.push(`path-${slotIdx}-prep`);
-      
-      const splitY = y;
-      y += 100;
-      
-      positions.forEach((x, i) => {
-        const label = ['ll', 'l', 'r', 'rr'][i];
-        const control = i < 2 ? 380 : 620;
-        pathHTML += `<path class="path-${slotIdx}-split-${label}" d="M ${centerX} ${splitY} Q ${control} ${splitY + 50} ${x} ${y}" stroke="url(#${gradient})" stroke-width="2.5" fill="none" stroke-dasharray="300" stroke-dashoffset="300"/>`;
-        pathRegistry.push(`path-${slotIdx}-split-${label}`);
-      });
-      
-      const branchY = y;
-      y += 220;
-      
-      positions.forEach((x, i) => {
-        const label = ['ll', 'l', 'r', 'rr'][i];
-        pathHTML += `<path class="path-${slotIdx}-branch-${label}" d="M ${x} ${branchY} L ${x} ${y}" stroke="url(#${gradient})" stroke-width="2.5" fill="none" stroke-dasharray="220" stroke-dashoffset="220"/>`;
-        pathRegistry.push(`path-${slotIdx}-branch-${label}`);
-      });
-      
-      const joinY = y;
-      y += 100;
-      
-      pathHTML += `<path class="path-${slotIdx}-join-1" d="M ${positions[0]} ${joinY} Q 310 ${joinY + 50} ${positions[1]} ${joinY + 70}" stroke="url(#${gradient})" stroke-width="2.5" fill="none" stroke-dasharray="180" stroke-dashoffset="180"/>`;
-      pathHTML += `<path class="path-${slotIdx}-join-2" d="M ${positions[1]} ${joinY + 70} Q 440 ${joinY + 90} ${centerX} ${y}" stroke="url(#${gradient})" stroke-width="2.5" fill="none" stroke-dasharray="150" stroke-dashoffset="150"/>`;
-      pathHTML += `<path class="path-${slotIdx}-join-3" d="M ${centerX} ${y} Q 560 ${joinY + 90} ${positions[2]} ${joinY + 70}" stroke="url(#${gradient})" stroke-width="2.5" fill="none" stroke-dasharray="150" stroke-dashoffset="150"/>`;
-      pathHTML += `<path class="path-${slotIdx}-join-4" d="M ${positions[2]} ${joinY + 70} Q 690 ${joinY + 50} ${positions[3]} ${joinY}" stroke="url(#${gradient})" stroke-width="2.5" fill="none" stroke-dasharray="180" stroke-dashoffset="180"/>`;
-      pathRegistry.push(`path-${slotIdx}-join-1`, `path-${slotIdx}-join-2`, `path-${slotIdx}-join-3`, `path-${slotIdx}-join-4`);
-    }
-    // 5 cards - special ML layout
-    else if (numCards === 5) {
-      const positions = [180, 340, 500, 660, 820];
-      
-      pathHTML += `<path class="path-${slotIdx}-prep" d="M ${centerX} ${startY} L ${centerX} ${y}" stroke="url(#${gradient})" stroke-width="2.5" fill="none" stroke-dasharray="120" stroke-dashoffset="120"/>`;
-      pathRegistry.push(`path-${slotIdx}-prep`);
-      
-      const splitY = y;
-      y += 80;
-      
-      // Split to left pair and right pair, center stays
-      pathHTML += `<path class="path-${slotIdx}-split-left-main" d="M ${centerX} ${splitY} Q 400 ${splitY + 40} 260 ${y}" stroke="url(#${gradient})" stroke-width="2.5" fill="none" stroke-dasharray="300" stroke-dashoffset="300"/>`;
-      pathHTML += `<path class="path-${slotIdx}-split-right-main" d="M ${centerX} ${splitY} Q 600 ${splitY + 40} 740 ${y}" stroke="url(#${gradient})" stroke-width="2.5" fill="none" stroke-dasharray="300" stroke-dashoffset="300"/>`;
-      pathRegistry.push(`path-${slotIdx}-split-left-main`, `path-${slotIdx}-split-right-main`);
-      
-      const subSplitY = y;
-      y += 60;
-      
-      pathHTML += `<path class="path-${slotIdx}-split-ll" d="M 260 ${subSplitY} Q 230 ${subSplitY + 30} ${positions[0]} ${y}" stroke="url(#${gradient})" stroke-width="2.5" fill="none" stroke-dasharray="120" stroke-dashoffset="120"/>`;
-      pathHTML += `<path class="path-${slotIdx}-split-l" d="M 260 ${subSplitY} Q 290 ${subSplitY + 30} ${positions[1]} ${y}" stroke="url(#${gradient})" stroke-width="2.5" fill="none" stroke-dasharray="120" stroke-dashoffset="120"/>`;
-      pathHTML += `<path class="path-${slotIdx}-center" d="M ${centerX} ${splitY} L ${centerX} ${y + 180}" stroke="url(#${gradient})" stroke-width="2.5" fill="none" stroke-dasharray="320" stroke-dashoffset="320"/>`;
-      pathHTML += `<path class="path-${slotIdx}-split-r" d="M 740 ${subSplitY} Q 710 ${subSplitY + 30} ${positions[3]} ${y}" stroke="url(#${gradient})" stroke-width="2.5" fill="none" stroke-dasharray="120" stroke-dashoffset="120"/>`;
-      pathHTML += `<path class="path-${slotIdx}-split-rr" d="M 740 ${subSplitY} Q 770 ${subSplitY + 30} ${positions[4]} ${y}" stroke="url(#${gradient})" stroke-width="2.5" fill="none" stroke-dasharray="120" stroke-dashoffset="120"/>`;
-      pathRegistry.push(`path-${slotIdx}-split-ll`, `path-${slotIdx}-split-l`, `path-${slotIdx}-center`, `path-${slotIdx}-split-r`, `path-${slotIdx}-split-rr`);
-      
-      const branchY = y;
-      y += 180;
-      
-      pathHTML += `<path class="path-${slotIdx}-branch-ll" d="M ${positions[0]} ${branchY} L ${positions[0]} ${y}" stroke="url(#${gradient})" stroke-width="2.5" fill="none" stroke-dasharray="180" stroke-dashoffset="180"/>`;
-      pathHTML += `<path class="path-${slotIdx}-branch-l" d="M ${positions[1]} ${branchY} L ${positions[1]} ${y}" stroke="url(#${gradient})" stroke-width="2.5" fill="none" stroke-dasharray="180" stroke-dashoffset="180"/>`;
-      pathHTML += `<path class="path-${slotIdx}-branch-r" d="M ${positions[3]} ${branchY} L ${positions[3]} ${y}" stroke="url(#${gradient})" stroke-width="2.5" fill="none" stroke-dasharray="180" stroke-dashoffset="180"/>`;
-      pathHTML += `<path class="path-${slotIdx}-branch-rr" d="M ${positions[4]} ${branchY} L ${positions[4]} ${y}" stroke="url(#${gradient})" stroke-width="2.5" fill="none" stroke-dasharray="180" stroke-dashoffset="180"/>`;
-      pathRegistry.push(`path-${slotIdx}-branch-ll`, `path-${slotIdx}-branch-l`, `path-${slotIdx}-branch-r`, `path-${slotIdx}-branch-rr`);
-      
-      const joinY = y;
-      y += 130;
-      
-      pathHTML += `<path class="path-${slotIdx}-join-1" d="M ${positions[0]} ${joinY} Q 260 ${joinY + 50} ${positions[1]} ${joinY + 70}" stroke="url(#${gradient})" stroke-width="2.5" fill="none" stroke-dasharray="200" stroke-dashoffset="200"/>`;
-      pathHTML += `<path class="path-${slotIdx}-join-2" d="M ${positions[1]} ${joinY + 70} Q 420 ${joinY + 90} ${centerX} ${y}" stroke="url(#${gradient})" stroke-width="2.5" fill="none" stroke-dasharray="200" stroke-dashoffset="200"/>`;
-      pathHTML += `<path class="path-${slotIdx}-join-3" d="M ${centerX} ${y} Q 580 ${joinY + 90} ${positions[3]} ${joinY + 70}" stroke="url(#${gradient})" stroke-width="2.5" fill="none" stroke-dasharray="200" stroke-dashoffset="200"/>`;
-      pathHTML += `<path class="path-${slotIdx}-join-4" d="M ${positions[3]} ${joinY + 70} Q 740 ${joinY + 50} ${positions[4]} ${joinY}" stroke="url(#${gradient})" stroke-width="2.5" fill="none" stroke-dasharray="200" stroke-dashoffset="200"/>`;
-      pathRegistry.push(`path-${slotIdx}-join-1`, `path-${slotIdx}-join-2`, `path-${slotIdx}-join-3`, `path-${slotIdx}-join-4`);
-    }
-  });
-
-  svg.innerHTML += markerHTML + pathHTML;
-  window._timelinePaths = pathRegistry;
+/* ─────────────────────────────────────────────────────────
+   NAV — scroll state
+   ───────────────────────────────────────────────────────── */
+function initNav() {
+  const nav = document.getElementById('siteNav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  }, { passive: true });
 }
 
-function initSingleSetCarouselToTimeline() {
-  const cards = [...document.querySelectorAll('.timeline-card')];
+/* ─────────────────────────────────────────────────────────
+   CAROUSEL → TIMELINE
+   Cards orbit while projects section is above fold,
+   then fly down and lock into timeline positions.
+   ───────────────────────────────────────────────────────── */
+function initCarouselToTimeline() {
+  const cards    = [...document.querySelectorAll('.timeline-card')];
   const projects = document.getElementById('projects');
-  if (!cards.length || !projects) return;
+  const layer    = document.getElementById('cardsLayer');
+  const svg      = document.getElementById('timelineSvg');
+  if (!cards.length || !projects || !layer) return;
+
+  // Show the layer now (intro is done)
+  layer.classList.add('active');
+
+  // Build SVG paths
+  const pathData = generateTimelinePaths(cards, svg);
 
   let t = 0;
 
-  const animate = () => {
+  (function animate() {
     t += 0.009;
 
-    const rect = projects.getBoundingClientRect();
-    const startOffset = window.innerHeight * 0.08;
-    const progressRaw = (startOffset - rect.top) / (rect.height - window.innerHeight * 0.75);
-    const progress = Math.max(0, Math.min(1, progressRaw));
+    const rect        = projects.getBoundingClientRect();
+    const scrollable  = rect.height - window.innerHeight * 0.75;
+    const rawProgress = (window.innerHeight * 0.08 - rect.top) / scrollable;
+    const progress    = Math.max(0, Math.min(1, rawProgress));
 
-    updateTimelinePaths(progress);
+    animatePaths(pathData, svg, progress);
 
-    cards.forEach((card, i) => {
-      const n = cards.length;
-      const angle = (i / n) * Math.PI * 2 + t;
-      const orbitRadius = Math.min(300, Math.max(170, window.innerWidth * 0.19));
+    cards.forEach((card) => {
+      const idx  = Number(card.dataset.index ?? 0);
+      const fork = card.dataset.fork ?? 'center';
+      const slot = Number(card.dataset.slot ?? 0);
+      const n    = cards.length;
+      const angle = (idx / n) * Math.PI * 2 + t;
 
-      const orbitX = Math.cos(angle) * orbitRadius;
-      const orbitY = Math.sin(angle * 1.35) * 24;
-      const orbitZ = Math.sin(angle) * orbitRadius;
+      const orbit = Math.min(260, Math.max(140, window.innerWidth * 0.17));
+      const ox = Math.cos(angle) * orbit;
+      const oy = Math.sin(angle * 1.3) * 22;
+      const oz = Math.sin(angle) * orbit;
 
-      const idx = Number(card.dataset.index || i);
-      const fork = card.dataset.fork || 'center';
-      const slot = Number(card.dataset.slot ?? idx);
-      const targetY = slot * 500 + 100;
-      
-      let targetX = 0;
-      if (fork === 'left') targetX = -Math.min(320, window.innerWidth * 0.25);
-      if (fork === 'right') targetX = Math.min(320, window.innerWidth * 0.25);
-      if (fork === 'left-outer') targetX = -Math.min(480, window.innerWidth * 0.35);
-      if (fork === 'left-inner') targetX = -Math.min(280, window.innerWidth * 0.20);
-      if (fork === 'right-inner') targetX = Math.min(280, window.innerWidth * 0.20);
-      if (fork === 'right-outer') targetX = Math.min(480, window.innerWidth * 0.35);
+      // Target: timeline resting position
+      const cardProgress = Math.max(0, Math.min(1, (progress - idx * 0.038) / 0.20));
+      const targetY = computeSlotY(slot, cards);
+      const targetX = forkX(fork);
 
-      const cardProgress = Math.max(0, Math.min(1, (progress - idx * 0.04) / 0.22));
+      const x     = ox * (1 - cardProgress) + targetX * cardProgress;
+      const y     = oy * (1 - cardProgress) + targetY * cardProgress;
+      const z     = oz * (1 - cardProgress);
+      const rotY  = angle * (1 - cardProgress);
+      const scale = 0.82 + 0.18 * cardProgress;
 
-      const x = orbitX * (1 - cardProgress) + targetX * cardProgress;
-      const y = orbitY * (1 - cardProgress) + targetY * cardProgress;
-      const z = orbitZ * (1 - cardProgress);
-      const rotY = angle * (1 - cardProgress);
-      const scale = 0.8 + 0.2 * cardProgress;
-
-      card.style.opacity = progress <= 0 ? '1' : String(Math.max(0.25, Math.min(1, cardProgress * 1.2)));
+      card.style.opacity   = String(Math.max(0.22, Math.min(1, cardProgress * 1.3)));
       card.style.transform = `translate3d(calc(-50% + ${x}px), calc(-50% + ${y}px), ${z}px) rotateY(${rotY}rad) scale(${scale})`;
+
+      // Make clickable once fully placed
+      if (cardProgress >= 0.95) {
+        card.classList.add('placed');
+      } else {
+        card.classList.remove('placed');
+      }
     });
 
     requestAnimationFrame(animate);
-  };
-
-  requestAnimationFrame(animate);
+  })();
 }
 
-function updateTimelinePaths(progress) {
-  const svg = document.querySelector('.timeline-svg');
-  if (!svg || !window._timelinePaths) return;
+/* Vertical position per slot — spread evenly in viewport height */
+function computeSlotY(slot, cards) {
+  // Count total slots
+  const slots = [...new Set(cards.map(c => Number(c.dataset.slot ?? 0)))].sort((a,b) => a-b);
+  const totalSlots = slots.length;
+  const spacing = 420; // px between slots
+  const offset = (slot - (totalSlots - 1) / 2) * spacing;
+  return offset;
+}
 
-  const paths = window._timelinePaths;
-  const yearMarkers = svg.querySelectorAll('.year-marker');
-
-  paths.forEach((pathClass, i) => {
-    const element = svg.querySelector(`.${pathClass}`);
-    if (!element) return;
-    
-    const dashArray = element.getAttribute('stroke-dasharray');
-    const length = parseFloat(dashArray);
-    const startProgress = i * 0.03;
-    const duration = 0.08;
-    const pathProgress = Math.max(0, Math.min(1, (progress - startProgress) / duration));
-    
-    element.style.strokeDashoffset = length * (1 - pathProgress);
-  });
-
-  yearMarkers.forEach((marker, i) => {
-    const markerProgress = Math.max(0, Math.min(1, (progress - i * 0.10) / 0.05));
-    marker.style.opacity = markerProgress;
-  });
-
-  if (progress > 0.03) {
-    document.body.classList.add('path-active');
-  } else {
-    document.body.classList.remove('path-active');
+/* Horizontal offset per fork type */
+function forkX(fork) {
+  const w = window.innerWidth;
+  const clamp = (v, max) => Math.min(v, max);
+  switch (fork) {
+    case 'left':        return -clamp(w * 0.23, 300);
+    case 'right':       return  clamp(w * 0.23, 300);
+    case 'left-outer':  return -clamp(w * 0.38, 460);
+    case 'left-inner':  return -clamp(w * 0.18, 220);
+    case 'right-inner': return  clamp(w * 0.18, 220);
+    case 'right-outer': return  clamp(w * 0.38, 460);
+    default:            return 0;
   }
 }
 
-function initEducationAxis() {
-  const section = document.getElementById('education');
-  const axis = document.getElementById('laminar-axis');
-  const ticks = document.querySelectorAll('.edu-tick');
-  if (!section || !axis || !ticks.length) return;
+/* ─────────────────────────────────────────────────────────
+   SVG PATH GENERATION
+   ───────────────────────────────────────────────────────── */
+function generateTimelinePaths(cards, svg) {
+  if (!svg) return [];
 
-  const observer = new IntersectionObserver((entries) => {
-    if (!entries[0].isIntersecting) return;
-    axis.style.width = '100%';
-    setTimeout(() => ticks.forEach((t) => (t.style.opacity = '1')), 450);
-    observer.disconnect();
-  }, { threshold: 0.35 });
+  // Group by slot
+  const groups = {};
+  cards.forEach(c => {
+    const s = c.dataset.slot ?? '0';
+    const y = c.dataset.year ?? '';
+    if (!groups[s]) groups[s] = { cards: [], year: y };
+    groups[s].cards.push(c);
+  });
 
-  observer.observe(section);
+  const slotKeys = Object.keys(groups).sort((a,b) => +a - +b);
+  const CX = 500; // SVG centre X
+  const SVGW = 1000;
+  let svgY = 60;
+  let pathHTML = '';
+  let markerHTML = '';
+  const registry = [];
+
+  slotKeys.forEach((slotKey, si) => {
+    const { cards: slotCards, year } = groups[slotKey];
+    const n = slotCards.length;
+    const isML = year.toLowerCase().includes('ml');
+    const grad = isML ? 'matrixGradient' : 'timelineGradient';
+    const mColor = isML ? '#00ff41' : '#ff4d00';
+    const yearLabel = year.toUpperCase().replace(/-/g, ' – ');
+
+    // Year marker
+    markerHTML += `<text class="year-marker" x="${CX}" y="${svgY}"
+      text-anchor="middle" fill="${mColor}" font-size="16" font-weight="700">${yearLabel}</text>`;
+    svgY += 40;
+
+    const startY = svgY;
+
+    if (n === 1) {
+      const len = 360;
+      const id = `p${si}-s`;
+      pathHTML += path(id, `M ${CX} ${startY} L ${CX} ${startY + len}`, grad, len);
+      registry.push(id);
+      svgY += len + 40;
+
+    } else if (n === 2) {
+      const lx = 330, rx = 670, branchH = 260, prepH = 60, joinH = 55;
+      let cy = startY;
+
+      // Prep
+      addSeg('prep');
+      cy += prepH;
+
+      // Split
+      addSeg('sl', `M ${CX} ${cy} Q ${CX-80} ${cy+30} ${lx} ${cy+prepH}`, 180);
+      addSeg('sr', `M ${CX} ${cy} Q ${CX+80} ${cy+30} ${rx} ${cy+prepH}`, 180);
+      cy += prepH;
+
+      // Branches
+      addSeg('bl', `M ${lx} ${cy} L ${lx} ${cy+branchH}`, branchH);
+      addSeg('br', `M ${rx} ${cy} L ${rx} ${cy+branchH}`, branchH);
+      cy += branchH;
+
+      // Rejoin
+      addSeg('j', `M ${lx} ${cy} Q ${CX-80} ${cy+joinH} ${CX} ${cy+joinH+10} Q ${CX+80} ${cy+joinH} ${rx} ${cy}`, 340);
+      svgY = cy + joinH + 40;
+
+      function addSeg(label, d, len) {
+        if (!d) {
+          d = `M ${CX} ${cy} L ${CX} ${cy + prepH}`;
+          len = prepH;
+        }
+        const id = `p${si}-${label}`;
+        pathHTML += path(id, d, grad, len);
+        registry.push(id);
+      }
+
+    } else if (n === 4) {
+      const xs = [210, 370, 630, 790];
+      let cy = startY;
+      const prepH = 50, branchH = 220, joinH = 60;
+
+      emit('prep', `M ${CX} ${cy} L ${CX} ${cy+prepH}`, prepH); cy += prepH;
+      xs.forEach((x,i) => {
+        const ctrl = x < CX ? CX - 60 : CX + 60;
+        emit(`sp${i}`, `M ${CX} ${cy} Q ${ctrl} ${cy+40} ${x} ${cy+prepH}`, 260);
+      });
+      cy += prepH;
+      xs.forEach((x,i) => emit(`b${i}`, `M ${x} ${cy} L ${x} ${cy+branchH}`, branchH));
+      cy += branchH;
+      // Rejoin in pairs then to centre
+      emit('jl',  `M ${xs[0]} ${cy} Q ${xs[1]-20} ${cy+30} ${xs[1]} ${cy+joinH}`, 150);
+      emit('jlc', `M ${xs[1]} ${cy+joinH} Q ${CX-60} ${cy+joinH+20} ${CX} ${cy+joinH+30}`, 160);
+      emit('jrc', `M ${CX} ${cy+joinH+30} Q ${CX+60} ${cy+joinH+20} ${xs[2]} ${cy+joinH}`, 160);
+      emit('jr',  `M ${xs[2]} ${cy+joinH} Q ${xs[3]-20} ${cy+30} ${xs[3]} ${cy}`, 150);
+      svgY = cy + joinH + 50;
+
+      function emit(label, d, len) {
+        const id = `p${si}-${label}`;
+        pathHTML += path(id, d, grad, len);
+        registry.push(id);
+      }
+
+    } else if (n === 5) {
+      // 5-wide fan: two outer pairs + centre
+      const xs = [155, 320, CX, 680, 845];
+      let cy = startY;
+      const prepH = 50, branchH = 200, joinH = 70;
+
+      emitf('prep', `M ${CX} ${cy} L ${CX} ${cy+prepH}`, prepH); cy += prepH;
+      xs.forEach((x, i) => {
+        const ctrl = x < CX ? CX-80 : x > CX ? CX+80 : CX;
+        emitf(`sp${i}`, `M ${CX} ${cy} Q ${ctrl} ${cy+35} ${x} ${cy+prepH}`, 280);
+      });
+      cy += prepH;
+      xs.forEach((x,i) => emitf(`b${i}`, `M ${x} ${cy} L ${x} ${cy+branchH}`, branchH));
+      cy += branchH;
+      // Funnel back: outer→inner→centre
+      emitf('jll', `M ${xs[0]} ${cy} Q ${xs[1]-10} ${cy+35} ${xs[1]} ${cy+joinH/2}`, 160);
+      emitf('jlc', `M ${xs[1]} ${cy+joinH/2} Q ${CX-60} ${cy+joinH} ${CX} ${cy+joinH+10}`, 160);
+      emitf('jrc', `M ${CX} ${cy+joinH+10} Q ${CX+60} ${cy+joinH} ${xs[3]} ${cy+joinH/2}`, 160);
+      emitf('jrr', `M ${xs[3]} ${cy+joinH/2} Q ${xs[4]-10} ${cy+35} ${xs[4]} ${cy}`, 160);
+      svgY = cy + joinH + 50;
+
+      function emitf(label, d, len) {
+        const id = `p${si}-${label}`;
+        pathHTML += path(id, d, grad, len);
+        registry.push(id);
+      }
+    }
+  });
+
+  // Set SVG viewBox to match generated height
+  svg.setAttribute('viewBox', `0 0 ${SVGW} ${svgY + 40}`);
+  svg.style.height = `${svgY + 40}px`;
+
+  // Inject paths and markers
+  svg.innerHTML += markerHTML + pathHTML;
+
+  return registry;
+
+  function path(id, d, grad, len) {
+    return `<path class="${id}" d="${d}" stroke="url(#${grad})" stroke-width="2"
+      fill="none" stroke-dasharray="${len}" stroke-dashoffset="${len}" stroke-linecap="round"/>`;
+  }
 }
 
-function initMatrix() {
-  const canvases = document.querySelectorAll('.matrix-bg');
-  const chars = '10CFDMLDL0123456789';
+/* ─────────────────────────────────────────────────────────
+   ANIMATE PATHS  (scroll-driven reveal)
+   ───────────────────────────────────────────────────────── */
+function animatePaths(registry, svg, progress) {
+  if (!svg || !registry.length) return;
 
-  canvases.forEach((canvas) => {
-    const ctx = canvas.getContext('2d');
-    let cols = [];
-    const size = 14;
+  const yearMarkers = svg.querySelectorAll('.year-marker');
+
+  registry.forEach((cls, i) => {
+    const el = svg.querySelector('.' + CSS.escape(cls));
+    if (!el) return;
+    const len  = parseFloat(el.getAttribute('stroke-dasharray'));
+    const start = i * 0.028;
+    const dur   = 0.09;
+    const p     = Math.max(0, Math.min(1, (progress - start) / dur));
+    el.style.strokeDashoffset = String(len * (1 - p));
+  });
+
+  yearMarkers.forEach((m, i) => {
+    const p = Math.max(0, Math.min(1, (progress - i * 0.11) / 0.06));
+    m.style.opacity = String(p);
+  });
+}
+
+/* ─────────────────────────────────────────────────────────
+   MATRIX RAIN  (only for .matrix-card canvases)
+   ───────────────────────────────────────────────────────── */
+function initMatrix() {
+  const chars = '10CFDML0123456789ΔΩΠΣ';
+  document.querySelectorAll('.matrix-bg').forEach(canvas => {
+    const ctx  = canvas.getContext('2d');
+    const size = 13;
+    let cols   = [];
 
     const resize = () => {
-      canvas.width = canvas.parentElement.offsetWidth;
+      canvas.width  = canvas.parentElement.offsetWidth;
       canvas.height = canvas.parentElement.offsetHeight;
       const n = Math.max(1, Math.floor(canvas.width / size));
       cols = Array.from({ length: n }, () => Math.random() * canvas.height);
-      ctx.font = `${size}px Space Mono`;
+      ctx.font = `${size}px "Space Mono", monospace`;
     };
 
     const draw = () => {
-      ctx.fillStyle = 'rgba(0,0,0,0.08)';
+      ctx.fillStyle = 'rgba(0,0,0,0.07)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = 'rgba(20, 255, 90, 0.78)';
-
+      ctx.fillStyle = 'rgba(0, 255, 65, 0.80)';
       cols.forEach((y, i) => {
         const c = chars[Math.floor(Math.random() * chars.length)];
         ctx.fillText(c, i * size, y);
-        cols[i] = y > canvas.height + Math.random() * 700 ? 0 : y + size;
+        cols[i] = y > canvas.height + Math.random() * 600 ? 0 : y + size;
       });
       requestAnimationFrame(draw);
     };
@@ -401,46 +456,21 @@ function initMatrix() {
   });
 }
 
-function initHeaderAndTopState() {
-  const topHeader = document.getElementById('topHeader');
-  const introName = document.getElementById('introNameWord');
-  const introPortfolio = document.getElementById('introPortfolioWord');
-  const headerName = document.getElementById('headerNameWord');
-  const headerPortfolio = document.getElementById('headerPortfolioWord');
+/* ─────────────────────────────────────────────────────────
+   EDUCATION AXIS
+   ───────────────────────────────────────────────────────── */
+function initEducationAxis() {
+  const section = document.getElementById('education');
+  const axis    = document.getElementById('laminar-axis');
+  const ticks   = document.querySelectorAll('.edu-tick');
+  if (!section || !axis) return;
 
-  const updateTitleFlightVectors = () => {
-    if (!introName || !introPortfolio || !headerName || !headerPortfolio) return;
+  const io = new IntersectionObserver(entries => {
+    if (!entries[0].isIntersecting) return;
+    axis.classList.add('grown');
+    setTimeout(() => ticks.forEach(t => t.classList.add('show')), 500);
+    io.disconnect();
+  }, { threshold: 0.3 });
 
-    const nameA = introName.getBoundingClientRect();
-    const nameB = headerName.getBoundingClientRect();
-    const portA = introPortfolio.getBoundingClientRect();
-    const portB = headerPortfolio.getBoundingClientRect();
-
-    const nameDx = (nameB.left + nameB.width / 2) - (nameA.left + nameA.width / 2);
-    const nameDy = (nameB.top + nameB.height / 2) - (nameA.top + nameA.height / 2);
-    const portDx = (portB.left + portB.width / 2) - (portA.left + portA.width / 2);
-    const portDy = (portB.top + portB.height / 2) - (portA.top + portA.height / 2);
-
-    document.body.style.setProperty('--name-fx', `${nameDx.toFixed(2)}px`);
-    document.body.style.setProperty('--name-fy', `${nameDy.toFixed(2)}px`);
-    document.body.style.setProperty('--portfolio-fx', `${portDx.toFixed(2)}px`);
-    document.body.style.setProperty('--portfolio-fy', `${portDy.toFixed(2)}px`);
-  };
-
-  const onScroll = () => {
-    const y = window.scrollY;
-    const atTop = y < 40;
-    const fly = y > 95;
-
-    document.body.classList.toggle('at-top', atTop);
-    document.body.classList.toggle('title-fly', fly);
-
-    if (topHeader) topHeader.classList.toggle('scrolled', y > 220);
-  };
-
-  updateTitleFlightVectors();
-  onScroll();
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', updateTitleFlightVectors);
-  window.addEventListener('scroll', updateTitleFlightVectors, { passive: true });
+  io.observe(section);
 }
