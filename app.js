@@ -1,11 +1,11 @@
+'use strict';
+
 window.addEventListener('load', () => {
   initFluid();
   runIntroGate();
-  initSingleSetCarouselToTimeline();
   initMatrix();
   initEducationAxis();
   initHeaderAndTopState();
-  initProjectsStageVisibility();
   initSectionNavHighlight();
 });
 
@@ -14,85 +14,38 @@ function initFluid() {
   if (!canvas || typeof window.WebGLFluid !== 'function') return;
 
   const fluid = window.WebGLFluid(canvas, {
-    SIM_RESOLUTION: 128,
-    DYE_RESOLUTION: 1024,
-    DENSITY_DISSIPATION: 0.999,
-    VELOCITY_DISSIPATION: 0.997,
-    PRESSURE: 0.8,
-    CURL: 88,
-    SPLAT_RADIUS: 0.33,
-    SPLAT_FORCE: 6500,
-    SHADING: true,
-    COLORFUL: false,
-    BACK_COLOR: { r: 0, g: 0, b: 0 },
-    BLOOM: false,
-    TRANSPARENT: true
+    SIM_RESOLUTION:128, DYE_RESOLUTION:1024,
+    DENSITY_DISSIPATION:.997, VELOCITY_DISSIPATION:.995,
+    PRESSURE:.8, CURL:88, SPLAT_RADIUS:.3, SPLAT_FORCE:6000,
+    SHADING:true, COLORFUL:false, BACK_COLOR:{r:0,g:0,b:0},
+    BLOOM:false, TRANSPARENT:true,
   });
 
-  const splat = (x, y, dx, dy, color) => {
-    if (fluid && typeof fluid.splat === 'function') fluid.splat(x, y, dx, dy, color);
-  };
-  window.__splat = splat;
-
-  for (let i = 0; i < 6; i += 1) {
-    setTimeout(() => {
-      splat(0.5, 0.5, (Math.random() - 0.5) * 88, (Math.random() - 0.5) * 88, { r: 0.46, g: 0.18, b: 0.03 });
-    }, i * 130);
-  }
-
-  const edge = { x: 0.2, y: 0.2, vx: 0.0038, vy: 0.0029 };
-  const edge2 = { x: 0.78, y: 0.68, vx: -0.0031, vy: 0.0024 };
-  let frame = 0;
-
-  const loop = () => {
-    frame += 1;
-
-    if (frame % 7 === 0) {
-      splat(Math.random(), Math.random(), (Math.random() - 0.5) * 14, (Math.random() - 0.5) * 14, { r: 0.56, g: 0.2, b: 0.03 });
-    }
-
-    edge.x += edge.vx;
-    edge.y += edge.vy;
-    edge2.x += edge2.vx;
-    edge2.y += edge2.vy;
-    if (edge.x < 0.02 || edge.x > 0.98) edge.vx *= -1;
-    if (edge.y < 0.02 || edge.y > 0.98) edge.vy *= -1;
-    if (edge2.x < 0.02 || edge2.x > 0.98) edge2.vx *= -1;
-    if (edge2.y < 0.02 || edge2.y > 0.98) edge2.vy *= -1;
-
-    if (frame % 3 === 0) {
-      splat(edge.x, edge.y, edge.vx * 14500, edge.vy * 14500, { r: 0.52, g: 0.19, b: 0.02 });
-      splat(edge2.x, edge2.y, edge2.vx * 14000, edge2.vy * 14000, { r: 0.45, g: 0.17, b: 0.02 });
-    }
-
-    if (frame % 120 === 0) {
-      splat(0.06, Math.random(), 34, (Math.random() - 0.5) * 30, { r: 0.48, g: 0.18, b: 0.03 });
-      splat(0.94, Math.random(), -34, (Math.random() - 0.5) * 30, { r: 0.48, g: 0.18, b: 0.03 });
-    }
-
+  const sp = (x,y,dx,dy,c) => fluid?.splat?.(x,y,dx,dy,c);
+  window.__splat = sp;
+  for (let i=0;i<5;i++) setTimeout(()=>sp(.5,.5,(Math.random()-.5)*80,(Math.random()-.5)*80,{r:.44,g:.17,b:.02}),i*140);
+  const w1={x:.2,y:.3,vx:.0036,vy:.0027}, w2={x:.8,y:.7,vx:-.0031,vy:-.0024};
+  let f=0;
+  (function loop(){ f++;
+    [w1,w2].forEach(w=>{ w.x+=w.vx; w.y+=w.vy; if(w.x<.02||w.x>.98)w.vx*=-1; if(w.y<.02||w.y>.98)w.vy*=-1; });
+    if(f%3===0){ sp(w1.x,w1.y,w1.vx*12000,w1.vy*12000,{r:.50,g:.18,b:.02}); sp(w2.x,w2.y,w2.vx*11000,w2.vy*11000,{r:.45,g:.16,b:.02}); }
+    if(f%180===0) sp(Math.random(),Math.random(),(Math.random()-.5)*22,(Math.random()-.5)*22,{r:.56,g:.20,b:.03});
     requestAnimationFrame(loop);
-  };
-  requestAnimationFrame(loop);
-
-  let lastScroll = window.scrollY;
-  window.addEventListener('scroll', () => {
-    const dy = window.scrollY - lastScroll;
-    if (Math.abs(dy) > 1) {
-      splat(Math.random(), 0.5, (Math.random() - 0.5) * 24, -dy * 9, { r: 0.62, g: 0.22, b: 0.03 });
-    }
-    lastScroll = window.scrollY;
-  });
+  })();
+  let lastY=window.scrollY;
+  window.addEventListener('scroll',()=>{ const dy=window.scrollY-lastY; if(Math.abs(dy)>1) sp(Math.random(),.5,(Math.random()-.5)*20,-dy*8,{r:.58,g:.21,b:.03}); lastY=window.scrollY; },{passive:true});
 }
 
 function runIntroGate() {
   const hi = document.getElementById('introHi');
   const welcome = document.getElementById('introWelcome');
   const intro = document.getElementById('introSequence');
+  const cue = document.getElementById('introScrollCue');
   const topHeader = document.getElementById('topHeader');
-  const splat = window.__splat || (() => {});
+  const sp = window.__splat || (() => {});
 
   setTimeout(() => {
-    splat(0.5, 0.52, (Math.random() - 0.5) * 90, (Math.random() - 0.5) * 90, { r: 0.56, g: 0.2, b: 0.03 });
+    sp(.5,.52,(Math.random()-.5)*85,(Math.random()-.5)*85,{r:.54,g:.20,b:.03});
     hi.style.opacity = '0';
     hi.style.filter = 'blur(12px)';
     hi.style.transform = 'scale(0.93)';
@@ -103,197 +56,266 @@ function runIntroGate() {
     welcome.style.transform = 'translateY(0)';
   }, 2900);
 
+  setTimeout(() => cue?.classList.add('show'), 4600);
+
   setTimeout(() => {
     intro.classList.add('hidden');
     topHeader.classList.add('ready');
-    document.body.classList.add('intro-complete');
-    document.body.classList.add('at-top');
+    document.body.classList.add('intro-complete', 'at-top');
     document.body.classList.remove('lock-scroll');
+    startExperience();
   }, 6200);
 }
 
-function initSingleSetCarouselToTimeline() {
-  const cards = [...document.querySelectorAll('.timeline-card')];
-  const projects = document.getElementById('projects');
-  const svg = document.getElementById('timelineSvg');
-  if (!cards.length || !projects) return;
+function startExperience() {
+  const staticCards = [...document.querySelectorAll('.tl-card')];
+  const cardData = staticCards.map(c=>({
+    title:  c.querySelector('h3')?.textContent || '',
+    date:   c.querySelector('.tl-date')?.textContent || '',
+    matrix: c.classList.contains('tl-card--matrix'),
+  }));
 
-  const pathRegistry = generateTimelinePaths(cards, svg);
-  let t = 0;
+  const ccEls = buildCarousel(cardData);
+  initUnravel(ccEls, staticCards);
 
-  const animate = () => {
-    t += 0.009;
-
-    const rect = projects.getBoundingClientRect();
-    const scrollable = rect.height - window.innerHeight * 0.75;
-    const rawProgress = (window.innerHeight * 0.08 - rect.top) / scrollable;
-    const progress = Math.max(0, Math.min(1, rawProgress));
-    const pathActive = progress > 0.08;
-    document.body.classList.toggle('path-active', pathActive);
-
-    // Keep SVG generation active for consistency, but primary visible line is the live dotted spine.
-    animatePaths(pathRegistry, svg, progress);
-
-    const slots = [...new Set(cards.map((c) => Number(c.dataset.slot ?? 0)))].sort((a, b) => a - b);
-    const totalSlots = slots.length;
-    const slotIndex = new Map(slots.map((slot, i) => [slot, i]));
-    const spacing = Math.max(170, Math.min(210, window.innerHeight * 0.22));
-    const baseY = window.innerHeight * 0.52;
-    const travel = progress * (totalSlots * spacing + window.innerHeight * 0.95);
-
-    cards.forEach((card, i) => {
-      const idx = Number(card.dataset.index ?? i);
-      const slot = Number(card.dataset.slot ?? idx);
-      const slotOrder = slotIndex.get(slot) ?? 0;
-      const fork = card.dataset.fork ?? 'center';
-      const n = cards.length;
-      const angle = (idx / n) * Math.PI * 2 + t;
-
-      const orbit = Math.min(230, Math.max(120, window.innerWidth * 0.14));
-      const ox = Math.cos(angle) * orbit;
-      const oy = Math.sin(angle * 1.3) * 20;
-      const oz = Math.sin(angle) * orbit;
-
-      // Transition by timeline slot (concurrent projects move together), not by card index.
-      const cardProgress = Math.max(0, Math.min(1, (progress - slotOrder * 0.065) / 0.26));
-      const targetX = forkX(fork);
-      const targetY = slotOrder * spacing + baseY - travel;
-
-      const x = ox * (1 - cardProgress) + targetX * cardProgress;
-      const y = oy * (1 - cardProgress) + targetY * cardProgress;
-      const z = oz * (1 - cardProgress) - (1 - cardProgress) * 520;
-      const rotY = angle * (1 - cardProgress);
-      const scale = 0.84 + 0.16 * cardProgress;
-
-      // Keep readable viewport window only.
-      const viewY = window.innerHeight / 2 + y;
-      const inLower = Math.max(0, Math.min(1, (viewY - window.innerHeight * 0.08) / (window.innerHeight * 0.30)));
-      const inUpper = Math.max(0, Math.min(1, (window.innerHeight * 0.90 - viewY) / (window.innerHeight * 0.28)));
-      const readableOpacity = Math.max(0, Math.min(1, inLower * inUpper));
-      let opacity = progress <= 0 ? 1 : Math.max(0.02, readableOpacity * 1.15);
-      if (progress > 0.08 && cardProgress < 0.22) opacity *= 0.08;
-
-      card.style.opacity = String(opacity);
-      card.style.transform = `translate3d(calc(-50% + ${x}px), calc(-50% + ${y}px), ${z}px) rotateY(${rotY}rad) scale(${scale})`;
-
-      if (cardProgress >= 0.92 && opacity > 0.22) card.classList.add('placed');
-      else card.classList.remove('placed');
-    });
-
-    requestAnimationFrame(animate);
-  };
-
-  requestAnimationFrame(animate);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    buildSandSpine();
+    initYearStamps();
+    initCardReveal();
+  }));
 }
 
-function computeSlotY(slot, cards) {
-  const slots = [...new Set(cards.map((c) => Number(c.dataset.slot ?? 0)))].sort((a, b) => a - b);
-  const total = slots.length;
-  const spacing = 150;
-  return (slot - (total - 1) / 2) * spacing;
-}
+function buildCarousel(cardData) {
+  const stage = document.getElementById('carouselStage');
+  if (!stage) return [];
 
-function forkX(fork) {
-  const w = window.innerWidth;
-  const clamp = (v, max) => Math.min(v, max);
-  switch (fork) {
-    case 'left': return -clamp(w * 0.23, 300);
-    case 'right': return clamp(w * 0.23, 300);
-    case 'left-outer': return -clamp(w * 0.36, 450);
-    case 'left-inner': return -clamp(w * 0.18, 230);
-    case 'right-inner': return clamp(w * 0.18, 230);
-    case 'right-outer': return clamp(w * 0.36, 450);
-    default: return 0;
-  }
-}
+  const n = cardData.length;
+  const els = [];
 
-function generateTimelinePaths(cards, svg) {
-  if (!svg) return [];
-
-  const groups = {};
-  cards.forEach((card) => {
-    const slot = card.dataset.slot ?? '0';
-    if (!groups[slot]) groups[slot] = [];
-    groups[slot].push(card);
+  cardData.forEach(d=>{
+    const el = document.createElement('div');
+    el.className = 'cc'+(d.matrix?' cc--matrix':'');
+    el.innerHTML = `<span class="cc-date">${d.date}</span><span class="cc-title">${d.title}</span>`;
+    stage.appendChild(el);
+    els.push(el);
   });
 
-  const slotKeys = Object.keys(groups).sort((a, b) => +a - +b);
-  const CX = 500;
-  const SVGW = 1000;
-  let y = 60;
-  let html = '';
-  const registry = [];
+  const RADIUS = 260;
+  const TILT_RAD = 22 * Math.PI / 180;
+  let theta = 0;
+  let alive = true;
 
-  slotKeys.forEach((slotKey, si) => {
-    const slotCards = groups[slotKey];
-    const xs = slotCards.map((c) => CX + forkX(c.dataset.fork ?? 'center'));
-    const minX = Math.min(...xs);
-    const maxX = Math.max(...xs);
-    const n = slotCards.length;
+  const trigger = document.getElementById('work-section');
+  const io = new IntersectionObserver(entries=>{ alive = entries[0].isIntersecting; },{threshold:0.02});
+  if (trigger) io.observe(trigger);
 
-    if (n === 1) {
-      const id = `p${si}-single`;
-      html += path(id, `M ${CX} ${y} L ${CX} ${y + 220}`);
-      registry.push({ id, start: si * 0.045, dur: 0.1 });
-      y += 250;
-      return;
+  (function spin(){
+    if (alive) theta += 0.007;
+    els.forEach((el,i)=>{
+      const a = (i/n)*Math.PI*2 + theta;
+      const x3 = Math.sin(a) * RADIUS;
+      const y3 = -Math.cos(a) * RADIUS * Math.sin(TILT_RAD);
+      const z3 = Math.cos(a) * RADIUS * Math.cos(TILT_RAD);
+      const maxZ = RADIUS * Math.cos(TILT_RAD);
+      const depth = (z3 + maxZ) / (2 * maxZ);
+      const scale = 0.52 + 0.48 * depth;
+      const opac = 0.08 + 0.88 * depth;
+      const blurPx = 2.0 * (1 - depth);
+      el.style.transform = `translate3d(calc(${x3}px - 50%), calc(${y3}px - 50%), ${z3.toFixed(1)}px) scale(${scale.toFixed(3)})`;
+      el.style.opacity = opac.toFixed(3);
+      el.style.filter = blurPx > 0.1 ? `blur(${blurPx.toFixed(2)}px)` : '';
+      el.style.zIndex = Math.round(depth * 100);
+    });
+    requestAnimationFrame(spin);
+  })();
+
+  return els;
+}
+
+function initUnravel(ccEls, staticCards) {
+  const trigger = document.getElementById('work-section');
+  if (!trigger) return;
+  let done = false;
+
+  const io = new IntersectionObserver(entries=>{
+    if (done) return;
+    if (!entries[0].isIntersecting && window.scrollY > trigger.offsetTop + 100) {
+      done = true;
+      flyToTimeline(ccEls, staticCards);
+      io.disconnect();
     }
+  },{threshold:0});
+  io.observe(trigger);
+}
 
-    const prep = 36;
-    const branchH = 140;
-    const recon = 36;
+function flyToTimeline(ccEls, staticCards) {
+  const n = Math.min(ccEls.length, staticCards.length);
 
-    const idPrep = `p${si}-prep`;
-    html += path(idPrep, `M ${CX} ${y} L ${CX} ${y + prep}`);
-    registry.push({ id: idPrep, start: si * 0.045, dur: 0.08 });
-    y += prep;
-
-    const idSplit = `p${si}-split`;
-    html += path(idSplit, `M ${minX} ${y} L ${maxX} ${y}`);
-    registry.push({ id: idSplit, start: si * 0.045 + 0.02, dur: 0.08 });
-
-    xs.forEach((x, i) => {
-      const idBranch = `p${si}-br${i}`;
-      html += path(idBranch, `M ${x} ${y} L ${x} ${y + branchH}`);
-      registry.push({ id: idBranch, start: si * 0.045 + 0.04, dur: 0.1 });
+  ccEls.forEach((cc,i)=>{
+    if (i >= n) { cc.style.display='none'; return; }
+    const target  = staticCards[i].getBoundingClientRect();
+    const ccRect  = cc.getBoundingClientRect();
+    const fromX = ccRect.left  + ccRect.width  / 2;
+    const fromY = ccRect.top   + ccRect.height / 2;
+    const toX   = target.left  + target.width  / 2;
+    const toY   = target.top   + target.height / 2;
+    cc.style.position  = 'fixed';
+    cc.style.left      = `${fromX}px`;
+    cc.style.top       = `${fromY}px`;
+    cc.style.transform = 'translate(-50%,-50%)';
+    cc.style.zIndex    = '999';
+    cc.style.transition= 'none';
+    cc.getBoundingClientRect();
+    const delay = i * 28;
+    cc.style.transition = `transform ${380+delay}ms cubic-bezier(.16,1,.3,1) ${delay}ms, opacity 280ms ease ${delay}ms`;
+    requestAnimationFrame(()=>{
+      cc.style.transform = `translate(calc(-50% + ${toX-fromX}px), calc(-50% + ${toY-fromY}px)) scale(0.82)`;
+      cc.style.opacity   = '0';
     });
-    y += branchH;
-
-    const idJoin = `p${si}-join`;
-    html += path(idJoin, `M ${minX} ${y} L ${maxX} ${y}`);
-    registry.push({ id: idJoin, start: si * 0.045 + 0.11, dur: 0.08 });
-
-    const idOut = `p${si}-out`;
-    html += path(idOut, `M ${CX} ${y} L ${CX} ${y + recon}`);
-    registry.push({ id: idOut, start: si * 0.045 + 0.14, dur: 0.07 });
-
-    y += recon + 36;
+    setTimeout(()=>cc.style.display='none', 380+delay*2+300);
   });
+}
 
-  svg.setAttribute('viewBox', `0 0 ${SVGW} ${y + 20}`);
-  svg.style.height = `${y + 20}px`;
-  svg.innerHTML = svg.querySelector('defs').outerHTML + html;
+function buildSandSpine() {
+  const zone = document.getElementById('timelineZone');
+  const canvas = document.getElementById('spineCanvas');
+  if (!zone || !canvas) return;
 
-  return registry;
+  const sizeCanvas = () => { canvas.width = zone.offsetWidth; canvas.height = zone.offsetHeight; };
+  sizeCanvas();
+  window.addEventListener('resize',()=>{ sizeCanvas(); rebuildSegs(); },{passive:true});
+  const ctx = canvas.getContext('2d');
+  let segs = [];
 
-  function path(id, d) {
-    return `<path class="${id}" d="${d}" stroke="url(#timelineGradient)" stroke-width="2" fill="none" opacity="0" stroke-dasharray="5 10" stroke-dashoffset="36"/>`;
+  function getOffsetInZone(el) {
+    let top=0, left=0, node=el;
+    while (node && node!==zone) { top += node.offsetTop; left += node.offsetLeft; node = node.offsetParent; }
+    return { top, left, w:el.offsetWidth, h:el.offsetHeight };
   }
+
+  function rebuildSegs() {
+    segs = [];
+    const rows = [...zone.querySelectorAll('.tl-row')];
+    let prevMidX = null, prevBotY = null;
+
+    rows.forEach(row=>{
+      const cards = [...row.querySelectorAll('.tl-card')];
+      if (!cards.length) return;
+      const isGreen = cards.some(c=>c.classList.contains('tl-card--matrix'));
+      const infos = cards.map(c=>{ const o = getOffsetInZone(c); return { cx:o.left+o.w/2, top:o.top, bot:o.top+o.h }; });
+      const midX = infos.reduce((s,i)=>s+i.cx,0)/infos.length;
+      const topY = Math.min(...infos.map(i=>i.top)) - 24;
+      const botY = Math.max(...infos.map(i=>i.bot)) + 24;
+      const G = isGreen;
+      if (prevMidX!==null) segs.push({x1:prevMidX,y1:prevBotY, x2:midX,y2:topY, G});
+
+      if (infos.length===1) {
+        const {cx,top,bot}=infos[0];
+        segs.push({x1:cx,y1:topY, x2:cx,y2:top, G});
+        segs.push({x1:cx,y1:top, x2:cx,y2:bot, G});
+        segs.push({x1:cx,y1:bot, x2:cx,y2:botY, G});
+      } else {
+        const minX=Math.min(...infos.map(i=>i.cx));
+        const maxX=Math.max(...infos.map(i=>i.cx));
+        const spreadY=topY+18, gatherY=botY-18;
+        segs.push({x1:midX,y1:topY, x2:midX,y2:spreadY, G});
+        segs.push({x1:minX,y1:spreadY, x2:maxX,y2:spreadY, G});
+        infos.forEach(({cx,top,bot})=>{
+          segs.push({x1:cx,y1:spreadY, x2:cx,y2:top, G});
+          segs.push({x1:cx,y1:top, x2:cx,y2:bot, G});
+          segs.push({x1:cx,y1:bot, x2:cx,y2:gatherY, G});
+        });
+        segs.push({x1:minX,y1:gatherY, x2:maxX,y2:gatherY, G});
+        segs.push({x1:midX,y1:gatherY, x2:midX,y2:botY, G});
+      }
+      prevMidX=midX; prevBotY=botY;
+    });
+  }
+  rebuildSegs();
+
+  const segLen = (s)=>Math.hypot(s.x2-s.x1, s.y2-s.y1);
+  const totalLen = ()=>segs.reduce((a,s)=>a+segLen(s),0);
+  function posAt(t) {
+    if (!segs.length) return {x:canvas.width/2,y:canvas.height/2,G:false};
+    const total = totalLen();
+    let d = ((t%1)+1)%1 * total;
+    for (const s of segs) {
+      const l = segLen(s);
+      if (d<=l) return {x:s.x1+(s.x2-s.x1)*(d/l), y:s.y1+(s.y2-s.y1)*(d/l), G:s.G};
+      d-=l;
+    }
+    const last=segs[segs.length-1];
+    return {x:last.x2,y:last.y2,G:last.G};
+  }
+
+  const N = 200;
+  const parts = Array.from({length:N},(_,i)=>({ t:i/N, size:0.6 + Math.random()*1.1, alpha:0.28 + Math.random()*0.65 }));
+  let scrollV = 0; let lastSY = window.scrollY;
+  window.addEventListener('scroll',()=>{ const dy=window.scrollY-lastSY; scrollV += dy*0.00014; lastSY=window.scrollY; },{passive:true});
+  let baseT = 0;
+
+  (function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    scrollV *= 0.84;
+    baseT += scrollV + 0.00018;
+    if (segs.length) {
+      parts.forEach(p=>{
+        const pos = posAt(((p.t + baseT)%1+1)%1);
+        const zRect = zone.getBoundingClientRect();
+        const screenY = zRect.top + pos.y;
+        const vhFrac = screenY / window.innerHeight;
+        const fade = Math.min(1, Math.max(0, vhFrac/0.22)) * Math.min(1, Math.max(0, (1-vhFrac)/0.22));
+        const a = p.alpha * fade;
+        if (a<0.02) return;
+        ctx.beginPath(); ctx.arc(pos.x, pos.y, p.size, 0, Math.PI*2);
+        ctx.fillStyle = pos.G ? `rgba(0,255,65,${a.toFixed(2)})` : `rgba(255,255,255,${a.toFixed(2)})`;
+        ctx.fill();
+      });
+    }
+    requestAnimationFrame(draw);
+  })();
+
+  window.addEventListener('resize',()=>setTimeout(rebuildSegs,220),{passive:true});
 }
 
-function animatePaths(registry, svg, progress) {
-  if (!svg || !registry.length) return;
+function initYearStamps() {
+  const stamps = document.querySelectorAll('.year-stamp');
+  const io = new IntersectionObserver(entries=>{ entries.forEach(e=>e.target.classList.toggle('show',e.isIntersecting)); },{threshold:0.15, rootMargin:'0px 0px -60px 0px'});
+  stamps.forEach(s=>io.observe(s));
+}
 
-  registry.forEach((seg) => {
-    const el = svg.querySelector('.' + CSS.escape(seg.id));
-    if (!el) return;
-    const p = Math.max(0, Math.min(1, (progress - seg.start) / seg.dur));
-    el.style.opacity = String(p);
-    el.style.strokeDashoffset = String((1 - p) * 24 - progress * 20);
+function initCardReveal() {
+  const cards = document.querySelectorAll('.tl-card');
+  const io = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      const card = e.target;
+      if (e.isIntersecting) {
+        const row = card.closest('.tl-row');
+        if (row) {
+          const sibs = [...row.querySelectorAll('.tl-card')];
+          card.style.transitionDelay = `${sibs.indexOf(card)*65}ms`;
+        }
+        card.classList.remove('out-view');
+        card.classList.add('in-view');
+      } else {
+        card.style.transitionDelay='0ms';
+        if (e.boundingClientRect.top < 0) { card.classList.remove('in-view'); card.classList.add('out-view'); }
+        else card.classList.remove('in-view','out-view');
+      }
+    });
+  },{threshold:0.08, rootMargin:'20px 0px -20px 0px'});
+  cards.forEach(c=>io.observe(c));
+}
+
+function initMatrix() {
+  const chars='01CFDML∇Δ∑ΩΠΣ0123456789';
+  document.querySelectorAll('.matrix-bg').forEach(cv=>{
+    const ctx=cv.getContext('2d'); const sz=13; let cols=[];
+    const resize=()=>{ cv.width=cv.parentElement.offsetWidth; cv.height=cv.parentElement.offsetHeight; const n=Math.max(1,Math.floor(cv.width/sz)); cols=Array.from({length:n},()=>Math.random()*cv.height); ctx.font=`${sz}px "Space Mono",monospace`; };
+    const draw=()=>{ ctx.fillStyle='rgba(0,0,0,0.07)'; ctx.fillRect(0,0,cv.width,cv.height); ctx.fillStyle='rgba(0,255,65,0.75)'; cols.forEach((y,i)=>{ ctx.fillText(chars[Math.floor(Math.random()*chars.length)],i*sz,y); cols[i]=y>cv.height+Math.random()*500?0:y+sz; }); requestAnimationFrame(draw); };
+    resize(); draw(); window.addEventListener('resize',resize);
   });
 }
-
-
 
 function initEducationAxis() {
   const section = document.getElementById('education');
@@ -313,56 +335,6 @@ function initEducationAxis() {
   observer.observe(section);
 }
 
-function initMatrix() {
-  const canvases = document.querySelectorAll('.matrix-bg');
-  const chars = '10CFDMLDL0123456789';
-
-  canvases.forEach((canvas) => {
-    const ctx = canvas.getContext('2d');
-    let cols = [];
-    const size = 14;
-
-    const resize = () => {
-      canvas.width = canvas.parentElement.offsetWidth;
-      canvas.height = canvas.parentElement.offsetHeight;
-      const n = Math.max(1, Math.floor(canvas.width / size));
-      cols = Array.from({ length: n }, () => Math.random() * canvas.height);
-      ctx.font = `${size}px Space Mono`;
-    };
-
-    const draw = () => {
-      ctx.fillStyle = 'rgba(0,0,0,0.08)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = 'rgba(20, 255, 90, 0.78)';
-
-      cols.forEach((y, i) => {
-        const c = chars[Math.floor(Math.random() * chars.length)];
-        ctx.fillText(c, i * size, y);
-        cols[i] = y > canvas.height + Math.random() * 700 ? 0 : y + size;
-      });
-      requestAnimationFrame(draw);
-    };
-
-    resize();
-    draw();
-    window.addEventListener('resize', resize);
-  });
-}
-
-
-
-function initProjectsStageVisibility() {
-  const projects = document.getElementById('projects');
-  if (!projects) return;
-
-  const observer = new IntersectionObserver((entries) => {
-    const visible = entries.some((entry) => entry.isIntersecting);
-    document.body.classList.toggle('projects-active', visible);
-  }, { threshold: 0.02 });
-
-  observer.observe(projects);
-}
-
 function initHeaderAndTopState() {
   const topHeader = document.getElementById('topHeader');
   const introName = document.getElementById('introNameWord');
@@ -372,33 +344,21 @@ function initHeaderAndTopState() {
 
   const updateTitleFlightVectors = () => {
     if (!introName || !introPortfolio || !headerName || !headerPortfolio) return;
-
     const nameA = introName.getBoundingClientRect();
     const nameB = headerName.getBoundingClientRect();
     const portA = introPortfolio.getBoundingClientRect();
     const portB = headerPortfolio.getBoundingClientRect();
-
-    const nameDx = (nameB.left + nameB.width / 2) - (nameA.left + nameA.width / 2);
-    const nameDy = (nameB.top + nameB.height / 2) - (nameA.top + nameA.height / 2);
-    const portDx = (portB.left + portB.width / 2) - (portA.left + portA.width / 2);
-    const portDy = (portB.top + portB.height / 2) - (portA.top + portA.height / 2);
-
-    document.body.style.setProperty('--name-fx', `${nameDx.toFixed(2)}px`);
-    document.body.style.setProperty('--name-fy', `${nameDy.toFixed(2)}px`);
-    document.body.style.setProperty('--portfolio-fx', `${portDx.toFixed(2)}px`);
-    document.body.style.setProperty('--portfolio-fy', `${portDy.toFixed(2)}px`);
+    document.body.style.setProperty('--name-fx', `${((nameB.left + nameB.width / 2) - (nameA.left + nameA.width / 2)).toFixed(2)}px`);
+    document.body.style.setProperty('--name-fy', `${((nameB.top + nameB.height / 2) - (nameA.top + nameA.height / 2)).toFixed(2)}px`);
+    document.body.style.setProperty('--portfolio-fx', `${((portB.left + portB.width / 2) - (portA.left + portA.width / 2)).toFixed(2)}px`);
+    document.body.style.setProperty('--portfolio-fy', `${((portB.top + portB.height / 2) - (portA.top + portA.height / 2)).toFixed(2)}px`);
   };
 
   const onScroll = () => {
     const y = window.scrollY;
-    const atTop = y < 40;
-    const fly = y > 95;
-    const landed = y > 185;
-
-    document.body.classList.toggle('at-top', atTop);
-    document.body.classList.toggle('title-fly', fly);
-    document.body.classList.toggle('title-landed', landed);
-
+    document.body.classList.toggle('at-top', y < 40);
+    document.body.classList.toggle('title-fly', y > 95);
+    document.body.classList.toggle('title-landed', y > 185);
     if (topHeader) topHeader.classList.toggle('scrolled', y > 220);
   };
 
@@ -412,26 +372,18 @@ function initHeaderAndTopState() {
 function initSectionNavHighlight() {
   const links = [...document.querySelectorAll('.top-nav-links a')];
   if (!links.length) return;
-
-  const sections = links
-    .map((link) => {
-      const target = document.querySelector(link.getAttribute('href'));
-      return target ? { link, target } : null;
-    })
-    .filter(Boolean);
-
+  const sections = links.map((link) => {
+    const target = document.querySelector(link.getAttribute('href'));
+    return target ? { link, target } : null;
+  }).filter(Boolean);
   if (!sections.length) return;
-
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       const match = sections.find((item) => item.target === entry.target);
-      if (!match) return;
-      if (entry.isIntersecting) {
-        links.forEach((link) => link.classList.remove('active'));
-        match.link.classList.add('active');
-      }
+      if (!match || !entry.isIntersecting) return;
+      links.forEach((link) => link.classList.remove('active'));
+      match.link.classList.add('active');
     });
   }, { rootMargin: '-30% 0px -55% 0px', threshold: [0.15, 0.35, 0.6] });
-
   sections.forEach((item) => observer.observe(item.target));
 }

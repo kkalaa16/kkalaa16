@@ -316,30 +316,53 @@
     <main class="content">
       <section id="work" class="section-anchor" aria-hidden="true"></section>
 
-      <section class="work-overview" aria-labelledby="work-overview-title">
-        <p class="section-kicker">OVERVIEW</p>
-        <h2 id="work-overview-title">Engineering portfolio with timeline-first storytelling.</h2>
-        <p>
-          The timeline below groups concurrent projects in parallel lanes so you can scan
-          what was happening at the same time. This keeps chronology accurate while still
-          preserving the fluid visual style.
-        </p>
-        <div class="overview-grid">
-          <article>
-            <h3>Core Focus</h3>
-            <p>Reacting flow modeling, aerospace systems design, and ML-driven engineering tooling.</p>
-          </article>
-          <article>
-            <h3>Current Window</h3>
-            <p>Georgia Tech MS work, combustion lab research, and hybridized rotorcraft analysis.</p>
-          </article>
-          <article>
-            <h3>Preferred Roles</h3>
-            <p>Propulsion systems, simulation architecture, and multidisciplinary optimization teams.</p>
-          </article>
+
+      <section class="work-trigger" id="work-section">
+        <div class="wt-text">
+          <p class="wt-eyebrow">Work Experience</p>
+          <h2 class="wt-heading">From carousel to <em>parallel timeline</em></h2>
+          <p class="wt-hint">SCROLL TO UNRAVEL</p>
         </div>
+        <div class="carousel-stage" id="carouselStage"></div>
       </section>
 
+      <section class="timeline-zone" id="timelineZone" aria-label="Work experience timeline">
+        <canvas class="spine-canvas" id="spineCanvas"></canvas>
+
+        <div class="tl-row">
+          <span class="year-stamp">2025 – CURRENT</span>
+          <article class="tl-card"><span class="tl-date">JUN 2025 – PRESENT</span><h3>BEN ZINN COMBUSTION LAB</h3><p>Entropy-generation analysis for turbulent diffusion flames, Sandia-D benchmark.</p><div class="tl-tags"><span>Thermodynamics</span><span>LES / ANSYS</span></div></article>
+          <article class="tl-card"><span class="tl-date">AUG 2025 – PRESENT · VFS</span><h3>HYBRIDIZED XV-15</h3><p>Battery sizing tool for tiltrotor with mission analysis and momentum-theory hover.</p><div class="tl-tags"><span>Hybrid Ratio</span><span>MATLAB Model</span></div></article>
+        </div>
+
+        <div class="tl-row">
+          <span class="year-stamp">2025</span>
+          <article class="tl-card"><span class="tl-date">AUG – DEC 2025</span><h3>GTA · AE 3330</h3><p>Teaching assistant for aerospace vehicle performance and propulsion.</p><div class="tl-tags"><span>Mentorship</span><span>Curriculum</span></div></article>
+          <article class="tl-card tl-card--matrix"><canvas class="matrix-bg"></canvas><span class="tl-date matrix-date">AUG – DEC 2025</span><h3 class="matrix-title">GAS TURBINE CYCLE DESIGN</h3><p>1D turbojet/turbofan with variable γ(T), NASA polynomials, design-space sweep.</p><div class="tl-tags"><span>Variable γ(T)</span><span>DOE Sweep</span></div></article>
+        </div>
+
+        <div class="tl-row">
+          <span class="year-stamp">2025 ML/DL</span>
+          <article class="tl-card tl-card--matrix"><canvas class="matrix-bg"></canvas><span class="tl-date matrix-date">MAY – AUG 2025</span><h3 class="matrix-title">F1 STRATEGY AI</h3><p>Track DNA clustering, driver profiling, and pit-stop optimization pipeline.</p><div class="tl-tags"><span>DBSCAN / GMM</span><span>Dashboard</span></div></article>
+          <article class="tl-card"><span class="tl-date">MAY – AUG 2025</span><h3>DEEP LEARNING SYSTEMS</h3><p>Physics-informed ROM + neural operators for rapid surrogate inference.</p><div class="tl-tags"><span>DL</span><span>Surrogates</span></div></article>
+        </div>
+
+        <div class="tl-row">
+          <span class="year-stamp">2025</span>
+          <article class="tl-card tl-card--solo"><span class="tl-date">JAN – MAY 2025</span><h3>MIN-TIME CLIMB TRAJECTORY</h3><p>NLP optimization with surrogate models and adjoint-based gradient verification.</p><div class="tl-tags"><span>R² &gt; 0.99</span><span>Adjoint Grad</span></div></article>
+        </div>
+
+        <div class="tl-row">
+          <span class="year-stamp">2024 – 2025</span>
+          <article class="tl-card"><span class="tl-date">AUG 2024 – MAY 2025</span><h3>TACTICAL MOBILITY AIRCRAFT</h3><p>Hybrid-electric propulsion with NPSS/FLOPS inside OpenMDAO framework.</p><div class="tl-tags"><span>Range +15.7%</span><span>STOL</span></div></article>
+          <article class="tl-card"><span class="tl-date">AUG 2024 – MAY 2025</span><h3>STRATEGIC MATERIALS</h3><p>Ti-6Al-4V supply chain vulnerability via DES and graph-theory metrics.</p><div class="tl-tags"><span>Network</span><span>SOVERN</span></div></article>
+        </div>
+
+        <div class="tl-row">
+          <span class="year-stamp">2024</span>
+          <article class="tl-card tl-card--solo"><span class="tl-date">AUG – DEC 2024</span><h3>H₂-POWERED BWB AIRCRAFT</h3><p>Blended Wing Body conceptual design — MBSE, SysML, QFD, TOPSIS ranking.</p><div class="tl-tags"><span>MBSE</span><span>TOPSIS</span></div></article>
+        </div>
+      </section>
       <section class="education" id="education">
         <h2>Education</h2>
         <div class="edu-journey" aria-label="Education journey from BITS Pilani to Georgia Tech">
