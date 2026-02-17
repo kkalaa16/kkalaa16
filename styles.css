@@ -311,6 +311,18 @@ body.path-active .timeline-svg { opacity: 0.92; }
   transform: translateX(-50%);
   pointer-events: none;
 }
+.edu-cat::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 94px;
+  height: 50px;
+  transform: translate(-50%, -50%);
+  background: rgba(255,255,255,0.94);
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.28);
+}
 .edu-cat.run {
   opacity: 1;
   animation: cat-run 1800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -319,6 +331,7 @@ body.path-active .timeline-svg { opacity: 0.92; }
   position: relative;
   width: 84px;
   height: 44px;
+  z-index: 1;
   animation: cat-bob 260ms ease-in-out infinite alternate;
 }
 .cat-body,
@@ -410,5 +423,6 @@ body.path-active .timeline-svg { opacity: 0.92; }
   .edu-journey { grid-template-columns: 1fr; gap: 1.6rem; }
   .edu-axis-line { width: min(420px, 90%); transition: none; }
   .edu-cat { left: 100%; opacity: 1; animation: none; transform: translateX(-50%); }
+  .edu-cat::before { width: 90px; height: 46px; }
   .cat-silhouette, .cat-tail, .cat-leg { animation: none; }
 }
