@@ -4,6 +4,7 @@ window.addEventListener('load', () => {
   initSingleSetCarouselToTimeline();
   initMatrix();
   initEducationAxis();
+  initHeaderAndTopState();
 });
 
 function initFluid() {
@@ -93,6 +94,7 @@ function runIntroGate() {
     intro.classList.add('hidden');
     topHeader.classList.add('ready');
     document.body.classList.add('intro-complete');
+    document.body.classList.add('at-top');
     document.body.classList.remove('lock-scroll');
   }, 6200);
 }
@@ -212,4 +214,17 @@ function initMatrix() {
     draw();
     window.addEventListener('resize', resize);
   });
+}
+
+
+function initHeaderAndTopState() {
+  const topHeader = document.getElementById('topHeader');
+  const onScroll = () => {
+    const y = window.scrollY;
+    document.body.classList.toggle('at-top', y < 40);
+    if (topHeader) topHeader.classList.toggle('scrolled', y > 140);
+  };
+
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
 }
