@@ -6,6 +6,7 @@ window.addEventListener('load', () => {
   initEducationAxis();
   initHeaderAndTopState();
   initProjectsStageVisibility();
+  initSectionNavHighlight();
 });
 
 function initFluid() {
@@ -406,3 +407,29 @@ function initHeaderAndTopState() {
   setTimeout(updateTitleFlightVectors, 900);
 }
 
+function initSectionNavHighlight() {
+  const links = [...document.querySelectorAll('.top-nav-links a')];
+  if (!links.length) return;
+
+  const sections = links
+    .map((link) => {
+      const target = document.querySelector(link.getAttribute('href'));
+      return target ? { link, target } : null;
+    })
+    .filter(Boolean);
+
+  if (!sections.length) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      const match = sections.find((item) => item.target === entry.target);
+      if (!match) return;
+      if (entry.isIntersecting) {
+        links.forEach((link) => link.classList.remove('active'));
+        match.link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -55% 0px', threshold: [0.15, 0.35, 0.6] });
+
+  sections.forEach((item) => observer.observe(item.target));
+}
