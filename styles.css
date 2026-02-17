@@ -104,18 +104,19 @@ body.intro-complete .cards-layer { opacity: 1; }
   position: absolute;
   inset: 0;
   opacity: 0;
-  display: none;
+  display: block;
+  z-index: 0;
   transition: opacity 300ms ease;
   --p-main: 0;
   --p-branch: 0;
   --p-bottom: 0;
 }
-body.path-active .timeline-path { opacity: 0; }
+body.path-active .timeline-path { opacity: 0.9; }
 .path-main,
 .path-branch,
 .path-join {
   position: absolute;
-  background: linear-gradient(to bottom, rgba(255,255,255,0.38), rgba(255,255,255,0.9));
+  background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.92) 0 6px, rgba(255,255,255,0.0) 6px 14px);
 }
 .path-main {
   left: 50%;
@@ -151,6 +152,7 @@ body.path-active .timeline-path { opacity: 0; }
 
 .timeline-card {
   position: absolute;
+  z-index: 2;
   left: 50%;
   top: 50%;
   width: min(420px, 84vw);

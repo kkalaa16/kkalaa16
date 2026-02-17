@@ -148,17 +148,17 @@ function initSingleSetCarouselToTimeline() {
       // then SAME cards become timeline anchors
       const idx = Number(card.dataset.index || i);
       const fork = card.dataset.fork || 'center';
-      const spacing = Math.max(150, Math.min(210, window.innerHeight * 0.21));
-      const baseY = window.innerHeight * 0.68;
+      const spacing = Math.max(145, Math.min(195, window.innerHeight * 0.2));
+      const baseY = window.innerHeight * 0.36;
       const targetY = idx * spacing + baseY;
-      const timelineTravel = progress * (cards.length * spacing + window.innerHeight * 0.95);
+      const timelineTravel = progress * (cards.length * spacing * 0.82 + window.innerHeight * 0.42);
       const timelineY = targetY - timelineTravel;
 
       let targetX = 0;
       if (fork === 'left') targetX = -Math.min(265, window.innerWidth * 0.22);
       if (fork === 'right') targetX = Math.min(265, window.innerWidth * 0.22);
 
-      const cardProgress = Math.max(0, Math.min(1, (progress - idx * 0.028) / 0.2));
+      const cardProgress = Math.max(0, Math.min(1, (progress - idx * 0.024) / 0.24));
 
       const x = orbitX * (1 - cardProgress) + targetX * cardProgress;
       const y = orbitY * (1 - cardProgress) + timelineY * cardProgress;
@@ -166,8 +166,8 @@ function initSingleSetCarouselToTimeline() {
       const rotY = angle * (1 - cardProgress);
       const scale = 0.8 + 0.2 * cardProgress;
 
-      const appearFromBottom = Math.max(0, Math.min(1, (window.innerHeight * 0.56 - y) / 220));
-      const fadeAtTop = Math.max(0, Math.min(1, (y + window.innerHeight * 0.56) / 230));
+      const appearFromBottom = Math.max(0, Math.min(1, (window.innerHeight * 0.72 - y) / 250));
+      const fadeAtTop = Math.max(0, Math.min(1, (y + window.innerHeight * 0.48) / 260));
       const scrollVisibility = appearFromBottom * fadeAtTop;
       const timelineOpacity = Math.max(0, Math.min(1, scrollVisibility));
 
