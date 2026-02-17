@@ -104,12 +104,13 @@ body.intro-complete .cards-layer { opacity: 1; }
   position: absolute;
   inset: 0;
   opacity: 0;
+  display: none;
   transition: opacity 300ms ease;
   --p-main: 0;
   --p-branch: 0;
   --p-bottom: 0;
 }
-body.path-active .timeline-path { opacity: 1; }
+body.path-active .timeline-path { opacity: 0; }
 .path-main,
 .path-branch,
 .path-join {
@@ -185,8 +186,8 @@ body.path-active .timeline-path { opacity: 1; }
 .edu-tick-label { position: absolute; top: 36px; font: 400 0.66rem "Space Mono"; white-space: nowrap; left: 50%; transform: translateX(-50%); color: var(--dim); }
 .edu-tick-year { position: absolute; bottom: 18px; font: 700 0.68rem "Space Mono"; color: #ddd; left: 50%; transform: translateX(-50%); white-space: nowrap; }
 
-.projects { position: relative; min-height: 220vh; padding-top: 14vh; }
-.vline { position: absolute; left: 50%; top: 0; width: 2px; height: calc(100% * var(--timeline-progress, 0)); transform: translateX(-50%); transform-origin: top center; background: rgba(255,255,255,0.55); z-index: 1; opacity: calc(var(--timeline-progress, 0) * 1.2); transition: height 160ms linear, opacity 220ms ease; }
+.projects { position: relative; min-height: 420vh; padding-top: 18vh; }
+.vline { position: absolute; left: 50%; top: calc(100% * var(--timeline-head, 0)); width: 2px; height: calc((var(--timeline-tail, 0) - var(--timeline-head, 0)) * 100%); transform: translateX(-50%); transform-origin: top center; background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.9) 0 6px, rgba(255,255,255,0) 6px 14px); z-index: 1; opacity: calc((var(--timeline-tail, 0) - var(--timeline-head, 0)) * 2.4); transition: top 180ms linear, height 180ms linear, opacity 200ms ease; }
 
 @media (max-width: 980px) {
   .vline { left: 20px; transform: none; }

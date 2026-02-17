@@ -125,7 +125,11 @@ function initSingleSetCarouselToTimeline() {
       path.style.setProperty('--p-main', pMain.toFixed(4));
       path.style.setProperty('--p-branch', pBranch.toFixed(4));
       path.style.setProperty('--p-bottom', pBottom.toFixed(4));
-      document.body.style.setProperty('--timeline-progress', pathActive ? pMain.toFixed(4) : '0');
+
+      const tail = pathActive ? Math.max(0, Math.min(1, (progress - 0.04) / 0.72)) : 0;
+      const head = pathActive ? Math.max(0, Math.min(1, (progress - 0.28) / 0.66)) : 0;
+      document.body.style.setProperty('--timeline-tail', tail.toFixed(4));
+      document.body.style.setProperty('--timeline-head', head.toFixed(4));
 
       if (pathActive) document.body.classList.add('path-active');
       else document.body.classList.remove('path-active');
@@ -144,21 +148,30 @@ function initSingleSetCarouselToTimeline() {
       // then SAME cards become timeline anchors
       const idx = Number(card.dataset.index || i);
       const fork = card.dataset.fork || 'center';
-      const slot = Number(card.dataset.slot ?? idx);
-      const targetY = slot * 300 - 380;
-      let targetX = 0;
-      if (fork === 'left') targetX = -Math.min(250, window.innerWidth * 0.2);
-      if (fork === 'right') targetX = Math.min(250, window.innerWidth * 0.2);
+      const spacing = Math.max(150, Math.min(210, window.innerHeight * 0.21));
+      const baseY = window.innerHeight * 0.68;
+      const targetY = idx * spacing + baseY;
+      const timelineTravel = progress * (cards.length * spacing + window.innerHeight * 0.95);
+      const timelineY = targetY - timelineTravel;
 
-      const cardProgress = Math.max(0, Math.min(1, (progress - idx * 0.10) / 0.31));
+      let targetX = 0;
+      if (fork === 'left') targetX = -Math.min(265, window.innerWidth * 0.22);
+      if (fork === 'right') targetX = Math.min(265, window.innerWidth * 0.22);
+
+      const cardProgress = Math.max(0, Math.min(1, (progress - idx * 0.028) / 0.2));
 
       const x = orbitX * (1 - cardProgress) + targetX * cardProgress;
-      const y = orbitY * (1 - cardProgress) + targetY * cardProgress;
+      const y = orbitY * (1 - cardProgress) + timelineY * cardProgress;
       const z = orbitZ * (1 - cardProgress);
       const rotY = angle * (1 - cardProgress);
       const scale = 0.8 + 0.2 * cardProgress;
 
-      card.style.opacity = progress <= 0 ? '1' : String(Math.max(0.18, Math.min(1, cardProgress * 1.15)));
+      const appearFromBottom = Math.max(0, Math.min(1, (window.innerHeight * 0.56 - y) / 220));
+      const fadeAtTop = Math.max(0, Math.min(1, (y + window.innerHeight * 0.56) / 230));
+      const scrollVisibility = appearFromBottom * fadeAtTop;
+      const timelineOpacity = Math.max(0, Math.min(1, scrollVisibility));
+
+      card.style.opacity = progress <= 0 ? '1' : String(timelineOpacity);
       card.style.transform = `translate3d(calc(-50% + ${x}px), calc(-50% + ${y}px), ${z}px) rotateY(${rotY}rad) scale(${scale})`;
     });
 
