@@ -157,7 +157,7 @@ function initSingleSetCarouselToTimeline() {
 
       const x = ox * (1 - cardProgress) + targetX * cardProgress;
       const y = oy * (1 - cardProgress) + targetY * cardProgress;
-      const z = oz * (1 - cardProgress);
+      const z = oz * (1 - cardProgress) - (1 - cardProgress) * 520;
       const rotY = angle * (1 - cardProgress);
       const scale = 0.84 + 0.16 * cardProgress;
 
@@ -166,12 +166,13 @@ function initSingleSetCarouselToTimeline() {
       const inLower = Math.max(0, Math.min(1, (viewY - window.innerHeight * 0.08) / (window.innerHeight * 0.30)));
       const inUpper = Math.max(0, Math.min(1, (window.innerHeight * 0.90 - viewY) / (window.innerHeight * 0.28)));
       const readableOpacity = Math.max(0, Math.min(1, inLower * inUpper));
-      const opacity = progress <= 0 ? 1 : Math.max(0.06, readableOpacity * 1.15);
+      let opacity = progress <= 0 ? 1 : Math.max(0.02, readableOpacity * 1.15);
+      if (progress > 0.08 && cardProgress < 0.22) opacity *= 0.08;
 
       card.style.opacity = String(opacity);
       card.style.transform = `translate3d(calc(-50% + ${x}px), calc(-50% + ${y}px), ${z}px) rotateY(${rotY}rad) scale(${scale})`;
 
-      if (cardProgress >= 0.95 && opacity > 0.22) card.classList.add('placed');
+      if (cardProgress >= 0.92 && opacity > 0.22) card.classList.add('placed');
       else card.classList.remove('placed');
     });
 
@@ -272,7 +273,7 @@ function generateTimelinePaths(cards, svg) {
   return registry;
 
   function path(id, d) {
-    return `<path class="${id}" d="${d}" stroke="url(#timelineGradient)" stroke-width="2" fill="none" opacity="0"/>`;
+    return `<path class="${id}" d="${d}" stroke="url(#timelineGradient)" stroke-width="2" fill="none" opacity="0" stroke-dasharray="5 10" stroke-dashoffset="36"/>`;
   }
 }
 

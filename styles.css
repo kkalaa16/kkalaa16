@@ -113,25 +113,11 @@ body.projects-active .cards-layer { opacity: 1; }
   transition: opacity 360ms ease;
   z-index: 0;
 }
-body.path-active .timeline-svg { opacity: 0; }
+body.path-active .timeline-svg { opacity: 0.92; }
 .timeline-svg path {
   stroke-linecap: round;
   stroke-dasharray: 4 10;
 }
-
-.timeline-live-line {
-  position: absolute;
-  left: 50%;
-  top: 12%;
-  width: 2px;
-  height: 76%;
-  transform: translateX(-50%);
-  background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.92) 0 5px, rgba(255,255,255,0) 5px 12px);
-  opacity: 0;
-  transition: opacity 280ms ease;
-  z-index: 1;
-}
-body.path-active .timeline-live-line { opacity: 0.9; }
 
 
 .timeline-card {
