@@ -169,7 +169,7 @@ function initSingleSetCarouselToTimeline() {
 function computeSlotY(slot, cards) {
   const slots = [...new Set(cards.map((c) => Number(c.dataset.slot ?? 0)))].sort((a, b) => a - b);
   const total = slots.length;
-  const spacing = 330;
+  const spacing = 150;
   return (slot - (total - 1) / 2) * spacing;
 }
 
@@ -177,12 +177,12 @@ function forkX(fork) {
   const w = window.innerWidth;
   const clamp = (v, max) => Math.min(v, max);
   switch (fork) {
-    case 'left': return -clamp(w * 0.23, 300);
-    case 'right': return clamp(w * 0.23, 300);
-    case 'left-outer': return -clamp(w * 0.38, 460);
-    case 'left-inner': return -clamp(w * 0.18, 220);
-    case 'right-inner': return clamp(w * 0.18, 220);
-    case 'right-outer': return clamp(w * 0.38, 460);
+    case 'left': return -clamp(w * 0.18, 220);
+    case 'right': return clamp(w * 0.18, 220);
+    case 'left-outer': return -clamp(w * 0.28, 330);
+    case 'left-inner': return -clamp(w * 0.13, 160);
+    case 'right-inner': return clamp(w * 0.13, 160);
+    case 'right-outer': return clamp(w * 0.28, 330);
     default: return 0;
   }
 }
@@ -200,80 +200,76 @@ function generateTimelinePaths(cards, svg) {
   const slotKeys = Object.keys(groups).sort((a, b) => +a - +b);
   const CX = 500;
   const SVGW = 1000;
-  let y = 50;
+  let y = 60;
   let html = '';
   const registry = [];
 
   slotKeys.forEach((slotKey, si) => {
     const slotCards = groups[slotKey];
+    const xs = slotCards.map((c) => CX + forkX(c.dataset.fork ?? 'center'));
+    const minX = Math.min(...xs);
+    const maxX = Math.max(...xs);
     const n = slotCards.length;
-    const startY = y;
 
     if (n === 1) {
-      const len = 300;
       const id = `p${si}-single`;
-      html += path(id, `M ${CX} ${startY} L ${CX} ${startY + len}`, len);
-      registry.push(id);
-      y += len + 40;
-    } else {
-      const forks = slotCards.map((c) => forkX(c.dataset.fork ?? 'center'));
-      const minX = Math.min(...forks) + CX;
-      const maxX = Math.max(...forks) + CX;
-      const prep = 50;
-      const branchH = 230;
-      const joinH = 65;
-      let cy = startY;
-
-      const idPrep = `p${si}-prep`;
-      html += path(idPrep, `M ${CX} ${cy} L ${CX} ${cy + prep}`, prep);
-      registry.push(idPrep);
-      cy += prep;
-
-      slotCards.forEach((card, i) => {
-        const tx = CX + forkX(card.dataset.fork ?? 'center');
-        const idSplit = `p${si}-sp${i}`;
-        html += path(idSplit, `M ${CX} ${cy} Q ${(CX + tx) / 2} ${cy + 30} ${tx} ${cy + prep}`, 220);
-        registry.push(idSplit);
-      });
-      cy += prep;
-
-      slotCards.forEach((card, i) => {
-        const tx = CX + forkX(card.dataset.fork ?? 'center');
-        const idBranch = `p${si}-br${i}`;
-        html += path(idBranch, `M ${tx} ${cy} L ${tx} ${cy + branchH}`, branchH);
-        registry.push(idBranch);
-      });
-      cy += branchH;
-
-      const idJoin = `p${si}-join`;
-      html += path(idJoin, `M ${minX} ${cy} Q ${CX} ${cy + joinH} ${maxX} ${cy}`, 320);
-      registry.push(idJoin);
-
-      y = cy + joinH + 45;
+      html += path(id, `M ${CX} ${y} L ${CX} ${y + 220}`);
+      registry.push({ id, start: si * 0.045, dur: 0.1 });
+      y += 250;
+      return;
     }
+
+    const prep = 36;
+    const branchH = 140;
+    const recon = 36;
+
+    const idPrep = `p${si}-prep`;
+    html += path(idPrep, `M ${CX} ${y} L ${CX} ${y + prep}`);
+    registry.push({ id: idPrep, start: si * 0.045, dur: 0.08 });
+    y += prep;
+
+    const idSplit = `p${si}-split`;
+    html += path(idSplit, `M ${minX} ${y} L ${maxX} ${y}`);
+    registry.push({ id: idSplit, start: si * 0.045 + 0.02, dur: 0.08 });
+
+    xs.forEach((x, i) => {
+      const idBranch = `p${si}-br${i}`;
+      html += path(idBranch, `M ${x} ${y} L ${x} ${y + branchH}`);
+      registry.push({ id: idBranch, start: si * 0.045 + 0.04, dur: 0.1 });
+    });
+    y += branchH;
+
+    const idJoin = `p${si}-join`;
+    html += path(idJoin, `M ${minX} ${y} L ${maxX} ${y}`);
+    registry.push({ id: idJoin, start: si * 0.045 + 0.11, dur: 0.08 });
+
+    const idOut = `p${si}-out`;
+    html += path(idOut, `M ${CX} ${y} L ${CX} ${y + recon}`);
+    registry.push({ id: idOut, start: si * 0.045 + 0.14, dur: 0.07 });
+
+    y += recon + 36;
   });
 
-  svg.setAttribute('viewBox', `0 0 ${SVGW} ${y + 30}`);
-  svg.style.height = `${y + 30}px`;
+  svg.setAttribute('viewBox', `0 0 ${SVGW} ${y + 20}`);
+  svg.style.height = `${y + 20}px`;
   svg.innerHTML = svg.querySelector('defs').outerHTML + html;
 
   return registry;
 
-  function path(id, d, len) {
-    return `<path class="${id}" d="${d}" stroke="url(#timelineGradient)" stroke-width="2" fill="none" stroke-dasharray="${len}" stroke-dashoffset="${len}" stroke-linecap="round"/>`;
+  function path(id, d) {
+    return `<path class="${id}" d="${d}" stroke="url(#timelineGradient)" stroke-width="2" fill="none" opacity="0"/>`;
   }
 }
 
 function animatePaths(registry, svg, progress) {
   if (!svg || !registry.length) return;
-  registry.forEach((cls, i) => {
-    const el = svg.querySelector('.' + CSS.escape(cls));
+
+  registry.forEach((seg) => {
+    const el = svg.querySelector('.' + CSS.escape(seg.id));
     if (!el) return;
-    const len = parseFloat(el.getAttribute('stroke-dasharray'));
-    const start = i * 0.02;
-    const dur = 0.12;
-    const p = Math.max(0, Math.min(1, (progress - start) / dur));
-    el.style.strokeDashoffset = String(len * (1 - p));
+    const p = Math.max(0, Math.min(1, (progress - seg.start) / seg.dur));
+    el.style.opacity = String(p);
+    el.style.strokeDashoffset = String((1 - p) * 24 - progress * 20);
   });
 }
 

@@ -116,6 +116,7 @@ body.projects-active .cards-layer { opacity: 1; }
 body.path-active .timeline-svg { opacity: 0.95; }
 .timeline-svg path {
   stroke-linecap: round;
+  stroke-dasharray: 4 10;
 }
 
 .timeline-card {
