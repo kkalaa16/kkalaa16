@@ -127,9 +127,17 @@ function initSingleSetCarouselToTimeline() {
     const scrollable = rect.height - window.innerHeight * 0.75;
     const rawProgress = (window.innerHeight * 0.08 - rect.top) / scrollable;
     const progress = Math.max(0, Math.min(1, rawProgress));
-    document.body.classList.toggle('path-active', progress > 0.06);
+    const pathActive = progress > 0.08;
+    document.body.classList.toggle('path-active', pathActive);
 
+    // Keep SVG generation active for consistency, but primary visible line is the live dotted spine.
     animatePaths(pathRegistry, svg, progress);
+
+    const slots = [...new Set(cards.map((c) => Number(c.dataset.slot ?? 0)))].sort((a, b) => a - b);
+    const totalSlots = slots.length;
+    const spacing = Math.max(145, Math.min(180, window.innerHeight * 0.18));
+    const baseY = window.innerHeight * 0.52;
+    const travel = progress * (totalSlots * spacing + window.innerHeight * 0.95);
 
     cards.forEach((card, i) => {
       const idx = Number(card.dataset.index ?? i);
@@ -138,25 +146,32 @@ function initSingleSetCarouselToTimeline() {
       const n = cards.length;
       const angle = (idx / n) * Math.PI * 2 + t;
 
-      const orbit = Math.min(260, Math.max(140, window.innerWidth * 0.17));
+      const orbit = Math.min(230, Math.max(120, window.innerWidth * 0.14));
       const ox = Math.cos(angle) * orbit;
-      const oy = Math.sin(angle * 1.3) * 22;
+      const oy = Math.sin(angle * 1.3) * 20;
       const oz = Math.sin(angle) * orbit;
 
-      const cardProgress = Math.max(0, Math.min(1, (progress - idx * 0.032) / 0.21));
-      const targetY = computeSlotY(slot, cards);
+      const cardProgress = Math.max(0, Math.min(1, (progress - idx * 0.028) / 0.21));
       const targetX = forkX(fork);
+      const targetY = slot * spacing + baseY - travel;
 
       const x = ox * (1 - cardProgress) + targetX * cardProgress;
       const y = oy * (1 - cardProgress) + targetY * cardProgress;
       const z = oz * (1 - cardProgress);
       const rotY = angle * (1 - cardProgress);
-      const scale = 0.82 + 0.18 * cardProgress;
+      const scale = 0.84 + 0.16 * cardProgress;
 
-      card.style.opacity = String(Math.max(0.2, Math.min(1, cardProgress * 1.25)));
+      // Keep readable viewport window only.
+      const viewY = window.innerHeight / 2 + y;
+      const inLower = Math.max(0, Math.min(1, (viewY - window.innerHeight * 0.08) / (window.innerHeight * 0.30)));
+      const inUpper = Math.max(0, Math.min(1, (window.innerHeight * 0.90 - viewY) / (window.innerHeight * 0.28)));
+      const readableOpacity = Math.max(0, Math.min(1, inLower * inUpper));
+      const opacity = progress <= 0 ? 1 : Math.max(0.06, readableOpacity * 1.15);
+
+      card.style.opacity = String(opacity);
       card.style.transform = `translate3d(calc(-50% + ${x}px), calc(-50% + ${y}px), ${z}px) rotateY(${rotY}rad) scale(${scale})`;
 
-      if (cardProgress >= 0.95) card.classList.add('placed');
+      if (cardProgress >= 0.95 && opacity > 0.22) card.classList.add('placed');
       else card.classList.remove('placed');
     });
 
