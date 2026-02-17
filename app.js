@@ -135,6 +135,7 @@ function initSingleSetCarouselToTimeline() {
 
     const slots = [...new Set(cards.map((c) => Number(c.dataset.slot ?? 0)))].sort((a, b) => a - b);
     const totalSlots = slots.length;
+    const slotIndex = new Map(slots.map((slot, i) => [slot, i]));
     const spacing = Math.max(145, Math.min(180, window.innerHeight * 0.18));
     const baseY = window.innerHeight * 0.52;
     const travel = progress * (totalSlots * spacing + window.innerHeight * 0.95);
@@ -142,6 +143,7 @@ function initSingleSetCarouselToTimeline() {
     cards.forEach((card, i) => {
       const idx = Number(card.dataset.index ?? i);
       const slot = Number(card.dataset.slot ?? idx);
+      const slotOrder = slotIndex.get(slot) ?? 0;
       const fork = card.dataset.fork ?? 'center';
       const n = cards.length;
       const angle = (idx / n) * Math.PI * 2 + t;
@@ -151,9 +153,10 @@ function initSingleSetCarouselToTimeline() {
       const oy = Math.sin(angle * 1.3) * 20;
       const oz = Math.sin(angle) * orbit;
 
-      const cardProgress = Math.max(0, Math.min(1, (progress - idx * 0.028) / 0.21));
+      // Transition by timeline slot (concurrent projects move together), not by card index.
+      const cardProgress = Math.max(0, Math.min(1, (progress - slotOrder * 0.065) / 0.26));
       const targetX = forkX(fork);
-      const targetY = slot * spacing + baseY - travel;
+      const targetY = slotOrder * spacing + baseY - travel;
 
       const x = ox * (1 - cardProgress) + targetX * cardProgress;
       const y = oy * (1 - cardProgress) + targetY * cardProgress;
