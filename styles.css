@@ -12,7 +12,7 @@
   --radius: 10px;
   --card-w: 380px;
   --col-gap: 80px;
-  --year-w: 110px;
+  --year-w: 220px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -209,14 +209,14 @@ body.intro-complete.title-landed .intro-scroll-cue { opacity: 0; }
 
 .timeline-zone {
   position:relative; width:100%;
-  padding:4rem calc(var(--year-w) + 3vw) 8rem calc(var(--year-w) + 3vw);
+  padding:4rem 3vw 8rem calc(var(--year-w) + 4.5vw);
 }
 .spine-canvas { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1; }
 .tl-row { position:relative; display:flex; justify-content:center; align-items:flex-start; gap:var(--col-gap); padding:2.8rem 0 1.2rem; z-index:2; }
 .year-stamp {
-  position:absolute; left:calc(-1 * var(--year-w) - 1.5vw); top:50%; transform:translateY(-50%);
+  position:absolute; left:calc(-1 * var(--year-w) - 2.2vw); top:50%; transform:translateY(-50%);
   font-family:'Space Mono',monospace; font-size:.7rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
-  color:#ffffff; text-align:right; white-space:nowrap; opacity:0; transition:opacity 600ms ease; z-index:5; line-height:1.6; padding-right:.4rem;
+  color:#ffffff; width:var(--year-w); text-align:right; white-space:nowrap; opacity:0; transition:opacity 600ms ease; z-index:5; line-height:1.6; padding-right:.4rem;
 }
 .year-stamp::after { content:'·'; position:absolute; right:-.8rem; top:50%; transform:translateY(-50%); color:var(--accent); font-size:1.1rem; }
 .year-stamp.show { opacity:1; }
@@ -538,9 +538,9 @@ body.path-active .timeline-svg { opacity: 0.92; }
   .work-trigger { grid-template-columns:1fr; }
   .carousel-stage { height:55vw; min-height:300px; }
   .wt-heading { font-size:clamp(2rem,6vw,4rem); }
-  :root { --card-w:300px; --col-gap:40px; --year-w:90px; }
+  :root { --card-w:300px; --col-gap:40px; --year-w:150px; }
   .tl-row { gap:.8rem; }
-  .year-stamp { left:calc(-1 * var(--year-w) - 1vw); }
+  .year-stamp { left:calc(-1 * var(--year-w) - 1.4vw); }
   .tl-card--solo { width:min(500px,90vw); }
   .tl-card--quad { width:min(210px,40vw); }
   .edu-journey { grid-template-columns: 1fr; gap: 1.6rem; }
