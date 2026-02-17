@@ -119,10 +119,15 @@ function initSingleSetCarouselToTimeline() {
       const pMain = Math.max(0, Math.min(1, (progress - 0.05) / 0.55));
       const pBranch = Math.max(0, Math.min(1, (progress - 0.22) / 0.22));
       const pBottom = Math.max(0, Math.min(1, (progress - 0.52) / 0.2));
+      const firstCardProgress = Math.max(0, Math.min(1, progress / 0.31));
+      const pathActive = firstCardProgress > 0.14;
+
       path.style.setProperty('--p-main', pMain.toFixed(4));
       path.style.setProperty('--p-branch', pBranch.toFixed(4));
       path.style.setProperty('--p-bottom', pBottom.toFixed(4));
-      if (progress > 0.05) document.body.classList.add('path-active');
+      document.body.style.setProperty('--timeline-progress', pathActive ? pMain.toFixed(4) : '0');
+
+      if (pathActive) document.body.classList.add('path-active');
       else document.body.classList.remove('path-active');
     }
 
@@ -247,9 +252,11 @@ function initHeaderAndTopState() {
     const y = window.scrollY;
     const atTop = y < 40;
     const fly = y > 95;
+    const landed = y > 185;
 
     document.body.classList.toggle('at-top', atTop);
     document.body.classList.toggle('title-fly', fly);
+    document.body.classList.toggle('title-landed', landed);
 
     if (topHeader) topHeader.classList.toggle('scrolled', y > 220);
   };

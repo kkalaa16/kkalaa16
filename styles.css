@@ -68,6 +68,17 @@ body.intro-complete.title-fly .intro-welcome {
   opacity: 1;
 }
 
+body.intro-complete.title-landed .intro-sequence.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-16vh);
+}
+body.intro-complete.title-landed .intro-name-word,
+body.intro-complete.title-landed .intro-portfolio-word {
+  opacity: 0;
+}
+
+
 .top-header { position: sticky; top: 0; z-index: 18; display: flex; justify-content: center; background: linear-gradient(to bottom, rgba(0,0,0,.92), rgba(0,0,0,.45), transparent); padding: .8rem 1rem; opacity: 0; transform: translateY(-18px) scale(1.04); transition: opacity 500ms ease, transform 650ms ease; pointer-events: none; }
 .top-header.ready { opacity: 0; transform: translateY(-10px) scale(1.02); }
 body.intro-complete.title-fly .top-header.ready { opacity: 1; transform: translateY(0) scale(1); }
@@ -175,7 +186,7 @@ body.path-active .timeline-path { opacity: 1; }
 .edu-tick-year { position: absolute; bottom: 18px; font: 700 0.68rem "Space Mono"; color: #ddd; left: 50%; transform: translateX(-50%); white-space: nowrap; }
 
 .projects { position: relative; min-height: 220vh; padding-top: 14vh; }
-.vline { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; transform: translateX(-50%); background: rgba(255,255,255,0.55); z-index: 1; }
+.vline { position: absolute; left: 50%; top: 0; width: 2px; height: calc(100% * var(--timeline-progress, 0)); transform: translateX(-50%); transform-origin: top center; background: rgba(255,255,255,0.55); z-index: 1; opacity: calc(var(--timeline-progress, 0) * 1.2); transition: height 160ms linear, opacity 220ms ease; }
 
 @media (max-width: 980px) {
   .vline { left: 20px; transform: none; }
