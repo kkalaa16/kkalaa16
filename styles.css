@@ -20,7 +20,68 @@ body { background: var(--bg); color: var(--text); font-family: Inter, sans-serif
 body.lock-scroll { height: 100vh; overflow: hidden; }
 html { scroll-behavior: smooth; }
 section { scroll-margin-top: 84px; }
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -2;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), rgba(95, 110, 255, 0.10), transparent 70%);
+  transition: background-position 80ms linear;
+}
 #fluid-canvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -3; pointer-events: none; }
+
+.cat-follower {
+  position: fixed;
+  right: 3.5vw;
+  bottom: 2.5rem;
+  width: 124px;
+  height: 110px;
+  z-index: 30;
+  pointer-events: none;
+  opacity: .92;
+  transform: translate3d(0, 0, 0);
+  transition: transform 110ms ease-out;
+}
+.cat-head-shape {
+  position: absolute;
+  inset: 14px 8px 6px;
+  background: #090909;
+  border-radius: 45% 45% 42% 42%;
+  box-shadow: 0 14px 30px rgba(0,0,0,.45), inset 0 -8px 18px rgba(255,255,255,.04);
+}
+.cat-ear-left,
+.cat-ear-right {
+  position: absolute;
+  width: 34px;
+  height: 30px;
+  background: #0c0c0c;
+  top: -16px;
+  clip-path: polygon(50% 0, 0 100%, 100% 100%);
+}
+.cat-ear-left { left: 14px; }
+.cat-ear-right { right: 14px; }
+.cat-eye {
+  position: absolute;
+  top: 34px;
+  width: 28px;
+  height: 22px;
+  border-radius: 50%;
+  background: #f1f6a6;
+  overflow: hidden;
+}
+.cat-eye.left { left: 23px; }
+.cat-eye.right { right: 23px; }
+.pupil {
+  position: absolute;
+  width: 9px;
+  height: 12px;
+  left: 9px;
+  top: 5px;
+  border-radius: 45%;
+  background: #171717;
+  transition: transform 90ms linear;
+}
 
 .intro-sequence { position: fixed; inset: 0; display: grid; place-items: center; background: radial-gradient(circle at center, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.82)); z-index: 40; transition: opacity 1000ms ease, transform 700ms ease; }
 .intro-sequence.hidden { opacity: 0; pointer-events: none; }

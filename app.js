@@ -2,6 +2,7 @@
 
 window.addEventListener('load', () => {
   initFluid();
+  initCatFollower();
   runIntroGate();
   initMatrix();
   initEducationAxis();
@@ -36,6 +37,81 @@ function initFluid() {
   })();
   let lastY=window.scrollY;
   window.addEventListener('scroll',()=>{ const dy=window.scrollY-lastY; if(Math.abs(dy)>1) sp(Math.random(),.5,(Math.random()-.5)*20,-dy*8,{r:.58,g:.21,b:.03}); lastY=window.scrollY; },{passive:true});
+}
+
+
+function initCatFollower() {
+  const follower = document.getElementById('catFollower');
+  const pupils = [...document.querySelectorAll('.cat-eye .pupil')];
+  if (!follower || !pupils.length) return;
+
+  const splat = window.__splat || (() => {});
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let targetX = window.innerWidth * 0.82;
+  let targetY = window.innerHeight * 0.82;
+  let currentX = targetX;
+  let currentY = targetY;
+  let lastSplat = 0;
+
+  const setWaveVars = (x, y) => {
+    document.body.style.setProperty('--mx', `${(x / window.innerWidth) * 100}%`);
+    document.body.style.setProperty('--my', `${(y / window.innerHeight) * 100}%`);
+  };
+
+  const updatePupils = (x, y) => {
+    const eyeCenters = [
+      { x: currentX - 20, y: currentY - 8 },
+      { x: currentX + 20, y: currentY - 8 },
+    ];
+
+    pupils.forEach((pupil, i) => {
+      const dx = x - eyeCenters[i].x;
+      const dy = y - eyeCenters[i].y;
+      const len = Math.hypot(dx, dy) || 1;
+      const maxOffset = 4.5;
+      const ox = (dx / len) * maxOffset;
+      const oy = (dy / len) * maxOffset;
+      pupil.style.transform = `translate(${ox.toFixed(2)}px, ${oy.toFixed(2)}px)`;
+    });
+  };
+
+  const onPointerMove = (event) => {
+    targetX = event.clientX;
+    targetY = event.clientY;
+    setWaveVars(targetX, targetY);
+
+    const now = performance.now();
+    if (now - lastSplat > 95) {
+      splat(
+        Math.min(0.98, Math.max(0.02, targetX / window.innerWidth)),
+        Math.min(0.98, Math.max(0.02, targetY / window.innerHeight)),
+        (Math.random() - 0.5) * 18,
+        (Math.random() - 0.5) * 18,
+        { r: 0.35, g: 0.23, b: 0.82 },
+      );
+      lastSplat = now;
+    }
+  };
+
+  const tick = () => {
+    const stiffness = reducedMotion ? 0.05 : 0.12;
+    currentX += (targetX - currentX) * stiffness;
+    currentY += (targetY - currentY) * stiffness;
+
+    const shiftX = (currentX - window.innerWidth * 0.82) * 0.08;
+    const shiftY = (currentY - window.innerHeight * 0.8) * 0.08;
+    follower.style.transform = `translate(${shiftX.toFixed(2)}px, ${shiftY.toFixed(2)}px)`;
+
+    updatePupils(targetX, targetY);
+    requestAnimationFrame(tick);
+  };
+
+  setWaveVars(targetX, targetY);
+  updatePupils(targetX, targetY);
+  window.addEventListener('pointermove', onPointerMove, { passive: true });
+  window.addEventListener('resize', () => setWaveVars(targetX, targetY));
+  requestAnimationFrame(tick);
 }
 
 function runIntroGate() {
