@@ -77,7 +77,6 @@ function runIntroGate() {
     document.body.classList.add('intro-complete', 'at-top');
     document.body.classList.remove('lock-scroll');
     startExperience();
-    setTimeout(() => document.getElementById('education')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 250);
   }, 6200);
 }
 
