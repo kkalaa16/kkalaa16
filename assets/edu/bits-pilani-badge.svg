@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="BITS Pilani emblem style logo">
+  <defs>
+    <style>
+      .w { fill: #f4f7ff; }
+      .blue { fill: #322f9a; }
+      .gold { fill: #bd9230; }
+      .red { fill: #d91f2e; }
+      .cyan { fill: #5db8d4; }
+      .cream { fill: #efd977; }
+      .none { fill: none; }
+      .sw { stroke: #f4f7ff; stroke-width: 5; }
+    </style>
+    <clipPath id="innerCircle">
+      <circle cx="256" cy="252" r="124"/>
+    </clipPath>
+  </defs>
+
+  <!-- outer ring -->
+  <circle cx="256" cy="252" r="236" class="gold"/>
+  <circle cx="256" cy="252" r="224" class="blue"/>
+  <circle cx="256" cy="252" r="182" class="gold"/>
+  <circle cx="256" cy="252" r="171" class="blue"/>
+
+  <!-- text arc substitutes -->
+  <text x="256" y="66" text-anchor="middle" class="w" font-family="Inter, Arial, sans-serif" font-size="29" font-weight="700" letter-spacing="1.8">BIRLA INSTITUTE OF TECHNOLOGY &amp; SCIENCE</text>
+
+  <!-- central tri-panel -->
+  <g clip-path="url(#innerCircle)">
+    <polygon points="134,133 256,374 100,374" class="cyan"/>
+    <polygon points="256,108 340,374 172,374" class="red"/>
+    <polygon points="378,133 412,374 256,374" class="cream"/>
+
+    <!-- simple motif overlays -->
+    <g class="sw">
+      <polyline points="128,192 164,236 144,274 181,314 160,350" class="none"/>
+      <line x1="164" y1="236" x2="208" y2="255"/>
+      <line x1="144" y1="274" x2="184" y2="316"/>
+      <line x1="160" y1="350" x2="218" y2="356"/>
+    </g>
+
+    <g fill="#bd9230" stroke="#f4f7ff" stroke-width="2">
+      <path d="M256 146l18 36-18 34-18-34z"/>
+      <path d="M228 170l28 12-44 30-26-18z"/>
+      <path d="M284 170l42 24-26 18-44-30z"/>
+      <rect x="250" y="216" width="12" height="66"/>
+    </g>
+
+    <path d="M338 176c-6 33-18 47-34 57 20 30 39 41 74 52" fill="none" stroke="#322f9a" stroke-width="6"/>
+  </g>
+
+  <circle cx="256" cy="252" r="124" class="none" stroke="#f4f7ff" stroke-width="6"/>
+
+  <!-- bottom banner -->
+  <path d="M148 432c76 44 140 44 216 0l-10-28c-65 34-131 34-196 0z" class="blue"/>
+  <path d="M148 432c76 44 140 44 216 0" class="none" stroke="#bd9230" stroke-width="10"/>
+  <text x="256" y="445" text-anchor="middle" class="w" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="700">PILANI</text>
+</svg>
