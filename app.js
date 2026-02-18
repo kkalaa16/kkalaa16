@@ -8,7 +8,7 @@ window.addEventListener('load', () => {
   initHeaderAndTopState();
   initSectionNavHighlight();
   initTimelineStageVisibility();
-  initSkillsNetwork();
+  initSkillsGlobe();
 });
 
 function initFluid() {
@@ -473,33 +473,35 @@ function initSectionNavHighlight() {
   sections.forEach((item) => observer.observe(item.target));
 }
 
-function initSkillsNetwork() {
-  const nodes = [...document.querySelectorAll('.skill-node')];
-  const out = document.getElementById('skillsConnectorList');
-  if (!nodes.length || !out) return;
+function initSkillsGlobe() {
+  const nodes = [...document.querySelectorAll('.app-node')];
+  const pin = document.getElementById('skillGeoPin');
+  const nameEl = document.getElementById('skillHoverName');
+  const listEl = document.getElementById('skillHoverProjects');
+  const globe = document.getElementById('skillsGlobe');
+  if (!nodes.length || !pin || !nameEl || !listEl || !globe) return;
 
-  const skillMap = {
-    cfd: ['NH₃/H₂ REACTING FLOW', 'CLASSROOM VENTILATION CFD', 'DRONE DOWNWASH ANALYSIS', 'SCRAMJET INLET VALIDATION'],
-    doe: ['GAS TURBINE CYCLE DESIGN', 'HELICAL VAWT OPTIMIZATION', 'F1 STRATEGY AI'],
-    'trade-studies': ['STRATEGIC MATERIALS', 'TACTICAL MOBILITY AIRCRAFT', 'H₂-POWERED BWB AIRCRAFT'],
-    optimization: ['MIN-TIME CLIMB TRAJECTORY', 'F1 STRATEGY AI', 'SUPPLY CHAIN OPTIMIZATION'],
-    mbse: ['H₂-POWERED BWB AIRCRAFT', 'TACTICAL MOBILITY AIRCRAFT'],
-    'ml-dl': ['F1 STRATEGY AI', 'DEEP LEARNING SYSTEMS', 'MIN-TIME CLIMB TRAJECTORY'],
-    propulsion: ['GAS TURBINE CYCLE DESIGN', 'HYBRIDIZED XV-15', 'INLET NOZZLE SCRAMJET']
-  };
+  const activateNode = (node) => {
+    nodes.forEach((n) => n.classList.remove('active'));
+    node.classList.add('active');
 
-  const render = (skill) => {
-    const projects = skillMap[skill] || [];
-    out.innerHTML = projects.map((p) => `<div class="connector-item">${p}</div>`).join('');
+    const app = node.dataset.app || 'Skill';
+    const projects = (node.dataset.projects || '').split(';').map((p) => p.trim()).filter(Boolean);
+    nameEl.textContent = app;
+    listEl.innerHTML = projects.map((p) => `<li>${p}</li>`).join('');
+
+    const globeRect = globe.getBoundingClientRect();
+    const nodeRect = node.getBoundingClientRect();
+    pin.style.left = `${nodeRect.left - globeRect.left + nodeRect.width / 2}px`;
+    pin.style.top = `${nodeRect.top - globeRect.top + nodeRect.height / 2}px`;
+    pin.classList.add('show');
   };
 
   nodes.forEach((node) => {
-    node.addEventListener('click', () => {
-      nodes.forEach((n) => n.classList.remove('active'));
-      node.classList.add('active');
-      render(node.dataset.skill);
-    });
+    node.addEventListener('mouseenter', () => activateNode(node));
+    node.addEventListener('focus', () => activateNode(node));
+    node.addEventListener('click', () => activateNode(node));
   });
 
-  render(nodes.find((n) => n.classList.contains('active'))?.dataset.skill || 'cfd');
+  activateNode(nodes[0]);
 }

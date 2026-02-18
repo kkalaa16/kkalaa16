@@ -314,8 +314,48 @@
     </div>
 
     <main class="content">
-      <section id="work" class="section-anchor" aria-hidden="true"></section>
+      <section class="intro-panel" id="introPanel" aria-labelledby="intro-panel-title">
+        <p class="section-kicker">INTRO</p>
+        <h2 id="intro-panel-title">Systems thinker building aerospace workflows that connect physics, optimization, and ML.</h2>
+        <p>
+          I’m Krtin Kala, an MS Aerospace Engineering student at Georgia Tech focused on
+          reacting-flow simulation, propulsion architecture, and data-driven design tools.
+          This portfolio traces how I apply core engineering methods across labs, internships,
+          and cross-functional project teams.
+        </p>
+        <p>
+          Scroll through the timeline to see exactly where each capability was applied, then use
+          the Skills globe to explore software-to-project links in an interactive way.
+        </p>
+      </section>
 
+      <section class="education" id="education">
+        <h2>Education</h2>
+        <div class="edu-journey" aria-label="Education journey from BITS Pilani to Georgia Tech">
+          <article class="edu-node left" id="edu-bits">
+            <img src="assets/edu/bits-pilani-badge.svg" alt="BITS Pilani badge" class="edu-logo" />
+            <span class="edu-degree">Bachelor's · BITS Pilani</span>
+            <span class="edu-sub">BE Mechanical Engineering · 2019–2023</span>
+          </article>
+
+          <div class="edu-axis-container">
+            <div class="edu-axis-line" id="laminar-axis">
+              <div class="edu-cat" id="eduCat" aria-hidden="true">
+                <span class="cat-sprite"></span>
+              </div>
+            </div>
+          </div>
+
+          <article class="edu-node right" id="edu-gatech">
+            <img src="assets/edu/georgia-tech-badge.svg" alt="Georgia Tech badge" class="edu-logo" />
+            <span class="edu-degree">Master's · Georgia Tech</span>
+            <span class="edu-sub">MS Aerospace Engineering · 2024–Present</span>
+          </article>
+        </div>
+      </section>
+
+
+      <section id="work" class="section-anchor" aria-hidden="true"></section>
 
       <section class="work-trigger" id="work-section">
         <div class="wt-text">
@@ -398,52 +438,35 @@
           <article class="tl-card"><span class="tl-date">MAY – AUG 2021</span><h3>SUPPLY CHAIN OPTIMIZATION</h3><p>FlexSim simulation and Lean restructuring of client supply chain at CCS Strategy.</p><div class="tl-tags"><span>40% Efficiency +</span><span>FlexSim / Lean</span></div></article>
         </div>
       </section>
-      <section class="education" id="education">
-        <h2>Education</h2>
-        <div class="edu-journey" aria-label="Education journey from BITS Pilani to Georgia Tech">
-          <article class="edu-node left" id="edu-bits">
-            <img src="assets/edu/bits-pilani-badge.svg" alt="BITS Pilani badge" class="edu-logo" />
-            <span class="edu-degree">Bachelor's · BITS Pilani</span>
-            <span class="edu-sub">BE Mechanical Engineering · 2019–2023</span>
-          </article>
-
-          <div class="edu-axis-container">
-            <div class="edu-axis-line" id="laminar-axis">
-              <div class="edu-cat" id="eduCat" aria-hidden="true">
-                <span class="cat-sprite"></span>
-              </div>
-            </div>
-          </div>
-
-          <article class="edu-node right" id="edu-gatech">
-            <img src="assets/edu/georgia-tech-badge.svg" alt="Georgia Tech badge" class="edu-logo" />
-            <span class="edu-degree">Master's · Georgia Tech</span>
-            <span class="edu-sub">MS Aerospace Engineering · 2024–Present</span>
-          </article>
-        </div>
-      </section>
-
       <section class="projects" id="projects">
         <div class="vline"></div>
       </section>
 
       <section class="skills" id="skills">
         <h2>Skills</h2>
-        <p class="skills-sub">Click a skill node to see the project connections.</p>
-        <div class="skills-network" id="skillsNetwork">
-          <div class="skill-nodes" role="listbox" aria-label="Skill nodes">
-            <button class="skill-node active" data-skill="cfd">CFD</button>
-            <button class="skill-node" data-skill="doe">DoE</button>
-            <button class="skill-node" data-skill="trade-studies">Trade Studies</button>
-            <button class="skill-node" data-skill="optimization">Optimization</button>
-            <button class="skill-node" data-skill="mbse">MBSE / SysML</button>
-            <button class="skill-node" data-skill="ml-dl">ML / DL</button>
-            <button class="skill-node" data-skill="propulsion">Propulsion</button>
+        <p class="skills-sub">Hover over each app symbol to see where I used it.</p>
+        <div class="skills-globe-layout">
+          <div class="skills-globe" id="skillsGlobe" aria-label="Skills globe with software nodes">
+            <div class="globe-core" aria-hidden="true"></div>
+            <button class="app-node" data-app="CFD" data-projects="NH₃/H₂ Reacting Flow; Classroom Ventilation CFD; Drone Downwash Analysis" style="--x:18%;--y:62%;">🌀</button>
+            <button class="app-node" data-app="DoE" data-projects="Gas Turbine Cycle Design; F1 Strategy AI; Helical VAWT Optimization" style="--x:30%;--y:24%;">Δ</button>
+            <button class="app-node" data-app="Trade Studies" data-projects="Strategic Materials; Tactical Mobility Aircraft; H₂-Powered BWB Aircraft" style="--x:68%;--y:26%;">⇄</button>
+            <button class="app-node" data-app="OpenMDAO" data-projects="Tactical Mobility Aircraft; Hybridized XV-15" style="--x:77%;--y:56%;">OM</button>
+            <button class="app-node" data-app="MBSE / SysML" data-projects="H₂-Powered BWB Aircraft; Tactical Mobility Aircraft" style="--x:56%;--y:74%;">⎇</button>
+            <button class="app-node" data-app="ML / DL" data-projects="F1 Strategy AI; Deep Learning Systems; Min-Time Climb Trajectory" style="--x:39%;--y:82%;">ML</button>
+            <button class="app-node" data-app="Propulsion" data-projects="Gas Turbine Cycle Design; Hybridized XV-15; Scramjet Inlet Validation" style="--x:84%;--y:42%;">🚀</button>
+            <span class="geo-pin" id="skillGeoPin" aria-hidden="true">📍</span>
           </div>
-          <div class="skill-connections">
-            <p class="connector-title">Applied in Projects</p>
-            <div class="connector-list" id="skillsConnectorList"></div>
-          </div>
+          <aside class="skill-hover-card" id="skillHoverCard" aria-live="polite">
+            <p class="hover-label">Software</p>
+            <h3 id="skillHoverName">CFD</h3>
+            <p class="hover-label">Projects Used In</p>
+            <ul id="skillHoverProjects">
+              <li>NH₃/H₂ Reacting Flow</li>
+              <li>Classroom Ventilation CFD</li>
+              <li>Drone Downwash Analysis</li>
+            </ul>
+          </aside>
         </div>
       </section>
 
