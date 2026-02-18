@@ -2,7 +2,6 @@
 
 window.addEventListener('load', () => {
   initFluid();
-  initCatFollower();
   runIntroGate();
   initMatrix();
   initEducationAxis();
@@ -37,89 +36,18 @@ function initFluid() {
   })();
   let lastY=window.scrollY;
   window.addEventListener('scroll',()=>{ const dy=window.scrollY-lastY; if(Math.abs(dy)>1) sp(Math.random(),.5,(Math.random()-.5)*20,-dy*8,{r:.58,g:.21,b:.03}); lastY=window.scrollY; },{passive:true});
-}
 
-
-function initCatFollower() {
-  const follower = document.getElementById('catFollower');
-  const pupils = [...document.querySelectorAll('.cat-eye .pupil')];
-  if (!follower || !pupils.length) return;
-
-  const splat = window.__splat || (() => {});
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  let enabled = false;
-  let targetX = window.innerWidth * 0.82;
-  let targetY = window.innerHeight * 0.82;
-  let currentX = targetX;
-  let currentY = targetY;
-  let lastSplat = 0;
-
-  const setWaveVars = (x, y) => {
-    document.body.style.setProperty('--mx', `${(x / window.innerWidth) * 100}%`);
-    document.body.style.setProperty('--my', `${(y / window.innerHeight) * 100}%`);
-  };
-
-  const updatePupils = (x, y) => {
-    const eyeCenters = [
-      { x: currentX - 20, y: currentY - 8 },
-      { x: currentX + 20, y: currentY - 8 },
-    ];
-
-    pupils.forEach((pupil, i) => {
-      const dx = x - eyeCenters[i].x;
-      const dy = y - eyeCenters[i].y;
-      const len = Math.hypot(dx, dy) || 1;
-      const maxOffset = 4.5;
-      pupil.style.transform = `translate(${((dx / len) * maxOffset).toFixed(2)}px, ${((dy / len) * maxOffset).toFixed(2)}px)`;
-    });
-  };
-
-  const onPointerMove = (event) => {
-    if (!enabled) return;
-    targetX = event.clientX;
-    targetY = event.clientY;
-    setWaveVars(targetX, targetY);
-
+  let lastPointerSplat = 0;
+  window.addEventListener('pointermove', (event) => {
     const now = performance.now();
-    if (now - lastSplat > 95) {
-      splat(
-        Math.min(0.98, Math.max(0.02, targetX / window.innerWidth)),
-        Math.min(0.98, Math.max(0.02, targetY / window.innerHeight)),
-        (Math.random() - 0.5) * 18,
-        (Math.random() - 0.5) * 18,
-        { r: 0.35, g: 0.23, b: 0.82 },
-      );
-      lastSplat = now;
-    }
-  };
-
-  const enableFollower = () => {
-    enabled = true;
-    follower.classList.add('active');
-    setWaveVars(targetX, targetY);
-  };
-
-  const tick = () => {
-    const stiffness = reducedMotion ? 0.05 : 0.12;
-    currentX += (targetX - currentX) * stiffness;
-    currentY += (targetY - currentY) * stiffness;
-
-    if (enabled) {
-      const shiftX = (currentX - window.innerWidth * 0.82) * 0.08;
-      const shiftY = (currentY - window.innerHeight * 0.8) * 0.08;
-      follower.style.transform = `translate(${shiftX.toFixed(2)}px, ${shiftY.toFixed(2)}px)`;
-      updatePupils(targetX, targetY);
-    }
-
-    requestAnimationFrame(tick);
-  };
-
-  window.addEventListener('pointermove', onPointerMove, { passive: true });
-  window.addEventListener('resize', () => enabled && setWaveVars(targetX, targetY));
-  window.addEventListener('enableCatFollower', enableFollower);
-  requestAnimationFrame(tick);
+    if (now - lastPointerSplat < 40) return;
+    const x = Math.min(0.98, Math.max(0.02, event.clientX / window.innerWidth));
+    const y = Math.min(0.98, Math.max(0.02, event.clientY / window.innerHeight));
+    sp(x, y, (Math.random() - 0.5) * 35, (Math.random() - 0.5) * 35, { r: .58, g: .21, b: .03 });
+    lastPointerSplat = now;
+  }, { passive: true });
 }
+
 
 function runIntroGate() {
   const hi = document.getElementById('introHi');
@@ -364,13 +292,13 @@ function buildSandSpine() {
   const N = 200;
   const parts = Array.from({length:N},(_,i)=>({ t:i/N, size:0.6 + Math.random()*1.1, alpha:0.28 + Math.random()*0.65 }));
   let scrollV = 0; let lastSY = window.scrollY;
-  window.addEventListener('scroll',()=>{ const dy=window.scrollY-lastSY; scrollV += dy*0.00014; lastSY=window.scrollY; },{passive:true});
+  window.addEventListener('scroll',()=>{ const dy=window.scrollY-lastSY; scrollV += dy*0.00022; lastSY=window.scrollY; },{passive:true});
   let baseT = 0;
 
   (function draw(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
-    scrollV *= 0.84;
-    baseT += scrollV + 0.00018;
+    scrollV *= 0.9;
+    baseT += scrollV + 0.00036;
     if (segs.length) {
       parts.forEach(p=>{
         const pos = posAt(((p.t + baseT)%1+1)%1);
@@ -490,55 +418,13 @@ function initEducationAxis() {
   const section = document.getElementById('education');
   const axis = document.getElementById('laminar-axis');
   const cat = document.getElementById('eduCat');
-  const yarn = document.getElementById('eduYarn');
-  const launcher = document.getElementById('eduLauncher');
-  const hint = document.getElementById('eduLaunchHint');
   const nodes = document.querySelectorAll('.edu-node');
-  if (!section || !axis || !cat || !yarn || !launcher || !hint || !nodes.length) return;
-
-  let launched = false;
-  let armed = false;
-
-  const launch = () => {
-    if (launched) return;
-    launched = true;
-    launcher.disabled = true;
-    hint.classList.add('hide');
-    yarn.classList.add('fly');
-    cat.classList.add('chase');
-
-    setTimeout(() => {
-      section.classList.add('catch-complete');
-      window.dispatchEvent(new Event('enableCatFollower'));
-    }, 1750);
-  };
-
-  launcher.addEventListener('pointerdown', () => {
-    if (launched) return;
-    armed = true;
-    launcher.classList.add('arming');
-    hint.textContent = 'Release to launch me';
-  });
-
-  const release = () => {
-    if (!armed || launched) return;
-    armed = false;
-    launcher.classList.remove('arming');
-    launch();
-  };
-
-  launcher.addEventListener('pointerup', release);
-  launcher.addEventListener('pointercancel', () => {
-    armed = false;
-    launcher.classList.remove('arming');
-  });
-  launcher.addEventListener('keyup', (event) => {
-    if ((event.key === 'Enter' || event.key === ' ') && !launched) launch();
-  });
+  if (!section || !axis || !cat || !nodes.length) return;
 
   const observer = new IntersectionObserver((entries) => {
     if (!entries[0].isIntersecting) return;
     axis.style.width = '100%';
+    cat.classList.add('run');
     setTimeout(() => nodes.forEach((n) => n.classList.add('show')), 280);
     observer.disconnect();
   }, { threshold: 0.35 });
