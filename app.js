@@ -192,6 +192,22 @@ function flyToTimeline(ccEls, staticCards) {
   });
 }
 
+function resetCarouselCards() {
+  const stage = document.getElementById('carouselStage');
+  if (!stage) return;
+  stage.querySelectorAll('.cc').forEach((cc) => {
+    cc.style.display = '';
+    cc.style.position = 'absolute';
+    cc.style.left = '50%';
+    cc.style.top = '50%';
+    cc.style.transition = '';
+    cc.style.zIndex = '';
+    cc.style.transform = '';
+    cc.style.opacity = '';
+    cc.style.filter = '';
+  });
+}
+
 function initTimelineStageVisibility() {
   const stage = document.getElementById('carouselStage');
   const trigger = document.getElementById('work-section');
@@ -203,7 +219,10 @@ function initTimelineStageVisibility() {
   if (trigger) {
     const triggerObserver = new IntersectionObserver((entries) => {
       const inWork = entries.some((e) => e.isIntersecting);
-      if (inWork) stage.classList.remove('fade-out');
+      if (inWork) {
+        stage.classList.remove('fade-out');
+        resetCarouselCards();
+      }
     }, { threshold: 0.25 });
     triggerObserver.observe(trigger);
   }

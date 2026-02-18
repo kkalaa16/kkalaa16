@@ -12,7 +12,7 @@
   --radius: 10px;
   --card-w: 460px;
   --col-gap: 110px;
-  --year-w: 150px;
+  --year-w: 170px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -264,8 +264,9 @@ body.intro-complete.title-landed .intro-scroll-cue { opacity: 0; }
   position:relative;
   display:inline-flex;
   align-items:center;
-  justify-content:center;
+  justify-content:flex-end;
   width:100%;
+  padding-right:.75rem;
   font-family:'Space Mono',monospace;
   font-size:.72rem;
   font-weight:700;
@@ -273,8 +274,8 @@ body.intro-complete.title-landed .intro-scroll-cue { opacity: 0; }
   text-transform:uppercase;
   color:#ffffff;
   text-align:center;
-  white-space:normal;
-  word-break:break-word;
+  white-space:nowrap;
+  word-break:normal;
   opacity:0;
   transition:opacity 600ms ease;
   z-index:5;
@@ -285,7 +286,7 @@ body.intro-complete.title-landed .intro-scroll-cue { opacity: 0; }
 .year-stamp::after {
   content:'•';
   position:absolute;
-  right:-.55rem;
+  right:-.35rem;
   top:50%;
   transform:translateY(-50%);
   color:var(--accent);
@@ -649,7 +650,7 @@ body.path-active .timeline-svg { opacity: 0.92; }
   .work-trigger { grid-template-columns:1fr; }
   .carousel-stage { height:55vw; min-height:300px; }
   .wt-heading { font-size:clamp(2rem,6vw,4rem); }
-  :root { --card-w:360px; --col-gap:54px; --year-w:94px; }
+  :root { --card-w:360px; --col-gap:54px; --year-w:110px; }
   .tl-row { grid-template-columns: 1fr; gap:1rem; }
   .tl-row > .year-stamp, .tl-row > .tl-card:nth-of-type(1), .tl-row > .tl-card:nth-of-type(2), .tl-row .tl-card--solo { grid-column: 1; justify-self: stretch; }
   .year-stamp { position: relative; margin: 0 0 .7rem .2rem; width: auto; opacity: .9; text-align: left; writing-mode: horizontal-tb; display:block; white-space:nowrap; }
