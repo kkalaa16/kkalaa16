@@ -12,7 +12,7 @@
   --radius: 10px;
   --card-w: 460px;
   --col-gap: 110px;
-  --year-w: 170px;
+  --year-w: 150px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -244,34 +244,32 @@ body.intro-complete.title-landed .intro-scroll-cue { opacity: 0; }
 
 .timeline-zone {
   position:relative; width:100%;
-  padding:4rem 2vw 8rem calc(var(--year-w) + 2.6vw);
+  padding:4rem 2vw 8rem;
 }
 .spine-canvas { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1; }
 .tl-row {
   position:relative;
   display:grid;
-  grid-template-columns:minmax(320px,1fr) minmax(320px,1fr);
-  column-gap:var(--col-gap);
+  grid-template-columns:var(--year-w) minmax(300px,1fr) minmax(300px,1fr);
+  column-gap:clamp(1rem, 2.6vw, var(--col-gap));
   align-items:flex-start;
   padding:2.8rem 0 1.2rem;
   z-index:2;
 }
-.tl-row > .tl-card:nth-of-type(1) { grid-column:1; }
-.tl-row > .tl-card:nth-of-type(2) { grid-column:2; }
-.tl-row .tl-card--solo { grid-column:1 / span 2; justify-self:center; }
+.tl-row > .year-stamp { grid-column:1; grid-row:1; justify-self:center; align-self:center; }
+.tl-row > .tl-card:nth-of-type(1) { grid-column:2; }
+.tl-row > .tl-card:nth-of-type(2) { grid-column:3; }
+.tl-row .tl-card--solo { grid-column:2 / span 2; justify-self:center; }
 .year-stamp {
-  position:absolute;
-  left:calc(-1 * var(--year-w) - 1.2vw);
-  top:50%;
-  transform:translateY(-50%);
-  width:var(--year-w);
+  position:static;
+  width:auto;
   font-family:'Space Mono',monospace;
   font-size:.72rem;
   font-weight:700;
   letter-spacing:.18em;
   text-transform:uppercase;
   color:#ffffff;
-  text-align:right;
+  text-align:center;
   white-space:nowrap;
   opacity:0;
   transition:opacity 600ms ease;
@@ -283,7 +281,7 @@ body.intro-complete.title-landed .intro-scroll-cue { opacity: 0; }
 .year-stamp::after {
   content:'•';
   position:absolute;
-  right:-1rem;
+  right:-.9rem;
   top:50%;
   transform:translateY(-50%);
   color:var(--accent);
@@ -647,10 +645,10 @@ body.path-active .timeline-svg { opacity: 0.92; }
   .work-trigger { grid-template-columns:1fr; }
   .carousel-stage { height:55vw; min-height:300px; }
   .wt-heading { font-size:clamp(2rem,6vw,4rem); }
-  :root { --card-w:360px; --col-gap:54px; --year-w:120px; }
+  :root { --card-w:360px; --col-gap:54px; --year-w:94px; }
   .tl-row { grid-template-columns: 1fr; gap:1rem; }
-  .tl-row > .tl-card:nth-of-type(1), .tl-row > .tl-card:nth-of-type(2), .tl-row .tl-card--solo { grid-column: 1; justify-self: stretch; }
-  .year-stamp { position: static; transform: none; margin: 0 0 .7rem .2rem; width: auto; opacity: .9; text-align: left; writing-mode: horizontal-tb; }
+  .tl-row > .year-stamp, .tl-row > .tl-card:nth-of-type(1), .tl-row > .tl-card:nth-of-type(2), .tl-row .tl-card--solo { grid-column: 1; justify-self: stretch; }
+  .year-stamp { position: static; margin: 0 0 .7rem .2rem; width: auto; opacity: .9; text-align: left; writing-mode: horizontal-tb; }
   .year-stamp::after { content: none; }
   .tl-card--solo { width:min(620px,92vw); }
   .tl-card--quad { width:min(270px,44vw); }
