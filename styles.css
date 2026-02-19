@@ -12,7 +12,7 @@
   --radius: 10px;
   --card-w: 460px;
   --col-gap: 110px;
-  --year-w: 170px;
+  --year-w: 240px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -250,13 +250,13 @@ body.intro-complete.title-landed .intro-scroll-cue { opacity: 0; }
 .tl-row {
   position:relative;
   display:grid;
-  grid-template-columns:var(--year-w) minmax(300px,1fr) minmax(300px,1fr);
+  grid-template-columns: var(--year-w) minmax(0, 1fr) minmax(0, 1fr);
   column-gap:clamp(1.4rem, 3vw, var(--col-gap));
   align-items:flex-start;
   padding:2.8rem 0 1.2rem;
   z-index:2;
 }
-.tl-row > .year-stamp { grid-column:1; grid-row:1; justify-self:center; align-self:center; }
+.tl-row > .year-stamp { grid-column:1; grid-row:1; justify-self:start; align-self:center; padding-left:.25rem; }
 .tl-row > .tl-card:nth-of-type(1) { grid-column:2; }
 .tl-row > .tl-card:nth-of-type(2) { grid-column:3; }
 .tl-row .tl-card--solo { grid-column:2 / span 2; justify-self:stretch; width:min(100%, 980px); }
@@ -264,9 +264,9 @@ body.intro-complete.title-landed .intro-scroll-cue { opacity: 0; }
   position:relative;
   display:inline-flex;
   align-items:center;
-  justify-content:flex-end;
+  justify-content:flex-start;
   width:100%;
-  padding-right:.75rem;
+  padding-right:0;
   font-family:'Space Mono',monospace;
   font-size:.72rem;
   font-weight:700;
@@ -286,7 +286,7 @@ body.intro-complete.title-landed .intro-scroll-cue { opacity: 0; }
 .year-stamp::after {
   content:'•';
   position:absolute;
-  right:-.35rem;
+  right:-.2rem;
   top:50%;
   transform:translateY(-50%);
   color:var(--accent);
@@ -650,7 +650,7 @@ body.path-active .timeline-svg { opacity: 0.92; }
   .work-trigger { grid-template-columns:1fr; }
   .carousel-stage { height:55vw; min-height:300px; }
   .wt-heading { font-size:clamp(2rem,6vw,4rem); }
-  :root { --card-w:360px; --col-gap:54px; --year-w:110px; }
+  :root { --card-w:360px; --col-gap:54px; --year-w:120px; }
   .tl-row { grid-template-columns: 1fr; gap:1rem; }
   .tl-row > .year-stamp, .tl-row > .tl-card:nth-of-type(1), .tl-row > .tl-card:nth-of-type(2), .tl-row .tl-card--solo { grid-column: 1; justify-self: stretch; }
   .year-stamp { position: relative; margin: 0 0 .7rem .2rem; width: auto; opacity: .9; text-align: left; writing-mode: horizontal-tb; display:block; white-space:nowrap; }
