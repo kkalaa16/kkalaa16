@@ -6,6 +6,7 @@ window.addEventListener('load', () => {
   initMatrix();
   initEducationAxis();
   initHeaderAndTopState();
+  initRoleAnimation();
   initSectionNavHighlight();
   initTimelineStageVisibility();
   initSkillsGlobe();
@@ -76,6 +77,7 @@ function runIntroGate() {
     topHeader.classList.add('ready');
     document.body.classList.add('intro-complete', 'at-top');
     document.body.classList.remove('lock-scroll');
+    document.querySelector('.hero')?.classList.add('visible');
     startExperience();
   }, 6200);
 }
@@ -518,6 +520,50 @@ function initSectionNavHighlight() {
     });
   }, { rootMargin: '-30% 0px -55% 0px', threshold: [0.15, 0.35, 0.6] });
   sections.forEach((item) => observer.observe(item.target));
+}
+
+function initRoleAnimation() {
+  const roleEl = document.getElementById('roleAnimated');
+  if (!roleEl) return;
+
+  const roles = [
+    'Mechanical Engineer',
+    'CFD Specialist',
+    'Thermal Analyst',
+    'Systems Engineer',
+    'ML Engineer',
+    'Aerospace Engineer',
+  ];
+
+  let currentIndex = 0;
+  let charIndex = 0;
+  let isDeleting = false;
+
+  function type() {
+    const currentRole = roles[currentIndex];
+
+    if (!isDeleting) {
+      roleEl.textContent = currentRole.substring(0, charIndex + 1);
+      charIndex += 1;
+      if (charIndex === currentRole.length) {
+        setTimeout(() => { isDeleting = true; type(); }, 1400);
+        return;
+      }
+      setTimeout(type, 85);
+    } else {
+      roleEl.textContent = currentRole.substring(0, charIndex - 1);
+      charIndex -= 1;
+      if (charIndex === 0) {
+        isDeleting = false;
+        currentIndex = (currentIndex + 1) % roles.length;
+        setTimeout(type, 260);
+        return;
+      }
+      setTimeout(type, 42);
+    }
+  }
+
+  setTimeout(type, 900);
 }
 
 function initSkillsGlobe() {
