@@ -16,7 +16,7 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); color: var(--text); font-family: Inter, sans-serif; overflow-x: hidden; }
+body { background: var(--bg); color: var(--text); font-family: "Space Grotesk", Inter, sans-serif; overflow-x: hidden; }
 body.lock-scroll { height: 100vh; overflow: hidden; }
 html { scroll-behavior: smooth; }
 section { scroll-margin-top: 84px; }
@@ -35,7 +35,7 @@ body::before {
 .intro-sequence { position: fixed; inset: 0; display: grid; place-items: center; background: radial-gradient(circle at center, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0.82)); z-index: 40; transition: opacity 1000ms ease, transform 700ms ease; }
 .intro-sequence.hidden { opacity: 0; pointer-events: none; }
 .intro-hi, .intro-welcome { position: absolute; font-weight: 800; letter-spacing: -0.02em; text-transform: uppercase; transition: opacity 1300ms ease, transform 1300ms ease, filter 1300ms ease; }
-.intro-hi { font-size: clamp(4.6rem, 16vw, 11rem); opacity: 1; }
+.intro-hi { font-size: clamp(4.6rem, 16vw, 11rem); opacity: 1; font-family: "Space Mono", monospace; }
 .intro-welcome { opacity: 0; transform: translateY(30px); text-align: center; max-width: 900px; }
 .welcome-title { font-size: clamp(1.6rem, 4vw, 2.8rem); font-weight: 500; letter-spacing: 4px; text-transform: uppercase; color: #efefef; margin-bottom: 1.2rem; display: block; }
 .welcome-name { font-size: clamp(2.9rem, 9.5vw, 6.2rem); font-weight: 900; line-height: 1; display: block; }
@@ -218,6 +218,34 @@ body.intro-complete.title-landed .intro-scroll-cue { opacity: 0; }
   animation:hint-grow 2.2s ease-in-out infinite;
 }
 @keyframes hint-grow { 0%,100%{width:24px;opacity:.3} 50%{width:64px;opacity:1} }
+
+.wt-unfurl-btn {
+  border: 1px solid rgba(255,255,255,.24);
+  background: rgba(255,255,255,.04);
+  color: #d6d6d6;
+  padding: .55rem .85rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: border-color 220ms ease, color 220ms ease, background 220ms ease, opacity 220ms ease;
+  opacity: 0;
+  pointer-events: none;
+}
+.wt-unfurl-btn.show {
+  opacity: 1;
+  pointer-events: auto;
+  animation: unfurl-pulse 1.6s ease-in-out infinite;
+}
+.wt-unfurl-btn.done {
+  opacity: .72;
+  pointer-events: auto;
+  animation: none;
+  border-color: rgba(255,77,0,.42);
+  color: var(--accent);
+}
+@keyframes unfurl-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,77,0,.0); }
+  50% { box-shadow: 0 0 0 10px rgba(255,77,0,.06); }
+}
 
 .carousel-stage {
   position:relative; z-index:2;

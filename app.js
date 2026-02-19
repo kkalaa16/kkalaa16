@@ -148,17 +148,34 @@ function buildCarousel(cardData) {
 
 function initUnravel(ccEls, staticCards) {
   const trigger = document.getElementById('work-section');
-  if (!trigger) return;
-  let done = false;
+  const prompt = document.getElementById('unfurlPrompt');
+  if (!trigger || !prompt) return;
 
-  const io = new IntersectionObserver(entries=>{
-    if (done) return;
-    if (!entries[0].isIntersecting && window.scrollY > trigger.offsetTop + 100) {
-      done = true;
-      flyToTimeline(ccEls, staticCards);
-      io.disconnect();
+  let unfurled = false;
+
+  const doUnfurl = () => {
+    if (unfurled) return;
+    unfurled = true;
+    prompt.classList.add('done');
+    prompt.textContent = 'TIMELINE UNFURLED';
+    flyToTimeline(ccEls, staticCards);
+  };
+
+  prompt.addEventListener('click', doUnfurl);
+
+  const io = new IntersectionObserver((entries) => {
+    const inWork = entries.some((entry) => entry.isIntersecting);
+    prompt.classList.toggle('show', inWork && !unfurled);
+
+    if (inWork && unfurled && window.scrollY <= trigger.offsetTop + 48) {
+      unfurled = false;
+      prompt.classList.remove('done');
+      prompt.textContent = 'CLICK TO UNFURL TIMELINE';
+      resetCarouselCards();
+      document.getElementById('carouselStage')?.classList.remove('fade-out');
     }
-  },{threshold:0});
+  }, { threshold: 0.35 });
+
   io.observe(trigger);
 }
 
