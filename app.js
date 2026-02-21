@@ -882,73 +882,80 @@ function initSkillsGlobe() {
 
   // Draw a circular badge with optional image centered inside (contain-fit)
   function makeBadgeTexture(skill) {
-  const c = document.createElement('canvas');
-  c.width = 128; c.height = 128;
-  const ctx = c.getContext('2d');
+    const c = document.createElement('canvas');
+    c.width = 128; c.height = 128;
+    const ctx = c.getContext('2d');
 
-  const col = '#' + (skill.color >>> 0).toString(16).padStart(6, '0');
+    const col = '#' + (skill.color >>> 0).toString(16).padStart(6, '0');
 
-  function drawBase() {
-    ctx.clearRect(0, 0, 128, 128);
+    function drawBase() {
+      ctx.clearRect(0, 0, 128, 128);
 
-    // dark halo
-    ctx.beginPath();
-    ctx.arc(64, 64, 60, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(0,0,0,0.55)';
-    ctx.fill();
-
-    // colored badge (subtle tint)
-    ctx.beginPath();
-    ctx.arc(64, 64, 52, 0, Math.PI * 2);
-    ctx.fillStyle = col;
-    ctx.globalAlpha = 0.22;
-    ctx.fill();
-    ctx.globalAlpha = 1;
-
-    // border
-    ctx.beginPath();
-    ctx.arc(64, 64, 52, 0, Math.PI * 2);
-    ctx.strokeStyle = 'rgba(255,255,255,0.30)';
-    ctx.lineWidth = 3;
-    ctx.stroke();
-
-    // NOTE: no fallback text at all
-  }
-
-  drawBase();
-  const tex = new THREE.CanvasTexture(c);
-  tex.needsUpdate = true;
-  if ('colorSpace' in tex) tex.colorSpace = THREE.SRGBColorSpace;
-
-  // Draw the icon if available
-  if (skill.iconUrl) {
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => {
-      drawBase();
-
-      // clip to inner circle
-      ctx.save();
+      // dark halo
       ctx.beginPath();
-      ctx.arc(64, 64, 38, 0, Math.PI * 2);
-      ctx.clip();
+      ctx.arc(64, 64, 60, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0,0,0,0.55)';
+      ctx.fill();
 
-      // contain fit inside 76x76 box
-      const iw = img.width, ih = img.height;
-      const s = Math.min(76 / iw, 76 / ih);
-      const w = iw * s, h = ih * s;
-      ctx.drawImage(img, 64 - w/2, 64 - h/2, w, h);
+      // colored badge
+      ctx.beginPath();
+      ctx.arc(64, 64, 52, 0, Math.PI * 2);
+      ctx.fillStyle = col;
+      ctx.globalAlpha = 0.22;
+      ctx.fill();
+      ctx.globalAlpha = 1;
 
-      ctx.restore();
+      // border
+      ctx.beginPath();
+      ctx.arc(64, 64, 52, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255,255,255,0.30)';
+      ctx.lineWidth = 3;
+      ctx.stroke();
 
-      tex.needsUpdate = true;
-    };
-    img.onerror = () => { /* keep empty badge (no text) */ };
-    img.src = skill.iconUrl;
+      // fallback text (first token)
+      ctx.fillStyle = '#fff';
+      ctx.font = '700 18px "Space Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText((skill.name || '').split(' ')[0].slice(0, 6), 64, 64);
+    }
+
+    drawBase();
+    const tex = new THREE.CanvasTexture(c);
+    tex.needsUpdate = true;
+    if ('colorSpace' in tex) tex.colorSpace = THREE.SRGBColorSpace;
+
+    // If iconUrl provided, draw icon into clipped circle
+    if (skill.iconUrl) {
+      const img = new Image();
+      // same-origin local assets: crossOrigin not needed; keep harmless
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        drawBase();
+
+        // clip to inner circle
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(64, 64, 38, 0, Math.PI * 2);
+        ctx.clip();
+
+        // contain fit inside 76x76 box
+        const iw = img.width, ih = img.height;
+        const s = Math.min(76 / iw, 76 / ih);
+        const w = iw * s, h = ih * s;
+        ctx.globalAlpha = 1;
+        ctx.drawImage(img, 64 - w/2, 64 - h/2, w, h);
+
+        ctx.restore();
+
+        tex.needsUpdate = true;
+      };
+      img.onerror = () => { /* fallback remains */ };
+      img.src = skill.iconUrl;
+    }
+
+    return tex;
   }
-
-  return tex;
-}
 
   // ---------- scene setup ----------
   const scene = new THREE.Scene();
@@ -1005,19 +1012,16 @@ function initSkillsGlobe() {
     const pinPos  = latLonToVec3(skill.lat, skill.lon, PIN_R);
 
     // Sprite (badge texture with icon drawn inside)
-    const tex = makeBadgeTexture(skill, spriteMatRef => { spriteMatRef.opacity = 0.95; });
+    const tex = makeBadgeTexture(skill);
     const spriteMat = new THREE.SpriteMaterial({
-    map: null,
-    transparent: true,
-    opacity: 0,           // hidden until loaded
-    depthTest: false,
-    depthWrite: false
-  });
+      map: tex,
+      transparent: true,
+      opacity: 0.95,
+      depthTest: false,
+      depthWrite: false
+    });
 
-const sprite = new THREE.Sprite(spriteMat);
-const tex = makeBadgeTexture(skill, () => { spriteMat.opacity = 0.95; });
-spriteMat.map = tex;
-spriteMat.needsUpdate = true;
+    const sprite = new THREE.Sprite(spriteMat);
     sprite.position.copy(iconPos);
     sprite.scale.set(24, 24, 1);   // matches your “aligned as before” sizing
     sprite.renderOrder = 10;
@@ -1467,4 +1471,3 @@ function initDownloadResume() {
     setTimeout(() => btn.style.transform = '', 200);
   });
 }
-
