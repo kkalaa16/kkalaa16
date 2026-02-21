@@ -1,0 +1,672 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>KRTIN KALA | PORTFOLIO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/webgl-fluid"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <link rel="stylesheet" href="styles.css"/>
+  <script src="app.js" defer></script>
+</head>
+<body class="lock-scroll">
+
+  <!-- WebGL fluid background -->
+  <canvas id="fluid-canvas"></canvas>
+
+  <!-- ══ INTRO GATE ══════════════════════════════════════ -->
+  <section class="intro-gate" id="introGate">
+    <span class="intro-hi" id="introHi">Hi.</span>
+    <div class="intro-welcome" id="introWelcome">
+      <p class="iw-line1">I'M <strong>KRTIN KALA</strong>.</p>
+      <p class="iw-line2">THIS IS MY <strong>PORTFOLIO</strong>.</p>
+      <p class="iw-sub">[ SYSTEMS DESIGN // REACTING FLOWS // ML ARCHITECT ]</p>
+    </div>
+    <div class="intro-cue" id="introCue">
+      <span>SCROLL</span><i class="cue-bar"></i>
+    </div>
+  </section>
+
+  <!-- ══ STICKY HEADER ════════════════════════════════════ -->
+  <header class="site-header" id="siteHeader">
+    <span class="sh-name">KRTIN KALA</span>
+    <nav>
+      <a href="#about">About</a>
+      <a href="#work-section">Work</a>
+      <a href="#education">Education</a>
+      <a href="mailto:kkala6@gatech.edu">Contact</a>
+    </nav>
+  </header>
+
+  <!-- ══ HERO / ABOUT ══════════════════════════════════════ -->
+  <section class="hero" id="about">
+    <div class="hero-left">
+      <p class="hero-eyebrow">MS Aerospace · Georgia Tech · 2024–Present</p>
+      <h1 class="hero-name">KRTIN<br>KALA</h1>
+      <p class="hero-role">
+        <span class="role-prefix">I am a </span>
+        <span class="role-animated" id="roleAnimated">CFD Specialist</span>
+        <span class="role-cursor">|</span>
+      </p>
+      <p class="hero-bio">I build high-fidelity thermal-fluid simulations and make them usable inside real design loops. My work spans turbulent combustion and propulsion modeling (RANS/LES, flamelet/FGM), hybrid-electric mission and power-split optimization, and ML-accelerated surrogates for fast trade studies. Previously at Baker Hughes / TU/e, IIT Bombay, HAL ARDC, and DRDO.</p>
+      <div class="hero-tags">
+        <span>OpenFOAM</span><span>ANSYS Fluent</span><span>LES/RANS</span>
+        <span>FGM/Flamelet</span><span>OpenMDAO</span><span>Python/SKL</span>
+        <span>SysML/MBSE</span><span>MATLAB</span>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="metric-card"><b>86.7%</b><span>Runtime reduction · NH₃/H₂ FGM</span></div>
+      <div class="metric-card"><b>15.7%</b><span>Range increase · AFRL Aircraft</span></div>
+      <div class="metric-card"><b>51.7%</b><span>Upthrust gain · Drone thesis</span></div>
+      <div class="metric-card"><b>21</b><span>Projects &amp; Roles, 2021–present</span></div>
+    </div>
+
+  
+  <!-- Download Resume Button -->
+  <a href="#" class="download-resume" id="downloadResume" title="Download Resume PDF">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+      <polyline points="7 10 12 15 17 10"/>
+      <line x1="12" y1="15" x2="12" y2="3"/>
+    </svg>
+    <span>Resume</span>
+  </a>  </section>
+
+  <!-- ══ WORK SECTION ══════════════════════════════════════ -->
+  <section class="work-trigger" id="work-section">
+    <div class="wt-text">
+      <div class="wt-eyebrow">MY WORK</div>
+      <div class="wt-heading">WORK EXPERIENCE<em>TIMELINE</em></div>
+
+      <!-- Prompt (user-controlled unfurl) -->
+      <div class="work-cue work-cue--inline" id="workCue" role="button" tabindex="0" aria-label="Click to unfurl timeline">
+        <span>CLICK TO UNFURL</span>
+        <div class="cue-bar"></div>
+      </div>
+    </div>
+
+    <!-- 3D Carousel (click to unfurl) -->
+    <div class="carousel-stage" id="carouselStage" tabindex="0" aria-label="Unfurl work experience timeline"></div>
+  </section>
+
+  <!-- Timeline tip toast (shown once on unfurl) -->
+  <div class="toast" id="timelineToast" aria-hidden="true">
+    <div class="toast-inner">
+      <div class="toast-text">
+        <div class="toast-title">TIP</div>
+        <div class="toast-msg">You can click any box to expand and learn more.</div>
+      </div>
+      <button class="toast-close" id="timelineToastClose" aria-label="Close tip">×</button>
+    </div>
+  </div>
+
+  <!-- ══ TIMELINE WITH MODALS ═══════════════════════════════ -->
+  <section class="timeline-zone" id="timelineZone">
+    <canvas class="spine-canvas" id="spineCanvas"></canvas>
+
+    <!-- ROW 0: Jun 2025 - Present -->
+    <div class="tl-row" data-year="2025 — CURRENT">
+      <span class="year-stamp">2025 — CURRENT</span>
+      
+      <article class="tl-card tl-card-large" data-project-id="ben-zinn">
+        <span class="tl-date">JUN 2025 – PRESENT</span>
+        <h3>BEN T. ZINN COMBUSTION LAB</h3>
+        <p>Entropy-generation analysis framework for turbulent diffusion flames</p>
+        <div class="tl-tags"><span>LES</span><span>ANSYS</span><span>Sandia-D</span></div>
+      </article>
+      
+      <article class="tl-card tl-card-large" data-project-id="xv15">
+        <span class="tl-date">AUG 2025 – PRESENT</span>
+        <h3>HYBRIDIZED XV-15 TILTROTOR</h3>
+        <p>Battery sizing with momentum-theory, +0.41% NASA X-57 validation</p>
+        <div class="tl-tags"><span>MATLAB</span><span>VFS Competition</span></div>
+      </article>
+    </div>
+
+    <!-- ROW 1: Aug-Dec 2025 (No Matrix) -->
+    <div class="tl-row" data-year="AUG – DEC 2025">
+      <span class="year-stamp">AUG – DEC 2025</span>
+      
+      <article class="tl-card tl-card-large" data-project-id="gta">
+        <span class="tl-date">AUG – DEC 2025</span>
+        <h3>GTA · AE 3330</h3>
+        <p>Teaching assistant for aerospace vehicle performance course</p>
+        <div class="tl-tags"><span>Mentorship</span><span>Georgia Tech</span></div>
+      </article>
+      
+      <article class="tl-card tl-card-large" data-project-id="gas-turbine">
+        <span class="tl-date">AUG – DEC 2025</span>
+        <h3>GAS TURBINE CYCLE DESIGN</h3>
+        <p>1D turbojet/turbofan with variable γ(T), NASA polynomial fits</p>
+        <div class="tl-tags"><span>Thermodynamics</span><span>DOE Sweep</span></div>
+      </article>
+    </div>
+
+    <!-- ROW 2: May-Aug 2025 (ML Projects - MATRIX THEME) -->
+    <div class="tl-row" data-year="MAY – AUG 2025">
+      <span class="year-stamp">MAY – AUG 2025</span>
+      
+      <article class="tl-card tl-card-large tl-card--matrix" data-project-id="f1-ai">
+        <canvas class="matrix-bg"></canvas>
+        <span class="tl-date matrix-date">MAY – AUG 2025</span>
+        <h3 class="matrix-title">F1 STRATEGY AI</h3>
+        <p>Track DNA clustering (DBSCAN/GMM), driver profiling, pit-stop forecast</p>
+        <div class="tl-tags"><span>Machine Learning</span><span>DBSCAN</span></div>
+      </article>
+      
+      <article class="tl-card tl-card-large tl-card--matrix" data-project-id="option-pricing">
+        <canvas class="matrix-bg"></canvas>
+        <span class="tl-date matrix-date">MAY – AUG 2025</span>
+        <h3 class="matrix-title">OPTION PRICING · FNO</h3>
+        <p>Physics-informed ROM + Fourier Neural Operator, 77% error reduction</p>
+        <div class="tl-tags"><span>Deep Learning</span><span>PyTorch</span></div>
+      </article>
+    </div>
+
+    <!-- ROW 3: Jan-May 2025 -->
+    <div class="tl-row" data-year="JAN – MAY 2025">
+      <span class="year-stamp">JAN – MAY 2025</span>
+      
+      <article class="tl-card tl-card-large tl-card--solo" data-project-id="trajectory">
+        <span class="tl-date">JAN – MAY 2025</span>
+        <h3>MIN-TIME CLIMB TRAJECTORY</h3>
+        <p>NLP optimization with 6 surrogate models (R²>0.99), adjoint gradients</p>
+        <div class="tl-tags"><span>Optimization</span><span>NLP</span></div>
+      </article>
+    </div>
+
+    <!-- ROW 4: Aug 2024 - May 2025 -->
+    <div class="tl-row" data-year="AUG 2024 – MAY 2025">
+      <span class="year-stamp">AUG 2024 – MAY 2025</span>
+      
+      <article class="tl-card tl-card-large" data-project-id="afrl">
+        <span class="tl-date">AUG 2024 – MAY 2025</span>
+        <h3>AFRL TACTICAL MOBILITY AIRCRAFT</h3>
+        <p>Hybrid-electric propulsion with OpenMDAO, +15.7% range gain</p>
+        <div class="tl-tags"><span>OpenMDAO</span><span>NPSS</span></div>
+      </article>
+      
+      <article class="tl-card tl-card-large" data-project-id="boeing">
+        <span class="tl-date">AUG 2024 – MAY 2025</span>
+        <h3>BOEING Ti-6Al-4V SUPPLY CHAIN</h3>
+        <p>Network modeling with HHI metrics, vulnerability assessment</p>
+        <div class="tl-tags"><span>Systems</span><span>Risk Analysis</span></div>
+      </article>
+    </div>
+
+    <!-- ROW 5: Aug-Dec 2024 -->
+    <div class="tl-row" data-year="AUG – DEC 2024">
+      <span class="year-stamp">AUG – DEC 2024</span>
+      
+      <article class="tl-card tl-card-large" data-project-id="bwb">
+        <span class="tl-date">AUG – DEC 2024</span>
+        <h3>NEXT-GEN BWB TRANSPORT</h3>
+        <p>Hydrogen-powered Blended Wing Body with SysML, TOPSIS rankings</p>
+        <div class="tl-tags"><span>SysML</span><span>MBSE</span></div>
+      </article>
+    </div>
+
+    <!-- ROW 6: Aug 2023 - Aug 2024 -->
+    <div class="tl-row" data-year="AUG 2023 – AUG 2024">
+      <span class="year-stamp">AUG 2023 – AUG 2024</span>
+      
+      <article class="tl-card tl-card-large" data-project-id="tue">
+        <span class="tl-date">AUG 2023 – AUG 2024</span>
+        <h3>TU/e BAKER HUGHES · FGM</h3>
+        <p>86.7% runtime reduction via Flamelet Generated Manifold</p>
+        <div class="tl-tags"><span>FGM</span><span>ANSYS</span></div>
+      </article>
+    </div>
+
+    <!-- ROW 7: Jul 2023 - Jan 2024 -->
+    <div class="tl-row" data-year="JUL 2023 – JAN 2024">
+      <span class="year-stamp">JUL 2023 – JAN 2024</span>
+      
+      <article class="tl-card tl-card-large" data-project-id="iit">
+        <span class="tl-date">JUL 2023 – JAN 2024</span>
+        <h3>IIT BOMBAY VENTILATION CFD</h3>
+        <p>Thermal stratification analysis, +23.7% ACH increase</p>
+        <div class="tl-tags"><span>CFD</span><span>Pathogen Spread</span></div>
+      </article>
+    </div>
+
+    <!-- ROW 8: Aug 2022 - May 2023 -->
+    <div class="tl-row" data-year="AUG 2022 – MAY 2023">
+      <span class="year-stamp">AUG 2022 – MAY 2023</span>
+      
+      <article class="tl-card tl-card-large" data-project-id="drone">
+        <span class="tl-date">AUG 2022 – MAY 2023</span>
+        <span class="tl-badge">UNDERGRADUATE THESIS</span>
+        <h3>DRONE BLADE ANALYSIS</h3>
+        <p>OpenFOAM RANS k-ω SST, +51.7% upthrust for 3-blade rotor</p>
+        <div class="tl-tags"><span>OpenFOAM</span><span>RANS</span></div>
+      </article>
+      
+      <article class="tl-card tl-card-large" data-project-id="fsi">
+        <span class="tl-date">AUG 2022 – DEC 2022</span>
+        <h3>FSI · ELASTIC WAVE PROPAGATION</h3>
+        <p>OpenFOAM + CalculiX via preCICE, 38% pressure loss</p>
+        <div class="tl-tags"><span>FSI</span><span>preCICE</span></div>
+      </article>
+    </div>
+
+    <!-- Additional rows for older projects -->
+    <div class="tl-row" data-year="2022">
+      <span class="year-stamp">2022</span>
+      
+      <article class="tl-card tl-card-large" data-project-id="hal">
+        <span class="tl-date">AUG 2022</span>
+        <h3>HAL ARDC INTERNSHIP</h3>
+        <p>Subsystem integration analysis for aircraft development</p>
+        <div class="tl-tags"><span>Systems</span><span>HAL</span></div>
+      </article>
+      
+      <article class="tl-card tl-card-large" data-project-id="cabs">
+        <span class="tl-date">JUN – JUL 2022</span>
+        <h3>DRDO CABS · NONLINEAR DYNAMICS</h3>
+        <p>Lotka-Volterra system, Jacobian stability analysis</p>
+        <div class="tl-tags"><span>MATLAB</span><span>Control Systems</span></div>
+      </article>
+      
+      <article class="tl-card tl-card-large" data-project-id="tcnj">
+        <span class="tl-date">JUN – OCT 2022</span>
+        <h3>TCNJ CAVITATION DETECTION</h3>
+        <p>Zwart-Gerber-Belamri model with FW-H acoustics, FFT analysis</p>
+        <div class="tl-tags"><span>ANSYS</span><span>Acoustics</span></div>
+      </article>
+    </div>
+
+    <div class="tl-row" data-year="2021 – 2022">
+      <span class="year-stamp">2021 – 2022</span>
+      
+      <article class="tl-card tl-card-large" data-project-id="hyperloop">
+        <span class="tl-date">JUL 2021 – JUN 2022</span>
+        <h3>HYPERLOOP POD DESIGN</h3>
+        <p>CAD integration, GD&T on 50+ components, 22% learning acceleration</p>
+        <div class="tl-tags"><span>CATIA</span><span>GD&T</span></div>
+      </article>
+      
+      <article class="tl-card tl-card-large" data-project-id="vawt">
+        <span class="tl-date">JUL 2021 – JUN 2022</span>
+        <h3>VERTICAL AXIS WIND TURBINE</h3>
+        <p>Savonius CFD parametric study, +72% power output</p>
+        <div class="tl-tags"><span>CFD</span><span>Coanda Effect</span></div>
+      </article>
+    </div>
+
+    <div class="tl-row" data-year="2021">
+      <span class="year-stamp">2021</span>
+      
+      <article class="tl-card tl-card-large" data-project-id="ccs">
+        <span class="tl-date">MAY – AUG 2021</span>
+        <h3>CCS SUPPLY CHAIN OPTIMIZATION</h3>
+        <p>FlexSim simulation, +40% process efficiency via Lean</p>
+        <div class="tl-tags"><span>FlexSim</span><span>Lean</span></div>
+      </article>
+      
+      <article class="tl-card tl-card-large" data-project-id="scramjet">
+        <span class="tl-date">AUG – DEC 2021</span>
+        <h3>SCRAMJET INLET NOZZLES</h3>
+        <p>3-ramp & 4-ramp CFD validation at Mach 5 & 8</p>
+        <div class="tl-tags"><span>CFD</span><span>Hypersonics</span></div>
+      </article>
+    </div>
+
+  </section>
+  <!-- ══ EDUCATION ══════════════════════════════════════════ -->
+  <section class="edu-section" id="education">
+    <h2 class="section-label">EDUCATION</h2>
+
+    <!-- Institution cards + runway in one white panel -->
+    <div class="edu-panel" id="eduPanel">
+
+      <!-- LEFT: BITS Pilani -->
+      <div class="edu-inst" id="eduBITS">
+        <div class="edu-inst-logo" aria-label="BITS Pilani">
+          <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="40" cy="40" r="38" fill="#002147" stroke="#C8A951" stroke-width="2.5"/>
+            <path d="M40 11 C33 21 27 28 29 38 C31 47 37 50 40 68 C43 50 49 47 51 38 C53 28 47 21 40 11Z" fill="#C8A951"/>
+            <path d="M40 21 C37 28 34 33 36 39 C37.5 43.5 39.2 45.5 40 56 C40.8 45.5 42.5 43.5 44 39 C46 33 43 28 40 21Z" fill="#fff" opacity="0.55"/>
+            <text x="40" y="77" text-anchor="middle" font-family="Georgia,serif" font-size="6.5" font-weight="700" fill="#C8A951" letter-spacing="0.8">BITS PILANI</text>
+          </svg>
+        </div>
+        <div class="edu-inst-text">
+          <span class="edu-inst-degree">Bachelor of Engineering</span>
+          <span class="edu-inst-field">Mechanical Engineering</span>
+          <span class="edu-inst-name">BITS Pilani</span>
+          <span class="edu-inst-year">2019 – 2023</span>
+        </div>
+      </div>
+
+      <!-- CENTRE: runway with dotted line + cat sprite -->
+      <div class="edu-runway" id="eduRunway">
+        <div class="edu-dotted-line" id="eduDottedLine"></div>
+
+        <!-- Rachel Nabors cat sprite sheet — 8 frames, 400×300px each, stacked vertically -->
+        <!-- The sprite sheet URL: each frame is 400w × 300h, total sheet 400×2400 -->
+        <div class="cat-sprite-wrap" id="catRunner" aria-hidden="true">
+          <div class="cat-sprite" id="catSprite"></div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Georgia Tech -->
+      <div class="edu-inst edu-inst--right" id="eduGT">
+        <div class="edu-inst-logo" aria-label="Georgia Tech">
+          <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="40" cy="40" r="38" fill="#003057" stroke="#B3A369" stroke-width="2.5"/>
+            <text x="40" y="37" text-anchor="middle" font-family="Impact,Arial Black,sans-serif" font-size="22" font-weight="900" fill="#B3A369">GT</text>
+            <rect x="16" y="41" width="48" height="2.5" rx="1.2" fill="#B3A369"/>
+            <text x="40" y="57" text-anchor="middle" font-family="Georgia,serif" font-size="6" font-weight="700" fill="#B3A369" letter-spacing="0.5">GEORGIA TECH</text>
+            <text x="40" y="67" text-anchor="middle" font-family="Georgia,serif" font-size="5" fill="#B3A369" opacity="0.75" letter-spacing="0.3">EST. 1885</text>
+          </svg>
+        </div>
+        <div class="edu-inst-text edu-inst-text--right">
+          <span class="edu-inst-degree">Master of Science</span>
+          <span class="edu-inst-field">Aerospace Engineering</span>
+          <span class="edu-inst-name">Georgia Tech</span>
+          <span class="edu-inst-year">2024 – Present</span>
+        </div>
+      </div>
+
+    </div><!-- /.edu-panel -->
+  </section>
+
+
+  <!-- ══ SKILLS GLOBE ══════════════════════════════════════ -->
+  <section class="skills-section" id="skills">
+    <h2 class="section-label">TECHNICAL EXPERTISE</h2>
+    <p class="section-subtitle">Hover over icons to see skills & project locations</p>
+    
+    <div class="globe-container">
+      <canvas id="globeCanvas"></canvas>
+      
+      <!-- Skill tooltip -->
+      <div class="skill-tooltip" id="skillTooltip">
+        <h4 class="tooltip-skill-name"></h4>
+        <div class="tooltip-projects"></div>
+      </div>
+      
+      <!-- Controls hint -->
+      <div class="globe-controls">
+        <span>🖱️ Drag to rotate • Scroll to zoom</span>
+      </div>
+    </div>
+    
+    <!-- Skills legend -->
+    <div class="skills-legend">
+      <div class="legend-group">
+        <h4>CFD & Simulation</h4>
+        <div class="legend-items">
+          <span>ANSYS Fluent</span>
+          <span>OpenFOAM</span>
+          <span>LES/RANS</span>
+          <span>FGM</span>
+        </div>
+      </div>
+      <div class="legend-group">
+        <h4>Systems Engineering</h4>
+        <div class="legend-items">
+          <span>SysML/MBSE</span>
+          <span>OpenMDAO</span>
+          <span>DoE</span>
+          <span>GD&T</span>
+        </div>
+      </div>
+      <div class="legend-group">
+        <h4>ML & Programming</h4>
+        <div class="legend-items">
+          <span>Python/SKL</span>
+          <span>PyTorch</span>
+          <span>MATLAB</span>
+          <span>C++</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ RESEARCH & PUBLICATIONS ════════════════════════════ -->
+  <section class="research-section" id="research">
+    <h2 class="section-label">RESEARCH & PUBLICATIONS</h2>
+    <div class="research-grid">
+      <article class="research-card">
+        <div class="research-icon patent-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6z"/>
+            <path d="M14 2v6h6M12 18v-6M9 15h6"/>
+          </svg>
+        </div>
+        <div class="research-content">
+          <span class="research-badge pending">GRANT PENDING</span>
+          <h3>Patent: Compound Vision using Drones</h3>
+          <p>Search and rescue missions enhancement through distributed drone vision systems</p>
+          <span class="research-year">2023</span>
+        </div>
+      </article>
+
+      <article class="research-card">
+        <div class="research-icon presentation-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2"/>
+            <path d="M8 21h8M12 17v4"/>
+          </svg>
+        </div>
+        <div class="research-content">
+          <span class="research-badge presentation">PRESENTATION</span>
+          <h3>Optimization of Turbulent Flow Simulation via ML</h3>
+          <p>EAISI, TU/e</p>
+          <span class="research-year">2024</span>
+        </div>
+      </article>
+
+      <article class="research-card">
+        <div class="research-icon poster-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <path d="M21 15l-5-5L5 21"/>
+          </svg>
+        </div>
+        <div class="research-content">
+          <span class="research-badge poster">POSTER</span>
+          <h3>CFD of NH₃/H₂ Flames in Gas Turbines</h3>
+          <p>COMBURA, TU/e</p>
+          <span class="research-year">2023</span>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ══ ACHIEVEMENTS ═══════════════════════════════════════ -->
+  <section class="achievements-section" id="achievements">
+    <h2 class="section-label">ACHIEVEMENTS & IMPACT</h2>
+    <div class="achievements-grid">
+      
+      <div class="achievement-card">
+        <h3>Test Scores</h3>
+        <div class="score-items">
+          <div class="score-item">
+            <div class="score-radial" data-score="97.6">
+              <svg viewBox="0 0 120 120">
+                <circle class="score-bg" cx="60" cy="60" r="50"/>
+                <circle class="score-fill gre-fill" cx="60" cy="60" r="50"/>
+              </svg>
+              <div class="score-value">
+                <span class="score-number" data-target="332">0</span>
+                <span class="score-max">/340</span>
+              </div>
+            </div>
+            <span class="score-label">GRE</span>
+            <span class="score-perc">98th percentile</span>
+          </div>
+          <div class="score-item">
+            <div class="score-radial" data-score="93.3">
+              <svg viewBox="0 0 120 120">
+                <circle class="score-bg" cx="60" cy="60" r="50"/>
+                <circle class="score-fill toefl-fill" cx="60" cy="60" r="50"/>
+              </svg>
+              <div class="score-value">
+                <span class="score-number" data-target="112">0</span>
+                <span class="score-max">/120</span>
+              </div>
+            </div>
+            <span class="score-label">TOEFL</span>
+            <span class="score-perc">C2 Proficient</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="achievement-card">
+        <h3>Leadership</h3>
+        <div class="impact-items">
+          <div class="impact-item">
+            <div class="impact-icon rupee">₹</div>
+            <div class="impact-content">
+              <span class="impact-number" data-target="17000">0</span>
+              <span class="impact-label">raised for STEM scholarships (Bhumi, India)</span>
+            </div>
+          </div>
+          <div class="impact-item">
+            <div class="impact-icon users">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </div>
+            <div class="impact-content">
+              <span class="impact-label">Interactive modules for visually impaired youth</span>
+              <span class="impact-org">Blind People's Association</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="achievement-card">
+        <h3>Certifications</h3>
+        <div class="cert-grid">
+          <div class="cert-badge"><div class="cert-icon matlab">M</div><span>MATLAB: Nonlinear Eqns</span></div>
+          <div class="cert-badge"><div class="cert-icon matlab">M</div><span>MATLAB: ML</span></div>
+          <div class="cert-badge"><div class="cert-icon matlab">M</div><span>MATLAB: ODEs</span></div>
+          <div class="cert-badge"><div class="cert-icon dl">DL</div><span>Deep Learning<br>(deeplearning.ai)</span></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══ CONTACT ════════════════════════════════════════════ -->
+  <section class="contact-section" id="contact">
+    <h2 class="section-label">GET IN TOUCH</h2>
+    <div class="contact-container">
+      <div class="contact-info">
+        <div class="contact-item">
+          <div class="contact-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <path d="M22 6l-10 7L2 6"/>
+            </svg>
+          </div>
+          <div><a href="mailto:kkala6@gatech.edu">kkala6@gatech.edu</a></div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+          </div>
+          <div><a href="tel:+14703991265">+1 (470) 399-1265</a></div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20.5 2h-17A1.5 1.5 0 002 3.5v17A1.5 1.5 0 003.5 22h17a1.5 1.5 0 001.5-1.5v-17A1.5 1.5 0 0020.5 2zM8 19H5v-9h3zM6.5 8.25A1.75 1.75 0 118.3 6.5a1.78 1.78 0 01-1.8 1.75zM19 19h-3v-4.74c0-1.42-.6-1.93-1.38-1.93A1.74 1.74 0 0013 14.19a.66.66 0 000 .14V19h-3v-9h2.9v1.3a3.11 3.11 0 012.7-1.4c1.55 0 3.36.86 3.36 3.66z"/>
+            </svg>
+          </div>
+          <div><a href="https://linkedin.com/in/krtin-kala-07a682198" target="_blank">LinkedIn</a></div>
+        </div>
+        <div class="contact-status">
+          <span class="status-dot"></span>
+          <span>Open to opportunities in Aerospace, Propulsion, CFD</span>
+        </div>
+        <div class="contact-location">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+          <span>Atlanta, GA</span>
+        </div>
+      </div>
+      
+      <form class="contact-form" id="contactForm">
+        <input type="text" name="name" placeholder="Your Name" required>
+        <input type="email" name="email" placeholder="Your Email" required>
+        <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+        <button type="submit">
+          <span>Send Message</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="22" y1="2" x2="11" y2="13"/>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+          </svg>
+        </button>
+      </form>
+    </div>
+  </section>
+
+
+  <!-- ══ PROJECT MODAL ═════════════════════════════════════ -->
+  <div class="project-modal" id="projectModal" aria-hidden="true">
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    <div class="modal-content" id="modalContent" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <canvas class="modal-matrix-bg" id="modalMatrixBg"></canvas>
+      <button class="modal-close" id="modalClose" aria-label="Close">×</button>
+
+      <div class="modal-scroll">
+        <div class="modal-header">
+          <span class="modal-date" id="modalDate"></span>
+          <h2 class="modal-title" id="modalTitle"></h2>
+          <div class="modal-tags" id="modalTags"></div>
+        </div>
+
+        <div class="modal-body">
+          <p class="modal-overview" id="modalOverview"></p>
+
+          <div class="modal-grid">
+            <div class="modal-section">
+              <h4>Key Contributions</h4>
+              <ul class="modal-list" id="modalContributions"></ul>
+            </div>
+            <div class="modal-section">
+              <h4>Tech Stack</h4>
+              <div class="modal-tech" id="modalTech"></div>
+            </div>
+          </div>
+
+          <div class="modal-section modal-results">
+            <h4>Results</h4>
+            <ul class="modal-list" id="modalResults"></ul>
+          </div>
+
+          <!-- Optional per-project rich content (images, embeds, etc.) -->
+          <div class="modal-extra" id="modalExtra"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FOOTER ═════════════════════════════════════════════ -->
+  <footer class="site-footer">
+    <span class="footer-name">KRTIN KALA</span>
+    <span class="footer-links">
+      <a href="mailto:kkala6@gatech.edu">Email</a>
+      <a href="https://linkedin.com/in/krtin-kala-07a682198" target="_blank">LinkedIn</a>
+      <a href="#hero">Top</a>
+    </span>
+    <span class="footer-note">© <span id="footerYear">2026</span></span>
+  </footer>
+
+</body>
+</html>
