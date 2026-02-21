@@ -590,7 +590,6 @@ a { color:inherit; text-decoration:none; }
   from{ background-position:0 0; }
   to  { background-position:0 -1824px; } /* 12 * 152 */
 }
-  to  { background-position:0 calc(-12 * var(--cat-frame-h)); }
 
 /* ─── SKILLS ────────────────────────────────────────────── */
 .skills-section { padding:5rem 8vw; position:relative; z-index:10; border-top:1px solid var(--line); }
@@ -1436,4 +1435,35 @@ a { color:inherit; text-decoration:none; }
   height:100%;
   display:block;
   object-fit:cover;
+}
+
+
+/* ══ FIX: remove giant gap above unfurled timeline ═════════ */
+
+/* When timeline is open, the carousel is visually hidden but still reserves 70vh.
+   Collapse that reserved space so the timeline starts right under the heading. */
+#work-section:has(.timeline-zone.open) .carousel-stage{
+  height: 0 !important;
+  min-height: 0 !important;
+  margin-top: 0 !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Also reduce the Work trigger block height once open (keeps heading + timeline tight) */
+#work-section:has(.timeline-zone.open) .work-trigger{
+  min-height: auto !important;
+  padding-bottom: 2.0rem;   /* keep a little breathing room */
+  margin-bottom: 0.5rem;    /* remove the extra separation */
+  align-items: flex-start;  /* stop vertical centering from creating dead space */
+}
+
+/* Tighten the timeline’s starting padding just a bit */
+#work-section:has(.timeline-zone.open) .timeline-zone{
+  --tz-pad-top: 0.9rem;
+}
+
+/* Optional: reduce only the first row top padding (minor polish) */
+#work-section:has(.timeline-zone.open) .tl-row:first-child{
+  padding-top: 1.6rem;
 }
