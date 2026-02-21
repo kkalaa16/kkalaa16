@@ -839,7 +839,7 @@ function initRoleAnimation() {
   setTimeout(type, 1000);
 }
 
-/* ══ 3D SKILLS GLOBE (ICON TEXTURES, STABLE ROTATION) ═════════════════ */
+/* ══ 3D SKILLS GLOBE (ALIGNED LIKE BEFORE + REAL ICONS) ═══════════════ */
 function initSkillsGlobe() {
   const canvas = document.getElementById('globeCanvas');
   if (!canvas || typeof THREE === 'undefined') {
@@ -850,49 +850,27 @@ function initSkillsGlobe() {
   const container = canvas.parentElement;
   const tooltip = document.getElementById('skillTooltip');
 
-  // IMPORTANT: use iconUrl paths (same assets as your legend)
+  // Skills data with geo coordinates (keep your existing list/paths)
   const skills = [
-    // CFD & Simulation
-    { name:'ANSYS',     iconUrl:'assets/icons/ansys.png',         lat: 45, lon:   5, color:0xff4d00, projects:['NH₃/H₂ FGM','IIT CFD'] },
-    { name:'OpenFOAM',  iconUrl:'assets/icons/openfoam.png',      lat:-20, lon:  30, color:0xff4d00, projects:['Drone','FSI'] },
-    { name:'LES',       iconUrl:'assets/icons/vortex.png',        lat: 25, lon:-100, color:0xff4d00, projects:['Combustion'] },
-    { name:'FGM',       iconUrl:'assets/icons/flame.png',         lat:-35, lon: 140, color:0xff4d00, projects:['TU/e 86.7%'] },
+    // CFD & Simulation (orange)
+    {name:'ANSYS Fluent', iconUrl:'assets/icons/ansys.png', lat:42, lon:15, color:0xff4d00, projects:['NH₃/H₂ FGM','Sandia-D Entropy']},
+    {name:'OpenFOAM', iconUrl:'assets/icons/openfoam.png', lat:-18, lon:35, color:0xff4d00, projects:['Drone Thesis','FSI']},
+    {name:'LES', iconUrl:'assets/icons/vortex.png', lat:26, lon:-95, color:0xff4d00, projects:['Combustion']},
+    {name:'Combustion', iconUrl:'assets/icons/flame.png', lat:-34, lon:140, color:0xff4d00, projects:['FGM','Entropy Analysis']},
 
-    // Systems
-    { name:'SysML',     iconUrl:'assets/icons/gear.png',          lat: 40, lon:-120, color:0xffa500, projects:['BWB'] },
-    { name:'OpenMDAO',  iconUrl:'assets/icons/gear.png',          lat:-15, lon: -60, color:0xffa500, projects:['AFRL +15.7%'] },
-    { name:'DoE',       iconUrl:'assets/icons/chart.png',         lat: 50, lon:  90, color:0xffa500, projects:['Turbine'] },
-    { name:'CATIA',     iconUrl:'assets/icons/gear.png',          lat:-40, lon: -10, color:0xffa500, projects:['Hyperloop'] },
+    // Systems / Design (amber)
+    {name:'SysML / MBSE', iconUrl:'assets/icons/gear.png', lat:40, lon:-120, color:0xffa500, projects:['BWB / ASDL']},
+    {name:'OpenMDAO', iconUrl:'assets/icons/gear.png', lat:-12, lon:-55, color:0xffa500, projects:['AFRL MDAO']},
+    {name:'DoE / Trade Studies', iconUrl:'assets/icons/chart.png', lat:52, lon:95, color:0xffa500, projects:['Gas Turbine Cycle']},
 
-    // ML & Programming
-    { name:'Python',    iconUrl:'assets/icons/python_snakes.png', lat: 10, lon: 120, color:0x00ff41, projects:['F1 AI'] },
-    { name:'PyTorch',   iconUrl:'assets/icons/flame.png',         lat:-25, lon:-120, color:0x00ff41, projects:['FNO'] },
-    { name:'MATLAB',    iconUrl:'assets/icons/matlab.png',        lat: 30, lon:  50, color:0x00bfff, projects:['Battery'] },
-    { name:'C++',       iconUrl:'assets/icons/cpp.png',           lat:-45, lon: 170, color:0x00bfff, projects:['Solvers'] },
+    // ML & Programming (green / cyan)
+    {name:'Python', iconUrl:'assets/icons/python_snakes.png', lat:8, lon:120, color:0x00ff41, projects:['F1 Strategy AI','Automation']},
+    {name:'PyTorch', iconUrl:'assets/icons/flame.png', lat:-26, lon:-120, color:0x00ff41, projects:['FNO / PINO']},
+    {name:'MATLAB', iconUrl:'assets/icons/matlab.png', lat:30, lon:50, color:0x00bfff, projects:['Battery / Controls']},
+    {name:'C++', iconUrl:'assets/icons/cpp.png', lat:-45, lon:170, color:0x00bfff, projects:['Solvers']},
   ];
 
   // ---------- helpers ----------
-  function makeCircleTexture(hexColor) {
-    const c = document.createElement('canvas');
-    c.width = 128; c.height = 128;
-    const ctx = c.getContext('2d');
-
-    ctx.clearRect(0, 0, 128, 128);
-    ctx.beginPath();
-    ctx.arc(64, 64, 56, 0, Math.PI * 2);
-    ctx.fillStyle = '#' + (hexColor >>> 0).toString(16).padStart(6, '0');
-    ctx.fill();
-
-    // subtle rim
-    ctx.lineWidth = 6;
-    ctx.strokeStyle = 'rgba(255,255,255,0.18)';
-    ctx.stroke();
-
-    const tex = new THREE.CanvasTexture(c);
-    tex.needsUpdate = true;
-    return tex;
-  }
-
   function latLonToVec3(lat, lon, r) {
     const phi = (90 - lat) * Math.PI / 180;
     const theta = (lon + 180) * Math.PI / 180;
@@ -902,26 +880,101 @@ function initSkillsGlobe() {
     return new THREE.Vector3(x, y, z);
   }
 
-  // ---------- scene ----------
+  // Draw a circular badge with optional image centered inside (contain-fit)
+  function makeBadgeTexture(skill) {
+    const c = document.createElement('canvas');
+    c.width = 128; c.height = 128;
+    const ctx = c.getContext('2d');
+
+    const col = '#' + (skill.color >>> 0).toString(16).padStart(6, '0');
+
+    function drawBase() {
+      ctx.clearRect(0, 0, 128, 128);
+
+      // dark halo
+      ctx.beginPath();
+      ctx.arc(64, 64, 60, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0,0,0,0.55)';
+      ctx.fill();
+
+      // colored badge
+      ctx.beginPath();
+      ctx.arc(64, 64, 52, 0, Math.PI * 2);
+      ctx.fillStyle = col;
+      ctx.globalAlpha = 0.22;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+
+      // border
+      ctx.beginPath();
+      ctx.arc(64, 64, 52, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(255,255,255,0.30)';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // fallback text (first token)
+      ctx.fillStyle = '#fff';
+      ctx.font = '700 18px "Space Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText((skill.name || '').split(' ')[0].slice(0, 6), 64, 64);
+    }
+
+    drawBase();
+    const tex = new THREE.CanvasTexture(c);
+    tex.needsUpdate = true;
+    if ('colorSpace' in tex) tex.colorSpace = THREE.SRGBColorSpace;
+
+    // If iconUrl provided, draw icon into clipped circle
+    if (skill.iconUrl) {
+      const img = new Image();
+      // same-origin local assets: crossOrigin not needed; keep harmless
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        drawBase();
+
+        // clip to inner circle
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(64, 64, 38, 0, Math.PI * 2);
+        ctx.clip();
+
+        // contain fit inside 76x76 box
+        const iw = img.width, ih = img.height;
+        const s = Math.min(76 / iw, 76 / ih);
+        const w = iw * s, h = ih * s;
+        ctx.globalAlpha = 1;
+        ctx.drawImage(img, 64 - w/2, 64 - h/2, w, h);
+
+        ctx.restore();
+
+        tex.needsUpdate = true;
+      };
+      img.onerror = () => { /* fallback remains */ };
+      img.src = skill.iconUrl;
+    }
+
+    return tex;
+  }
+
+  // ---------- scene setup ----------
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(
-    45,
-    container.offsetWidth / Math.max(1, container.offsetHeight),
-    0.1,
-    2000
-  );
+
+  const w0 = Math.max(1, container.offsetWidth);
+  const h0 = Math.max(1, container.offsetHeight);
+  const camera = new THREE.PerspectiveCamera(45, w0 / h0, 0.1, 2000);
   camera.position.z = 400;
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  renderer.setSize(container.offsetWidth, container.offsetHeight);
+  renderer.setSize(w0, h0);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   if ('outputColorSpace' in renderer) renderer.outputColorSpace = THREE.SRGBColorSpace;
 
-  // globe group (rotate this only)
+  // ONE group: globe + sprites + pins rotate together (this is the alignment fix)
   const globeGroup = new THREE.Group();
   scene.add(globeGroup);
 
-  // globe wireframe
+  // Globe wireframe
   const globeGeom = new THREE.SphereGeometry(100, 64, 64);
   const globeMat = new THREE.MeshBasicMaterial({
     color: 0x0a0a0e,
@@ -933,7 +986,7 @@ function initSkillsGlobe() {
   globe.renderOrder = 1;
   globeGroup.add(globe);
 
-  // glow
+  // Glow atmosphere
   const glowGeom = new THREE.SphereGeometry(102, 32, 32);
   const glowMat = new THREE.MeshBasicMaterial({
     color: 0x0066cc,
@@ -946,98 +999,61 @@ function initSkillsGlobe() {
   glow.renderOrder = 0;
   globeGroup.add(glow);
 
-  // sprites + pins
-  const skillHitTargets = [];
+  // Skill sprites + pins
+  const skillObjects = [];
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
-  const loader = new THREE.TextureLoader();
 
-  const ICON_R = 130;
-  const PIN_R  = 101;
+  const ICON_R = 130;   // where icons float
+  const PIN_R  = 101;   // on the globe surface
 
   skills.forEach(skill => {
-    const pos = latLonToVec3(skill.lat, skill.lon, ICON_R);
+    const iconPos = latLonToVec3(skill.lat, skill.lon, ICON_R);
+    const pinPos  = latLonToVec3(skill.lat, skill.lon, PIN_R);
 
-    // Badge sprite behind icon
-    const badgeTex = makeCircleTexture(skill.color);
-    const badgeMat = new THREE.SpriteMaterial({
-      map: badgeTex,
+    // Sprite (badge texture with icon drawn inside)
+    const tex = makeBadgeTexture(skill);
+    const spriteMat = new THREE.SpriteMaterial({
+      map: tex,
       transparent: true,
       opacity: 0.95,
       depthTest: false,
       depthWrite: false
     });
-    const badge = new THREE.Sprite(badgeMat);
-    badge.position.copy(pos);
-    badge.scale.set(26, 26, 1);
-    badge.renderOrder = 10;
 
-    // Icon sprite on top (loads async)
-    const iconMat = new THREE.SpriteMaterial({
-      transparent: true,
-      opacity: 1,
-      depthTest: false,
-      depthWrite: false
-    });
-    const iconSprite = new THREE.Sprite(iconMat);
-    iconSprite.position.copy(pos.clone().multiplyScalar(1.002)); // tiny lift
-    iconSprite.scale.set(18, 18, 1);
-    iconSprite.renderOrder = 11;
+    const sprite = new THREE.Sprite(spriteMat);
+    sprite.position.copy(iconPos);
+    sprite.scale.set(24, 24, 1);   // matches your “aligned as before” sizing
+    sprite.renderOrder = 10;
 
-    // attach user data for hover
-    iconSprite.userData = {
+    sprite.userData = {
       skill,
-      baseScale: 18,
-      baseOpacity: 1.0,
-      badge
+      baseScale: 24,
+      baseOpacity: 0.90
     };
 
-    // Load icon texture
-    loader.load(
-      skill.iconUrl,
-      (tex) => {
-        if ('colorSpace' in tex) tex.colorSpace = THREE.SRGBColorSpace;
-        tex.needsUpdate = true;
-        iconMat.map = tex;
-        iconMat.needsUpdate = true;
-      },
-      undefined,
-      () => console.warn('Failed to load globe icon:', skill.iconUrl)
-    );
+    globeGroup.add(sprite);
+    skillObjects.push(sprite);
 
-    globeGroup.add(badge);
-    globeGroup.add(iconSprite);
-    skillHitTargets.push(iconSprite);
-
-    // Pin on globe surface
+    // Pin (cone)
     const pinGeom = new THREE.ConeGeometry(2, 8, 8);
-    const pinMat  = new THREE.MeshBasicMaterial({ color: skill.color, transparent: true, opacity: 0 });
+    const pinMat = new THREE.MeshBasicMaterial({ color: skill.color, transparent: true, opacity: 0 });
     const pin = new THREE.Mesh(pinGeom, pinMat);
-    pin.position.copy(latLonToVec3(skill.lat, skill.lon, PIN_R));
+    pin.position.copy(pinPos);
     pin.lookAt(0, 0, 0);
     pin.rotateX(Math.PI);
     pin.renderOrder = 5;
-    globeGroup.add(pin);
 
-    iconSprite.userData.pin = pin;
+    globeGroup.add(pin);
+    sprite.userData.pin = pin;
   });
 
-  // ---------- hover tooltip ----------
-  let hovered = null;
+  // ---------- hover interaction ----------
+  let hoveredSkill = null;
 
   function hideTooltip() {
     if (!tooltip) return;
     tooltip.classList.remove('visible');
-  }
-
-  function showTooltip(skill, x, y) {
-    if (!tooltip) return;
-    tooltip.querySelector('.tooltip-skill-name').textContent = skill.name;
-    tooltip.querySelector('.tooltip-projects').innerHTML =
-      (skill.projects || []).map(p => `<div class="tooltip-project-item">${p}</div>`).join('');
-    tooltip.style.left = (x + 18) + 'px';
-    tooltip.style.top  = (y - 18) + 'px';
-    tooltip.classList.add('visible');
   }
 
   canvas.addEventListener('mousemove', (e) => {
@@ -1046,69 +1062,86 @@ function initSkillsGlobe() {
     mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
 
     raycaster.setFromCamera(mouse, camera);
-    const hits = raycaster.intersectObjects(skillHitTargets, false);
+    const intersects = raycaster.intersectObjects(skillObjects, false);
 
-    if (hits.length) {
-      const spr = hits[0].object;
-      if (hovered !== spr) {
+    if (intersects.length > 0) {
+      const sprite = intersects[0].object;
+
+      if (hoveredSkill !== sprite) {
         // reset old
-        if (hovered) {
-          hovered.scale.set(hovered.userData.baseScale, hovered.userData.baseScale, 1);
-          hovered.material.opacity = hovered.userData.baseOpacity;
-          hovered.userData.badge.scale.set(26, 26, 1);
-          if (hovered.userData.pin) hovered.userData.pin.material.opacity = 0;
+        if (hoveredSkill) {
+          hoveredSkill.scale.set(hoveredSkill.userData.baseScale, hoveredSkill.userData.baseScale, 1);
+          hoveredSkill.material.opacity = hoveredSkill.userData.baseOpacity;
+          if (hoveredSkill.userData.pin) hoveredSkill.userData.pin.material.opacity = 0;
         }
-        hovered = spr;
+
+        hoveredSkill = sprite;
 
         // highlight new
-        hovered.scale.set(hovered.userData.baseScale * 1.35, hovered.userData.baseScale * 1.35, 1);
-        hovered.userData.badge.scale.set(30, 30, 1);
-        if (hovered.userData.pin) hovered.userData.pin.material.opacity = 0.85;
+        sprite.scale.set(sprite.userData.baseScale * 1.5, sprite.userData.baseScale * 1.5, 1);
+        sprite.material.opacity = 1;
+        if (sprite.userData.pin) sprite.userData.pin.material.opacity = 0.85;
 
-        showTooltip(hovered.userData.skill, e.clientX - rect.left, e.clientY - rect.top);
+        // tooltip
+        const skill = sprite.userData.skill;
+        if (tooltip) {
+          tooltip.querySelector('.tooltip-skill-name').textContent = skill.name;
+          tooltip.querySelector('.tooltip-projects').innerHTML =
+            (skill.projects || []).map(p => `<div class="tooltip-project-item">${p}</div>`).join('');
+
+          tooltip.style.left = (e.clientX - rect.left + 20) + 'px';
+          tooltip.style.top  = (e.clientY - rect.top - 20) + 'px';
+          tooltip.classList.add('visible');
+        }
       } else {
-        showTooltip(hovered.userData.skill, e.clientX - rect.left, e.clientY - rect.top);
+        // keep tooltip following cursor
+        if (tooltip) {
+          tooltip.style.left = (e.clientX - rect.left + 20) + 'px';
+          tooltip.style.top  = (e.clientY - rect.top - 20) + 'px';
+        }
       }
     } else {
-      if (hovered) {
-        hovered.scale.set(hovered.userData.baseScale, hovered.userData.baseScale, 1);
-        hovered.userData.badge.scale.set(26, 26, 1);
-        if (hovered.userData.pin) hovered.userData.pin.material.opacity = 0;
-        hovered = null;
+      if (hoveredSkill) {
+        hoveredSkill.scale.set(hoveredSkill.userData.baseScale, hoveredSkill.userData.baseScale, 1);
+        hoveredSkill.material.opacity = hoveredSkill.userData.baseOpacity;
+        if (hoveredSkill.userData.pin) hoveredSkill.userData.pin.material.opacity = 0;
+        hoveredSkill = null;
       }
       hideTooltip();
     }
   });
 
   canvas.addEventListener('mouseleave', () => {
-    if (hovered) {
-      hovered.scale.set(hovered.userData.baseScale, hovered.userData.baseScale, 1);
-      hovered.userData.badge.scale.set(26, 26, 1);
-      if (hovered.userData.pin) hovered.userData.pin.material.opacity = 0;
-      hovered = null;
+    if (hoveredSkill) {
+      hoveredSkill.scale.set(hoveredSkill.userData.baseScale, hoveredSkill.userData.baseScale, 1);
+      hoveredSkill.material.opacity = hoveredSkill.userData.baseOpacity;
+      if (hoveredSkill.userData.pin) hoveredSkill.userData.pin.material.opacity = 0;
+      hoveredSkill = null;
     }
     hideTooltip();
   });
 
-  // ---------- drag rotate ----------
-  let dragging = false;
-  let last = { x: 0, y: 0 };
+  // ---------- drag rotate (rotate the group) ----------
+  let isDragging = false;
+  let prev = { x: 0, y: 0 };
   let vx = 0, vy = 0;
 
   canvas.addEventListener('mousedown', (e) => {
-    dragging = true;
-    last = { x: e.clientX, y: e.clientY };
+    isDragging = true;
+    prev = { x: e.clientX, y: e.clientY };
   });
-  window.addEventListener('mouseup', () => dragging = false);
+
+  window.addEventListener('mouseup', () => (isDragging = false));
 
   window.addEventListener('mousemove', (e) => {
-    if (!dragging) return;
-    const dx = e.clientX - last.x;
-    const dy = e.clientY - last.y;
-    last = { x: e.clientX, y: e.clientY };
+    if (!isDragging) return;
+    const dx = e.clientX - prev.x;
+    const dy = e.clientY - prev.y;
+    prev = { x: e.clientX, y: e.clientY };
 
     const ry = dx * 0.005;
     const rx = dy * 0.005;
+
     globeGroup.rotation.y += ry;
     globeGroup.rotation.x += rx;
 
@@ -1122,14 +1155,16 @@ function initSkillsGlobe() {
     camera.position.z = Math.max(250, Math.min(600, camera.position.z));
   }, { passive: false });
 
-  // ---------- loop ----------
+  // ---------- animation ----------
   function animate() {
     requestAnimationFrame(animate);
 
-    if (!dragging) {
+    // auto rotation + inertia
+    if (!isDragging) {
       globeGroup.rotation.y += 0.001 + vy * 0.02;
       globeGroup.rotation.x += vx * 0.02;
-      vx *= 0.92; vy *= 0.92;
+      vx *= 0.92;
+      vy *= 0.92;
     }
 
     renderer.render(scene, camera);
@@ -1138,9 +1173,9 @@ function initSkillsGlobe() {
 
   // resize
   window.addEventListener('resize', () => {
-    const w = container.offsetWidth;
-    const h = container.offsetHeight;
-    camera.aspect = w / Math.max(1, h);
+    const w = Math.max(1, container.offsetWidth);
+    const h = Math.max(1, container.offsetHeight);
+    camera.aspect = w / h;
     camera.updateProjectionMatrix();
     renderer.setSize(w, h);
   });
