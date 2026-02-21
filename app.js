@@ -8,14 +8,11 @@ const PROJECT_DATA = {
     date: 'MAY – AUG 2025',
     tags: ['Machine Learning', 'DBSCAN/GMM', 'Python', 'Web Dashboard'],
 
-    // For this project, show a clean description-first layout (no “Key Contributions” / “Results” headings)
     layout: 'description',
     extraPosition: 'afterOverview',
 
-    // Description (what the project is + what you owned)
     overviewHTML: `Built an interactive Formula 1 strategy dashboard that combines multiple ML modules for driver profiling, tyre-choice support, qualifying pace estimation, track DNA clustering, and pit-stop strategy exploration.<br><br><b>What I was responsible for:</b> Track DNA analysis using DBSCAN and Gaussian Mixture Models, feature engineering from multi-season track geometry data, driver-performance analysis from telemetry-style signals (braking/cornering), and integrating the insights into a multi-page web dashboard.`,
 
-    // Kept for completeness (hidden by the description layout)
     contributions: [
       'Led Track DNA Analysis module with DBSCAN & Gaussian Mixture Models',
       'Engineered feature extraction from multi-season track geometry data',
@@ -132,7 +129,6 @@ const PROJECT_DATA = {
     ],
     hasMatrix: false,
 
-    // Image-heavy case study: larger modal + gallery shown first
     modalSize: 'xl',
     extraPosition: 'top',
     extraHTML: `
@@ -172,14 +168,11 @@ const PROJECT_DATA = {
     `
   }
 
-
   // Add more projects as needed
 };
 
 // Timeline heavy visual effects are booted only after the user opts in.
 let TIMELINE_BOOTED = false;
-
-
 
 /* ══ BOOT ═══════════════════════════════════════════════════ */
 window.addEventListener('load', () => {
@@ -318,7 +311,7 @@ function buildCarousel(cardData) {
       const blurPx=2.0*(1-depth);
       el.style.transform=`translate3d(calc(${x3}px - 50%), calc(${y3}px - 50%), ${z3.toFixed(1)}px) scale(${scale.toFixed(3)})`;
       el.style.opacity=opac.toFixed(3);
-      el.style.filter=blurPx>0.1?`blur(${blurPx.toFixed(2)}px)`:'';
+      el.style.filter=blurPx>0.1?`blur(${blurPx.toFixed(2)}px)`:``;
       el.style.zIndex=Math.round(depth*100);
     });
     requestAnimationFrame(spin);
@@ -422,19 +415,15 @@ function initUnravel(ccEls, staticCards) {
         zone.style.maxHeight = 'none';
         zone.removeEventListener('transitionend', onEnd);
 
-        // Bring the first row to the fold once the layout is stable.
         scrollToTimelineStart();
         showTimelineToastOnce();
 
-        // Now that the zone has its final size, boot the heavy visuals.
         bootTimelineOnce();
       }
     };
     zone.addEventListener('transitionend', onEnd);
 
-    // Fallback in case transitionend doesn't fire (e.g., reduced motion).
     setTimeout(() => {
-      // If we never received transitionend, finalize state + guide the user.
       if (zone.style.maxHeight !== 'none') {
         zone.style.maxHeight = 'none';
         scrollToTimelineStart();
@@ -443,24 +432,19 @@ function initUnravel(ccEls, staticCards) {
       if (!TIMELINE_BOOTED) bootTimelineOnce();
     }, 900);
 
-    // Run fly animation after layout settles.
     requestAnimationFrame(() => requestAnimationFrame(() => {
       flyToTimeline(ccEls, staticCards);
       carousel.style.opacity = '0';
     }));
-
-    // Note: scrolling is handled on transition end to avoid landing above empty padding.
   }
 
   function closeTimeline() {
     if (!open) return;
     open = false;
 
-    // Re-show carousel
     refurlCarousel(ccEls, staticCards);
     carousel.style.opacity = '1';
 
-    // Collapse zone
     zone.style.maxHeight = zone.scrollHeight + 'px';
     zone.getBoundingClientRect();
     zone.classList.remove('open');
@@ -468,16 +452,13 @@ function initUnravel(ccEls, staticCards) {
     zone.inert = true;
     zone.setAttribute('aria-hidden', 'true');
 
-    // Prevent a leftover blank area when the timeline collapses above the viewport.
     requestAnimationFrame(() => scrollToWorkTop());
   }
 
-  // Track work section visibility
   new IntersectionObserver(entries => {
     workInView = entries[0].isIntersecting;
     if (!workInView) hideCue();
 
-    // Prompt when the work section is reached (similar to the intro cue).
     if (workInView && !open) {
       clearTimeout(cueTimer);
       cueTimer = setTimeout(showCue, 650);
@@ -486,7 +467,6 @@ function initUnravel(ccEls, staticCards) {
     }
   }, { threshold: 0.35 }).observe(work);
 
-  // Scroll logic: show prompt on upward scroll after passing the work section once.
   window.addEventListener('scroll', () => {
     const y = window.scrollY;
     const dir = (y < lastY) ? 'up' : 'down';
@@ -497,7 +477,6 @@ function initUnravel(ccEls, staticCards) {
     if (!open && workInView && (dir === 'up' || !passedWork)) showCue();
     if (dir === 'down') hideCue();
 
-    // Auto refurl when the user returns to the work section.
     if (open && y < work.offsetTop + 80) closeTimeline();
   }, { passive: true });
 
@@ -517,7 +496,6 @@ function initUnravel(ccEls, staticCards) {
 }
 
 function refurlCarousel(ccEls, staticCards) {
-  // Reset carousel cards to original positions
   ccEls.forEach((cc, i) => {
     if (i >= staticCards.length) return;
     cc.style.position = '';
@@ -727,13 +705,9 @@ function initEducation() {
   new IntersectionObserver(entries => {
     if (!entries[0].isIntersecting) return;
 
-    // Slide in institution cards
     insts.forEach((el, i) => setTimeout(() => el.classList.add('show'), i * 300));
-
-    // Grow dotted line + cat travels across
     setTimeout(() => panel.classList.add('grown'), 750);
 
-    // Test if the external sprite loads; if not, use canvas fallback
     const sprite = document.getElementById('catSprite');
     if (sprite) {
       const testImg = new Image();
@@ -793,7 +767,6 @@ function initRoleAnimation() {
   const cursorEl = document.querySelector('.role-cursor');
   if (!roleEl) return;
 
-  // Hide the separate cursor element - we'll include it in the text
   if (cursorEl) cursorEl.style.display = 'none';
 
   const roles = [
@@ -815,7 +788,6 @@ function initRoleAnimation() {
     const currentRole = roles[currentIndex];
     
     if (!isDeleting) {
-      // Include blinking cursor in the text
       roleEl.innerHTML = currentRole.substring(0, charIndex + 1) + '<span style="color:#00bfff;animation:blink 1s step-end infinite;">|</span>';
       charIndex++;
       if (charIndex === currentRole.length) {
@@ -839,7 +811,7 @@ function initRoleAnimation() {
   setTimeout(type, 1000);
 }
 
-/* ══ 3D SKILLS GLOBE (ALIGNED LIKE BEFORE + REAL ICONS) ═══════════════ */
+/* ══ 3D SKILLS GLOBE (ALIGNED LIKE BEFORE + REAL ICONS, NO TEXT) ══════ */
 function initSkillsGlobe() {
   const canvas = document.getElementById('globeCanvas');
   if (!canvas || typeof THREE === 'undefined') {
@@ -850,27 +822,22 @@ function initSkillsGlobe() {
   const container = canvas.parentElement;
   const tooltip = document.getElementById('skillTooltip');
 
-  // Skills data with geo coordinates (keep your existing list/paths)
   const skills = [
-    // CFD & Simulation (orange)
     {name:'ANSYS Fluent', iconUrl:'assets/icons/ansys.png', lat:42, lon:15, color:0xff4d00, projects:['NH₃/H₂ FGM','Sandia-D Entropy']},
     {name:'OpenFOAM', iconUrl:'assets/icons/openfoam.png', lat:-18, lon:35, color:0xff4d00, projects:['Drone Thesis','FSI']},
     {name:'LES', iconUrl:'assets/icons/vortex.png', lat:26, lon:-95, color:0xff4d00, projects:['Combustion']},
     {name:'Combustion', iconUrl:'assets/icons/flame.png', lat:-34, lon:140, color:0xff4d00, projects:['FGM','Entropy Analysis']},
 
-    // Systems / Design (amber)
     {name:'SysML / MBSE', iconUrl:'assets/icons/gear.png', lat:40, lon:-120, color:0xffa500, projects:['BWB / ASDL']},
     {name:'OpenMDAO', iconUrl:'assets/icons/gear.png', lat:-12, lon:-55, color:0xffa500, projects:['AFRL MDAO']},
     {name:'DoE / Trade Studies', iconUrl:'assets/icons/chart.png', lat:52, lon:95, color:0xffa500, projects:['Gas Turbine Cycle']},
 
-    // ML & Programming (green / cyan)
     {name:'Python', iconUrl:'assets/icons/python_snakes.png', lat:8, lon:120, color:0x00ff41, projects:['F1 Strategy AI','Automation']},
     {name:'PyTorch', iconUrl:'assets/icons/flame.png', lat:-26, lon:-120, color:0x00ff41, projects:['FNO / PINO']},
     {name:'MATLAB', iconUrl:'assets/icons/matlab.png', lat:30, lon:50, color:0x00bfff, projects:['Battery / Controls']},
     {name:'C++', iconUrl:'assets/icons/cpp.png', lat:-45, lon:170, color:0x00bfff, projects:['Solvers']},
   ];
 
-  // ---------- helpers ----------
   function latLonToVec3(lat, lon, r) {
     const phi = (90 - lat) * Math.PI / 180;
     const theta = (lon + 180) * Math.PI / 180;
@@ -880,8 +847,9 @@ function initSkillsGlobe() {
     return new THREE.Vector3(x, y, z);
   }
 
-  // Draw a circular badge with optional image centered inside (contain-fit)
-  function makeBadgeTexture(skill) {
+  // Badge canvas that draws ONLY the halo/border and the icon (no text ever).
+  // Sprite is hidden until icon is drawn to prevent any flash/overlap.
+  function makeBadgeTextureNoText(skill, onReady) {
     const c = document.createElement('canvas');
     c.width = 128; c.height = 128;
     const ctx = c.getContext('2d');
@@ -897,11 +865,11 @@ function initSkillsGlobe() {
       ctx.fillStyle = 'rgba(0,0,0,0.55)';
       ctx.fill();
 
-      // colored badge
+      // colored tint
       ctx.beginPath();
       ctx.arc(64, 64, 52, 0, Math.PI * 2);
       ctx.fillStyle = col;
-      ctx.globalAlpha = 0.22;
+      ctx.globalAlpha = 0.18;
       ctx.fill();
       ctx.globalAlpha = 1;
 
@@ -911,53 +879,53 @@ function initSkillsGlobe() {
       ctx.strokeStyle = 'rgba(255,255,255,0.30)';
       ctx.lineWidth = 3;
       ctx.stroke();
-
-      // fallback text (first token)
-      ctx.fillStyle = '#fff';
-      ctx.font = '700 18px "Space Mono", monospace';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText((skill.name || '').split(' ')[0].slice(0, 6), 64, 64);
     }
 
     drawBase();
     const tex = new THREE.CanvasTexture(c);
     tex.needsUpdate = true;
-    if ('colorSpace' in tex) tex.colorSpace = THREE.SRGBColorSpace;
 
-    // If iconUrl provided, draw icon into clipped circle
-    if (skill.iconUrl) {
-      const img = new Image();
-      // same-origin local assets: crossOrigin not needed; keep harmless
-      img.crossOrigin = 'anonymous';
-      img.onload = () => {
-        drawBase();
-
-        // clip to inner circle
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(64, 64, 38, 0, Math.PI * 2);
-        ctx.clip();
-
-        // contain fit inside 76x76 box
-        const iw = img.width, ih = img.height;
-        const s = Math.min(76 / iw, 76 / ih);
-        const w = iw * s, h = ih * s;
-        ctx.globalAlpha = 1;
-        ctx.drawImage(img, 64 - w/2, 64 - h/2, w, h);
-
-        ctx.restore();
-
-        tex.needsUpdate = true;
-      };
-      img.onerror = () => { /* fallback remains */ };
-      img.src = skill.iconUrl;
+    // Three.js version compatibility: colorSpace vs encoding
+    if ('colorSpace' in tex && THREE.SRGBColorSpace) {
+      tex.colorSpace = THREE.SRGBColorSpace;
+    } else if ('encoding' in tex && THREE.sRGBEncoding) {
+      tex.encoding = THREE.sRGBEncoding;
     }
 
+    if (!skill.iconUrl) {
+      // No icon -> leave hidden (images-only policy)
+      if (typeof onReady === 'function') onReady(false);
+      return tex;
+    }
+
+    const img = new Image();
+    img.onload = () => {
+      drawBase();
+
+      // clip inner circle then draw icon
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(64, 64, 38, 0, Math.PI * 2);
+      ctx.clip();
+
+      const s = Math.min(76 / img.width, 76 / img.height);
+      const w = img.width * s, h = img.height * s;
+      ctx.drawImage(img, 64 - w/2, 64 - h/2, w, h);
+
+      ctx.restore();
+
+      tex.needsUpdate = true;
+      if (typeof onReady === 'function') onReady(true);
+    };
+    img.onerror = () => {
+      // Icon failed -> keep hidden (images-only)
+      if (typeof onReady === 'function') onReady(false);
+    };
+
+    img.src = skill.iconUrl;
     return tex;
   }
 
-  // ---------- scene setup ----------
   const scene = new THREE.Scene();
 
   const w0 = Math.max(1, container.offsetWidth);
@@ -968,13 +936,17 @@ function initSkillsGlobe() {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setSize(w0, h0);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-  if ('outputColorSpace' in renderer) renderer.outputColorSpace = THREE.SRGBColorSpace;
 
-  // ONE group: globe + sprites + pins rotate together (this is the alignment fix)
+  // compatibility: outputColorSpace vs outputEncoding
+  if ('outputColorSpace' in renderer && THREE.SRGBColorSpace) {
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+  } else if ('outputEncoding' in renderer && THREE.sRGBEncoding) {
+    renderer.outputEncoding = THREE.sRGBEncoding;
+  }
+
   const globeGroup = new THREE.Group();
   scene.add(globeGroup);
 
-  // Globe wireframe
   const globeGeom = new THREE.SphereGeometry(100, 64, 64);
   const globeMat = new THREE.MeshBasicMaterial({
     color: 0x0a0a0e,
@@ -986,7 +958,6 @@ function initSkillsGlobe() {
   globe.renderOrder = 1;
   globeGroup.add(globe);
 
-  // Glow atmosphere
   const glowGeom = new THREE.SphereGeometry(102, 32, 32);
   const glowMat = new THREE.MeshBasicMaterial({
     color: 0x0066cc,
@@ -999,31 +970,29 @@ function initSkillsGlobe() {
   glow.renderOrder = 0;
   globeGroup.add(glow);
 
-  // Skill sprites + pins
   const skillObjects = [];
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
 
-  const ICON_R = 130;   // where icons float
-  const PIN_R  = 101;   // on the globe surface
+  const ICON_R = 130;
+  const PIN_R  = 101;
 
   skills.forEach(skill => {
     const iconPos = latLonToVec3(skill.lat, skill.lon, ICON_R);
     const pinPos  = latLonToVec3(skill.lat, skill.lon, PIN_R);
 
-    // Sprite (badge texture with icon drawn inside)
-    const tex = makeBadgeTexture(skill);
+    // Create sprite material hidden until icon loads
     const spriteMat = new THREE.SpriteMaterial({
-      map: tex,
+      map: null,
       transparent: true,
-      opacity: 0.95,
+      opacity: 0,            // hidden at start (prevents any overlap/flash)
       depthTest: false,
       depthWrite: false
     });
 
     const sprite = new THREE.Sprite(spriteMat);
     sprite.position.copy(iconPos);
-    sprite.scale.set(24, 24, 1);   // matches your “aligned as before” sizing
+    sprite.scale.set(24, 24, 1);
     sprite.renderOrder = 10;
 
     sprite.userData = {
@@ -1032,10 +1001,17 @@ function initSkillsGlobe() {
       baseOpacity: 0.90
     };
 
+    // Build texture and show sprite only when icon is drawn
+    const tex = makeBadgeTextureNoText(skill, (ok) => {
+      if (ok) spriteMat.opacity = 0.95;   // show only if icon exists and loaded
+      else spriteMat.opacity = 0;         // images-only policy: hide if missing
+    });
+    spriteMat.map = tex;
+    spriteMat.needsUpdate = true;
+
     globeGroup.add(sprite);
     skillObjects.push(sprite);
 
-    // Pin (cone)
     const pinGeom = new THREE.ConeGeometry(2, 8, 8);
     const pinMat = new THREE.MeshBasicMaterial({ color: skill.color, transparent: true, opacity: 0 });
     const pin = new THREE.Mesh(pinGeom, pinMat);
@@ -1048,7 +1024,6 @@ function initSkillsGlobe() {
     sprite.userData.pin = pin;
   });
 
-  // ---------- hover interaction ----------
   let hoveredSkill = null;
 
   function hideTooltip() {
@@ -1068,7 +1043,6 @@ function initSkillsGlobe() {
       const sprite = intersects[0].object;
 
       if (hoveredSkill !== sprite) {
-        // reset old
         if (hoveredSkill) {
           hoveredSkill.scale.set(hoveredSkill.userData.baseScale, hoveredSkill.userData.baseScale, 1);
           hoveredSkill.material.opacity = hoveredSkill.userData.baseOpacity;
@@ -1077,12 +1051,10 @@ function initSkillsGlobe() {
 
         hoveredSkill = sprite;
 
-        // highlight new
         sprite.scale.set(sprite.userData.baseScale * 1.5, sprite.userData.baseScale * 1.5, 1);
         sprite.material.opacity = 1;
         if (sprite.userData.pin) sprite.userData.pin.material.opacity = 0.85;
 
-        // tooltip
         const skill = sprite.userData.skill;
         if (tooltip) {
           tooltip.querySelector('.tooltip-skill-name').textContent = skill.name;
@@ -1094,7 +1066,6 @@ function initSkillsGlobe() {
           tooltip.classList.add('visible');
         }
       } else {
-        // keep tooltip following cursor
         if (tooltip) {
           tooltip.style.left = (e.clientX - rect.left + 20) + 'px';
           tooltip.style.top  = (e.clientY - rect.top - 20) + 'px';
@@ -1121,7 +1092,6 @@ function initSkillsGlobe() {
     hideTooltip();
   });
 
-  // ---------- drag rotate (rotate the group) ----------
   let isDragging = false;
   let prev = { x: 0, y: 0 };
   let vx = 0, vy = 0;
@@ -1148,18 +1118,15 @@ function initSkillsGlobe() {
     vy = ry; vx = rx;
   });
 
-  // zoom
   canvas.addEventListener('wheel', (e) => {
     e.preventDefault();
     camera.position.z += e.deltaY * 0.1;
     camera.position.z = Math.max(250, Math.min(600, camera.position.z));
   }, { passive: false });
 
-  // ---------- animation ----------
   function animate() {
     requestAnimationFrame(animate);
 
-    // auto rotation + inertia
     if (!isDragging) {
       globeGroup.rotation.y += 0.001 + vy * 0.02;
       globeGroup.rotation.x += vx * 0.02;
@@ -1171,7 +1138,6 @@ function initSkillsGlobe() {
   }
   animate();
 
-  // resize
   window.addEventListener('resize', () => {
     const w = Math.max(1, container.offsetWidth);
     const h = Math.max(1, container.offsetHeight);
@@ -1191,9 +1157,7 @@ function initProjectModals() {
   
   if (!modal) return;
   
-  // Click + keyboard handlers for all project cards
   document.querySelectorAll('[data-project-id]').forEach(card => {
-    // Make cards focusable for keyboard users
     if (!card.hasAttribute('tabindex')) card.setAttribute('tabindex', '0');
 
     const launch = () => {
@@ -1232,7 +1196,6 @@ function initProjectModals() {
     };
   }
   
-  
   function openModal(data) {
     const modalBody = modal.querySelector('.modal-body');
     const grid = modal.querySelector('.modal-grid');
@@ -1240,30 +1203,24 @@ function initProjectModals() {
     const overviewEl = document.getElementById('modalOverview');
     const extra = document.getElementById('modalExtra');
 
-    // Reset per-open layout classes
     modalContent.classList.remove('modal-xl');
 
-    // Size variants (used for image-heavy projects)
     if (data.modalSize === 'xl') {
       modalContent.classList.add('modal-xl');
     }
 
-    // Populate modal content
     document.getElementById('modalDate').textContent = data.date || '';
     document.getElementById('modalTitle').textContent = data.title || '';
 
-    // Tags
     const tags = Array.isArray(data.tags) ? data.tags : [];
     document.getElementById('modalTags').innerHTML = tags.map(tag => `<span>${tag}</span>`).join('');
 
-    // Overview (supports HTML for curated descriptions)
     if (data.overviewHTML) {
       overviewEl.innerHTML = data.overviewHTML;
     } else {
       overviewEl.textContent = data.overview || '';
     }
 
-    // Sections
     const contributions = Array.isArray(data.contributions) ? data.contributions : [];
     const tech = Array.isArray(data.tech) ? data.tech : [];
     const results = Array.isArray(data.results) ? data.results : [];
@@ -1272,17 +1229,14 @@ function initProjectModals() {
     document.getElementById('modalTech').innerHTML = tech.map(t => `<span>${t}</span>`).join('');
     document.getElementById('modalResults').innerHTML = results.map(r => `<li>${r}</li>`).join('');
 
-    // Layout controls
     const isDescriptionLayout = data.layout === 'description';
     if (grid) grid.style.display = (isDescriptionLayout || data.hideGrid) ? 'none' : '';
     if (resultsSection) resultsSection.style.display = (isDescriptionLayout || data.hideResults) ? 'none' : '';
 
-    // Optional rich content (images, embeds, etc.)
     if (extra) {
       extra.innerHTML = data.extraHTML || '';
       extra.classList.remove('is-top', 'is-after-overview');
 
-      // Default placement: bottom
       const pos = data.extraPosition || 'bottom';
       if (pos === 'top') {
         extra.classList.add('is-top');
@@ -1299,25 +1253,21 @@ function initProjectModals() {
       }
     }
 
-    // Matrix background for ML/DL projects
     if (data.hasMatrix) {
       modalContent.classList.add('matrix-active');
     } else {
       modalContent.classList.remove('matrix-active');
     }
 
-    // Show modal first so the matrix canvas can size correctly
     modal.classList.add('active');
     modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
 
-    // Start matrix after layout is visible
     if (data.hasMatrix) {
       requestAnimationFrame(() => initModalMatrix());
     }
   }
 
-  
   function closeModal() {
     modal.classList.remove('active');
     modal.setAttribute('aria-hidden', 'true');
@@ -1328,11 +1278,9 @@ function initProjectModals() {
     if (extra) extra.innerHTML = '';
   }
   
-  // Close handlers
   modalClose.addEventListener('click', closeModal);
   modalBackdrop.addEventListener('click', closeModal);
   
-  // ESC key
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && modal.classList.contains('active')) {
       closeModal();
@@ -1345,7 +1293,6 @@ function initModalMatrix() {
   const canvas = document.getElementById('modalMatrixBg');
   if (!canvas) return;
 
-  // Prevent duplicate intervals if the same modal is opened repeatedly.
   if (canvas.dataset.running === '1') return;
   canvas.dataset.running = '1';
   
@@ -1376,7 +1323,6 @@ function initModalMatrix() {
   
   const interval = setInterval(draw, 50);
   
-  // Clean up on modal close
   const modal = document.getElementById('projectModal');
   const observer = new MutationObserver(() => {
     if (!modal.classList.contains('active')) {
@@ -1397,16 +1343,14 @@ function initAchievements() {
   const io = new IntersectionObserver(entries => {
     if (!entries[0].isIntersecting) return;
 
-    // Animate score radials
     document.querySelectorAll('.score-radial').forEach(radial => {
       const score = parseFloat(radial.dataset.score);
       const fill = radial.querySelector('.score-fill');
-      const circ = 2 * Math.PI * 50; // r=50
+      const circ = 2 * Math.PI * 50;
       const offset = circ * (1 - score/100);
       setTimeout(()=> fill.style.strokeDashoffset = offset, 100);
     });
 
-    // Animate counters
     document.querySelectorAll('.score-number, .impact-number').forEach(el => {
       const target = parseInt(el.dataset.target);
       const duration = 1500;
@@ -1433,14 +1377,12 @@ function initContact() {
 
   form.addEventListener('submit', e => {
     e.preventDefault();
-    const data = new FormData(form);
     const btn = form.querySelector('button');
     const orig = btn.innerHTML;
 
     btn.innerHTML = '<span>Sending...</span>';
     btn.disabled = true;
 
-    // Simulate send (replace with actual endpoint)
     setTimeout(() => {
       btn.innerHTML = '<span>Sent!</span>';
       form.reset();
@@ -1460,13 +1402,11 @@ function initDownloadResume() {
   btn.addEventListener('click', e => {
     e.preventDefault();
     
-    // Create a link to the PDF from project files
     const link = document.createElement('a');
     link.href = 'Krtin_Kala_Resume.pdf';
     link.download = 'Krtin_Kala_Resume.pdf';
     link.click();
     
-    // Visual feedback
     btn.style.transform = 'scale(0.95)';
     setTimeout(() => btn.style.transform = '', 200);
   });
