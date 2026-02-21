@@ -852,47 +852,92 @@ function initSkillsGlobe() {
 
   // Skills data with geo coordinates
   const skills = [
-    // Distribute across entire globe - North, South, East, West
-    // CFD & Simulation (Orange) - scattered
-    {name:'ANSYS', icon:'A', lat:45, lon:5, color:0xff4d00, projects:['NH₃/H₂ FGM','IIT CFD']},
-    {name:'OpenFOAM', icon:'OF', lat:-20, lon:30, color:0xff4d00, projects:['Drone','FSI']},
-    {name:'LES', icon:'≈', lat:25, lon:-100, color:0xff4d00, projects:['Combustion']},
-    {name:'FGM', icon:'🔥', lat:-35, lon:140, color:0xff4d00, projects:['TU/e 86.7%']},
-    
-    // Systems (Light Orange) - scattered
-    {name:'SysML', icon:'⚙', lat:40, lon:-120, color:0xffa500, projects:['BWB']},
-    {name:'OpenMDAO', icon:'M', lat:-15, lon:-60, color:0xffa500, projects:['AFRL +15.7%']},
-    {name:'DoE', icon:'📊', lat:50, lon:90, color:0xffa500, projects:['Turbine']},
-    {name:'CATIA', icon:'C', lat:-40, lon:-10, color:0xffa500, projects:['Hyperloop']},
-    
-    // ML & Programming (Green/Cyan) - scattered
-    {name:'Python', icon:'Py', lat:10, lon:120, color:0x00ff41, projects:['F1 AI']},
-    {name:'PyTorch', icon:'🔥', lat:-25, lon:-120, color:0x00ff41, projects:['FNO']},
-    {name:'MATLAB', icon:'M', lat:30, lon:50, color:0x00bfff, projects:['Battery']},
-    {name:'C++', icon:'C++', lat:-45, lon:170, color:0x00bfff, projects:['Solvers']},
+    // CFD & Simulation (orange)
+    {name:'ANSYS Fluent', iconUrl:'assets/icons/ansys.png', lat:42, lon:15, color:0xff4d00, projects:['NH₃/H₂ FGM','Sandia-D Entropy']},
+    {name:'OpenFOAM', iconUrl:'assets/icons/openfoam.png', lat:-18, lon:35, color:0xff4d00, projects:['Drone Thesis','FSI']},
+    {name:'LES', iconUrl:'assets/icons/vortex.png', lat:26, lon:-95, color:0xff4d00, projects:['Combustion']},
+    {name:'Combustion', iconUrl:'assets/icons/flame.png', lat:-34, lon:140, color:0xff4d00, projects:['FGM','Entropy Analysis']},
+
+    // Systems / Design (amber)
+    {name:'SysML / MBSE', iconUrl:'assets/icons/gear.png', lat:40, lon:-120, color:0xffa500, projects:['BWB / ASDL']},
+    {name:'OpenMDAO', iconUrl:'assets/icons/gear.png', lat:-12, lon:-55, color:0xffa500, projects:['AFRL MDAO']},
+    {name:'DoE / Trade Studies', iconUrl:'assets/icons/chart.png', lat:52, lon:95, color:0xffa500, projects:['Gas Turbine Cycle']},
+
+    // ML & Programming (green / cyan)
+    {name:'Python', iconUrl:'assets/icons/python_snakes.png', lat:8, lon:120, color:0x00ff41, projects:['F1 Strategy AI','Automation']},
+    {name:'PyTorch', iconUrl:'assets/icons/flame.png', lat:-26, lon:-120, color:0x00ff41, projects:['FNO / PINO']},
+    {name:'MATLAB', iconUrl:'assets/icons/matlab.png', lat:30, lon:50, color:0x00bfff, projects:['Battery / Controls']},
+    {name:'C++', iconUrl:'assets/icons/cpp.png', lat:-45, lon:170, color:0x00bfff, projects:['Solvers']},
   ];
-  
-  // Helper: Create icon texture
-  function createIconTexture(icon, color) {
+
+  // Helper: Create icon texture (circular badge with image)
+  function createIconTexture(skill) {
     const canvas = document.createElement('canvas');
-    canvas.width = 64;
-    canvas.height = 64;
+    canvas.width = 96;
+    canvas.height = 96;
     const ctx = canvas.getContext('2d');
-    
-    // Circle background
-    ctx.fillStyle = '#' + color.toString(16).padStart(6, '0');
-    ctx.beginPath();
-    ctx.arc(32, 32, 28, 0, Math.PI * 2);
-    ctx.fill();
-    
-    // Icon text
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 20px Arial';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(icon, 32, 32);
-    
-    return new THREE.CanvasTexture(canvas);
+
+    function drawBase() {
+      // outer glow ring
+      ctx.clearRect(0,0,96,96);
+      const col = '#' + skill.color.toString(16).padStart(6,'0');
+      ctx.beginPath();
+      ctx.arc(48,48,44,0,Math.PI*2);
+      ctx.fillStyle = 'rgba(0,0,0,0.55)';
+      ctx.fill();
+
+      // inner badge
+      ctx.beginPath();
+      ctx.arc(48,48,38,0,Math.PI*2);
+      ctx.fillStyle = col;
+      ctx.globalAlpha = 0.22;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+
+      // border
+      ctx.beginPath();
+      ctx.arc(48,48,38,0,Math.PI*2);
+      ctx.strokeStyle = 'rgba(255,255,255,0.28)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // fallback text
+      ctx.fillStyle = '#fff';
+      ctx.font = '700 16px Space Mono, monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(skill.name.split(' ')[0], 48, 48);
+    }
+
+    drawBase();
+    const tex = new THREE.CanvasTexture(canvas);
+
+    if (skill.iconUrl) {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        drawBase();
+        // clip circle
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(48,48,30,0,Math.PI*2);
+        ctx.clip();
+        // contain-fit
+        const iw = img.width, ih = img.height;
+        const s = min(60/iw, 60/ih);
+        const w = iw*s, h = ih*s;
+        ctx.globalAlpha = 1;
+        ctx.drawImage(img, 48-w/2, 48-h/2, w, h);
+        ctx.restore();
+        tex.needsUpdate = true;
+      };
+      img.onerror = () => {};
+      img.src = skill.iconUrl;
+    }
+
+    return tex;
+
+    function min(a,b){return a<b?a:b;}
   }
 
   // Scene setup
@@ -933,7 +978,7 @@ function initSkillsGlobe() {
 
   skills.forEach(skill => {
     // Convert lat/lon to 3D position
-    const radius = 130;
+    const radius = 106;
     const phi = (90 - skill.lat) * Math.PI / 180;
     const theta = (skill.lon + 180) * Math.PI / 180;
     const x = -radius * Math.sin(phi) * Math.cos(theta);
@@ -941,18 +986,20 @@ function initSkillsGlobe() {
     const z = radius * Math.sin(phi) * Math.sin(theta);
 
     // Create sprite
-    const texture = createIconTexture(skill.icon, skill.color);
+    const texture = createIconTexture(skill);
     const spriteMat = new THREE.SpriteMaterial({
-      map:texture,
-      transparent:true,
-      opacity:0.95
+      map: texture,
+      transparent: true,
+      opacity: 0.95,
+      depthTest: false,
+      depthWrite: false
     });
     const sprite = new THREE.Sprite(spriteMat);
     sprite.position.set(x, y, z);
-    sprite.scale.set(20, 20, 1);  // Increased from 12 to 20
+    sprite.scale.set(24, 24, 1);
     sprite.userData = {
       skill:skill,
-      baseScale:20,  // Updated from 12 to 20 to match new size
+      baseScale:24,
       baseOpacity:0.9,
       angle:0
     };
@@ -963,7 +1010,7 @@ function initSkillsGlobe() {
     const pinGeom = new THREE.ConeGeometry(2, 8, 8);
     const pinMat = new THREE.MeshBasicMaterial({color:skill.color, transparent:true, opacity:0});
     const pin = new THREE.Mesh(pinGeom, pinMat);
-    const pinRadius = 101;
+    const pinRadius = 100.2;
     const px = -pinRadius * Math.sin(phi) * Math.cos(theta);
     const py = pinRadius * Math.cos(phi);
     const pz = pinRadius * Math.sin(phi) * Math.sin(theta);
@@ -1075,7 +1122,7 @@ function initSkillsGlobe() {
     // Update sprite positions to follow globe rotation
     skillObjects.forEach(sprite => {
       const skill = sprite.userData.skill;
-      const radius = 130;
+      const radius = 106;
       const phi = (90 - skill.lat) * Math.PI / 180;
       const theta = (skill.lon + 180 + globe.rotation.y * 180 / Math.PI) * Math.PI / 180;
       const x = -radius * Math.sin(phi) * Math.cos(theta);
@@ -1085,7 +1132,7 @@ function initSkillsGlobe() {
 
       // Pin follows too
       if (sprite.userData.pin) {
-        const pinRadius = 101;
+        const pinRadius = 100.2;
         const px = -pinRadius * Math.sin(phi) * Math.cos(theta);
         const py = pinRadius * Math.cos(phi);
         const pz = pinRadius * Math.sin(phi) * Math.sin(theta);
