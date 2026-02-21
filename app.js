@@ -403,6 +403,7 @@ function initUnravel(ccEls, staticCards) {
   function openTimeline() {
     if (open) return;
     open = true;
+    work.classList.add('timeline-open');
     hideCue();
 
     // Expand first so target positions exist.
@@ -441,7 +442,7 @@ function initUnravel(ccEls, staticCards) {
   function closeTimeline() {
     if (!open) return;
     open = false;
-
+    work.classList.remove('timeline-open');
     refurlCarousel(ccEls, staticCards);
     carousel.style.opacity = '1';
 
