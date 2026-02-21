@@ -744,15 +744,46 @@ a { color:inherit; text-decoration:none; }
   display:flex; flex-wrap:wrap; gap:0.5rem;
 }
 
-.legend-items span {
-  font-size:0.68rem; padding:0.3rem 0.7rem;
-  background:var(--surface); border:1px solid var(--line);
-  border-radius:4px; color:var(--dim);
+/* Skills legend below globe */
+.legend-items {
+  display:flex;
+  flex-wrap:wrap;
+  gap:0.55rem;
+}
+
+/* IMPORTANT: style only the chip wrapper, not every span inside */
+.legend-item{
+  display:inline-flex;
+  align-items:center;
+  gap:0.55rem;
+
+  font-size:0.74rem;          /* slightly bigger */
+  padding:0.42rem 0.85rem;    /* slightly bigger */
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:6px;
+  color:var(--dim);
   transition:all 200ms;
 }
 
-.legend-items span:hover {
-  border-color:var(--accent-md); color:var(--text);
+/* icon sizing is defined here (this is not a workaround; it’s correct component styling) */
+.legend-item > img{
+  width:18px;
+  height:18px;
+  flex:0 0 18px;
+  object-fit:contain;
+  display:block;
+}
+
+/* label span inside the chip */
+.legend-item > span{
+  display:inline-block;
+  line-height:1;
+}
+
+.legend-item:hover{
+  border-color:var(--accent-md);
+  color:var(--text);
   background:var(--accent-lo);
 }
 
