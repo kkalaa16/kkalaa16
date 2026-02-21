@@ -1438,11 +1438,20 @@ a { color:inherit; text-decoration:none; }
 }
 
 
-/* ══ FIX: remove giant gap above unfurled timeline ═════════ */
+/* ================================
+   FIX: remove gap when timeline open
+   ================================ */
 
-/* When timeline is open, the carousel is visually hidden but still reserves 70vh.
-   Collapse that reserved space so the timeline starts right under the heading. */
-#work-section:has(.timeline-zone.open) .carousel-stage{
+/* When timeline is open, stop forcing the work section to be a full viewport hero */
+#work-section.timeline-open {
+  min-height: auto !important;
+  align-items: flex-start !important;
+  padding-bottom: 2rem !important;
+  margin-bottom: 0 !important;
+}
+
+/* The carousel is faded out in JS, but it still reserves 70vh. Kill that space. */
+#work-section.timeline-open .carousel-stage {
   height: 0 !important;
   min-height: 0 !important;
   margin-top: 0 !important;
@@ -1450,20 +1459,12 @@ a { color:inherit; text-decoration:none; }
   pointer-events: none !important;
 }
 
-/* Also reduce the Work trigger block height once open (keeps heading + timeline tight) */
-#work-section:has(.timeline-zone.open) .work-trigger{
-  min-height: auto !important;
-  padding-bottom: 2.0rem;   /* keep a little breathing room */
-  margin-bottom: 0.5rem;    /* remove the extra separation */
-  align-items: flex-start;  /* stop vertical centering from creating dead space */
+/* Tighten the top of the timeline a bit */
+#work-section.timeline-open .timeline-zone.open {
+  --tz-pad-top: 0.8rem;
 }
 
-/* Tighten the timeline’s starting padding just a bit */
-#work-section:has(.timeline-zone.open) .timeline-zone{
-  --tz-pad-top: 0.9rem;
-}
-
-/* Optional: reduce only the first row top padding (minor polish) */
-#work-section:has(.timeline-zone.open) .tl-row:first-child{
+/* Optional: your rows have big padding-top; reduce only the first row */
+#work-section.timeline-open .tl-row:first-child {
   padding-top: 1.6rem;
 }
