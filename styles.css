@@ -592,19 +592,57 @@ a { color:inherit; text-decoration:none; }
 }
   to  { background-position:0 calc(-12 * var(--cat-frame-h)); }
 
-/* ─── SKILLS ────────────────────────────────────────────── */
-.skills-section { padding:5rem 8vw; position:relative; z-index:10; border-top:1px solid var(--line); }
-.skills-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2.5rem; margin-top:2rem; }
-.skill-group h4 {
-  font-family:'Space Mono',monospace; font-size:.65rem;
-  letter-spacing:.14em; color:var(--accent); margin-bottom:1rem; text-transform:uppercase;
-}
-.skill-chips { display:flex; flex-wrap:wrap; gap:.45rem; }
-.skill-chips span {
-  font-size:.72rem; padding:.28rem .6rem; border:1px solid var(--line);
-  border-radius:999px; color:var(--dim); transition:border-color 200ms,color 200ms;
-}
-.skill-chips span:hover { border-color:var(--accent-md); color:var(--text); }
+<!-- ══ SKILLS GLOBE ══════════════════════════════════════ -->
+  <section class="skills-section" id="skills">
+    <h2 class="section-label">TECHNICAL EXPERTISE</h2>
+    <p class="section-subtitle">Hover over icons to see skills & project locations</p>
+    
+    <div class="globe-container">
+      <canvas id="globeCanvas"></canvas>
+      
+      <!-- Skill tooltip -->
+      <div class="skill-tooltip" id="skillTooltip">
+        <h4 class="tooltip-skill-name"></h4>
+        <div class="tooltip-projects"></div>
+      </div>
+      
+      <!-- Controls hint -->
+      <div class="globe-controls">
+        <span>🖱️ Drag to rotate • Scroll to zoom</span>
+      </div>
+    </div>
+    
+    <!-- Skills legend -->
+    <div class="skills-legend">
+      <div class="legend-group">
+        <h4>CFD & Simulation</h4>
+        <div class="legend-items">
+          <span class="legend-item"><img src="assets/icons/ansys.png" alt="" aria-hidden="true"><span>ANSYS Fluent</span></span>
+          <span class="legend-item"><img src="assets/icons/openfoam.png" alt="" aria-hidden="true"><span>OpenFOAM</span></span>
+          <span class="legend-item"><img src="assets/icons/vortex.png" alt="" aria-hidden="true"><span>LES/RANS</span></span>
+          <span class="legend-item"><img src="assets/icons/flame.png" alt="" aria-hidden="true"><span>FGM</span></span>
+</div>
+      </div>
+      <div class="legend-group">
+        <h4>Systems Engineering</h4>
+        <div class="legend-items">
+          <span class="legend-item"><img src="assets/icons/gear.png" alt="" aria-hidden="true"><span>SysML/MBSE</span></span>
+          <span class="legend-item"><img src="assets/icons/gear.png" alt="" aria-hidden="true"><span>OpenMDAO</span></span>
+          <span class="legend-item"><img src="assets/icons/chart.png" alt="" aria-hidden="true"><span>DoE</span></span>
+          <span class="legend-item"><img src="assets/icons/gear.png" alt="" aria-hidden="true"><span>GD&amp;T</span></span>
+</div>
+      </div>
+      <div class="legend-group">
+        <h4>ML & Programming</h4>
+        <div class="legend-items">
+          <span class="legend-item"><img src="assets/icons/python_snakes.png" alt="" aria-hidden="true"><span>Python/SKL</span></span>
+          <span class="legend-item"><img src="assets/icons/flame.png" alt="" aria-hidden="true"><span>PyTorch</span></span>
+          <span class="legend-item"><img src="assets/icons/matlab.png" alt="" aria-hidden="true"><span>MATLAB</span></span>
+          <span class="legend-item"><img src="assets/icons/cpp.png" alt="" aria-hidden="true"><span>C++</span></span>
+</div>
+      </div>
+    </div>
+  </section>
 
 /* ─── FOOTER ────────────────────────────────────────────── */
 .site-footer {
