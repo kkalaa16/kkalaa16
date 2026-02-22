@@ -350,15 +350,33 @@ function initUnravel(ccEls, staticCards) {
     if (cue) cue.classList.remove('show');
   };
 
-  function bootTimelineOnce() {
-    if (TIMELINE_BOOTED) return;
-    TIMELINE_BOOTED = true;
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      buildSandSpine();
-      initYearStamps();
-      initCardReveal();
-    }));
-  }
+  let TIMELINE_LIGHT_BOOTED = false;
+  let TIMELINE_HEAVY_BOOTED = false;
+
+  function bootTimelineLightOnce() {
+    if (TIMELINE_LIGHT_BOOTED) return;
+    TIMELINE_LIGHT_BOOTED = true;
+
+  // These must run ASAP so cards don't stay opacity:0
+  initYearStamps();
+  initCardReveal();
+
+  // Immediate safety kick: if IO hasn't fired yet, make sure nothing is blank
+  zone.querySelectorAll('.tl-card').forEach(c => {
+    c.classList.remove('out-view');
+    c.classList.add('in-view');
+  });
+}
+
+function bootTimelineHeavyOnce() {
+  if (TIMELINE_HEAVY_BOOTED) return;
+  TIMELINE_HEAVY_BOOTED = true;
+
+  // Sand spine needs final layout sizes
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    buildSandSpine();
+  }));
+}
 
   function scrollToTimelineStart(behavior = 'smooth') {
   const header = document.getElementById('siteHeader');
@@ -412,6 +430,7 @@ function initUnravel(ccEls, staticCards) {
   function openTimeline() {
     if (open) return;
     open = true;
+    bootTimelineLightOnce();
     work.classList.add('timeline-open');
     hideCue();
 
@@ -427,6 +446,7 @@ function initUnravel(ccEls, staticCards) {
     const onEnd = (e) => {
       if (e.propertyName === 'max-height') {
         zone.style.maxHeight = 'none';
+        bootTimelineHeavyOnce();
         // SNAP FIX after layout is final (prevents “blank screen” when clicked mid-viewport)
         setTimeout(() => scrollToTimelineStart('auto'), 0);
         zone.removeEventListener('transitionend', onEnd);
@@ -442,6 +462,7 @@ function initUnravel(ccEls, staticCards) {
     setTimeout(() => {
       if (zone.style.maxHeight !== 'none') {
         zone.style.maxHeight = 'none';
+        bootTimelineHeavyOnce();
         setTimeout(() => scrollToTimelineStart('auto'), 0);
         scrollToTimelineStart();
         showTimelineToastOnce();
