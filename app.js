@@ -360,14 +360,23 @@ function initUnravel(ccEls, staticCards) {
     }));
   }
 
-  function scrollToTimelineStart() {
-    const header = document.getElementById('siteHeader');
-    const offset = (header?.offsetHeight || 72) + 18;
-    const firstRow = zone.querySelector('.tl-row');
-    const target = firstRow || zone;
-    const top = target.getBoundingClientRect().top + window.scrollY - offset;
-    window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
-  }
+  function scrollToTimelineStart(behavior = 'smooth') {
+  const header = document.getElementById('siteHeader');
+  const offset = (header?.offsetHeight || 72) + 18;
+
+  const firstRow = zone.querySelector('.tl-row');
+  const target = firstRow || zone;
+  if (!target) return;
+
+  const r = target.getBoundingClientRect();
+  const desiredTop = offset + 6;
+
+  // If it's already reasonably placed, don't fight the user's position
+  if (r.top >= desiredTop - 18 && r.top <= desiredTop + 60) return;
+
+  const top = r.top + window.scrollY - offset;
+  window.scrollTo({ top: Math.max(0, top), behavior });
+}
 
   function showTimelineToastOnce() {
     if (!toast) return;
@@ -411,9 +420,15 @@ function initUnravel(ccEls, staticCards) {
     zone.setAttribute('aria-hidden', 'false');
     zone.classList.add('open');
     zone.style.maxHeight = zone.scrollHeight + 'px';
+    // EARLY GUIDE: ensures it works even if transitionend is missed / layout shifts
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      scrollToTimelineStart('smooth');
+    }));
     const onEnd = (e) => {
       if (e.propertyName === 'max-height') {
         zone.style.maxHeight = 'none';
+        // SNAP FIX after layout is final (prevents “blank screen” when clicked mid-viewport)
+        setTimeout(() => scrollToTimelineStart('auto'), 0);
         zone.removeEventListener('transitionend', onEnd);
 
         scrollToTimelineStart();
@@ -427,6 +442,7 @@ function initUnravel(ccEls, staticCards) {
     setTimeout(() => {
       if (zone.style.maxHeight !== 'none') {
         zone.style.maxHeight = 'none';
+        setTimeout(() => scrollToTimelineStart('auto'), 0);
         scrollToTimelineStart();
         showTimelineToastOnce();
       }
