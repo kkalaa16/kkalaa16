@@ -330,7 +330,7 @@ function initUnravel(ccEls, staticCards) {
   const toastClose = document.getElementById('timelineToastClose');
   if (!work || !carousel || !zone) return;
 
-  // Start collapsed; user must opt-in.
+  // Start collapsed
   zone.classList.remove('open');
   zone.style.maxHeight = '0px';
   zone.inert = true;
@@ -342,6 +342,9 @@ function initUnravel(ccEls, staticCards) {
   let lastY = window.scrollY;
   let cueTimer = null;
 
+  // Prevent the "auto close" rule from firing during programmatic scroll/layout settle
+  let allowAutoClose = true;
+
   const showCue = () => {
     if (open || !cue) return;
     cue.classList.add('show');
@@ -350,6 +353,7 @@ function initUnravel(ccEls, staticCards) {
     if (cue) cue.classList.remove('show');
   };
 
+  // ---- boot flags ----
   let TIMELINE_LIGHT_BOOTED = false;
   let TIMELINE_HEAVY_BOOTED = false;
 
@@ -357,44 +361,38 @@ function initUnravel(ccEls, staticCards) {
     if (TIMELINE_LIGHT_BOOTED) return;
     TIMELINE_LIGHT_BOOTED = true;
 
-  // These must run ASAP so cards don't stay opacity:0
-  initYearStamps();
-  initCardReveal();
+    // Make cards eligible to show immediately
+    initYearStamps();
+    initCardReveal();
 
-  // Immediate safety kick: if IO hasn't fired yet, make sure nothing is blank
-  zone.querySelectorAll('.tl-card').forEach(c => {
-    c.classList.remove('out-view');
-    c.classList.add('in-view');
-  });
-}
+    // Hard safety: ensure no "blank" even before IO runs
+    zone.querySelectorAll('.tl-card').forEach(c => {
+      c.classList.remove('out-view');
+      c.classList.add('in-view');
+    });
+  }
 
-function bootTimelineHeavyOnce() {
-  if (TIMELINE_HEAVY_BOOTED) return;
-  TIMELINE_HEAVY_BOOTED = true;
+  function bootTimelineHeavyOnce() {
+    if (TIMELINE_HEAVY_BOOTED) return;
+    TIMELINE_HEAVY_BOOTED = true;
 
-  // Sand spine needs final layout sizes
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    buildSandSpine();
-  }));
-}
+    // Needs final layout sizes
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      buildSandSpine();
+    }));
+  }
 
-  function scrollToTimelineStart(behavior = 'smooth') {
-  const header = document.getElementById('siteHeader');
-  const offset = (header?.offsetHeight || 72) + 18;
+  function scrollToTimelineStart(behavior = 'auto') {
+    const header = document.getElementById('siteHeader');
+    const offset = (header?.offsetHeight || 72) + 18;
 
-  const firstRow = zone.querySelector('.tl-row');
-  const target = firstRow || zone;
-  if (!target) return;
+    const firstRow = zone.querySelector('.tl-row');
+    const target = firstRow || zone;
+    if (!target) return;
 
-  const r = target.getBoundingClientRect();
-  const desiredTop = offset + 6;
-
-  // If it's already reasonably placed, don't fight the user's position
-  if (r.top >= desiredTop - 18 && r.top <= desiredTop + 60) return;
-
-  const top = r.top + window.scrollY - offset;
-  window.scrollTo({ top: Math.max(0, top), behavior });
-}
+    const top = target.getBoundingClientRect().top + window.scrollY - offset;
+    window.scrollTo({ top: Math.max(0, top), behavior });
+  }
 
   function showTimelineToastOnce() {
     if (!toast) return;
@@ -410,7 +408,6 @@ function bootTimelineHeavyOnce() {
       toast.removeEventListener('click', hide);
     };
 
-    // Close button + click anywhere on the toast.
     toast.addEventListener('click', hide);
     toastClose?.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -430,59 +427,68 @@ function bootTimelineHeavyOnce() {
   function openTimeline() {
     if (open) return;
     open = true;
+
+    // Block auto-close while we expand + scroll
+    allowAutoClose = false;
+
     bootTimelineLightOnce();
     work.classList.add('timeline-open');
     hideCue();
 
-    // Expand first so target positions exist.
     zone.inert = false;
     zone.setAttribute('aria-hidden', 'false');
     zone.classList.add('open');
+
+    // Expand
     zone.style.maxHeight = zone.scrollHeight + 'px';
-    // EARLY GUIDE: ensures it works even if transitionend is missed / layout shifts
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      scrollToTimelineStart('smooth');
-    }));
+
+    // KEY: immediately bring timeline into view BEFORE fading carousel
+    requestAnimationFrame(() => {
+      scrollToTimelineStart('auto');
+
+      // now run the fly + fade
+      requestAnimationFrame(() => {
+        flyToTimeline(ccEls, staticCards);
+        carousel.style.opacity = '0';
+      });
+    });
+
+    const finalizeOpen = () => {
+      zone.style.maxHeight = 'none';
+      bootTimelineHeavyOnce();
+      showTimelineToastOnce();
+
+      // Allow auto-close again after everything is stable
+      setTimeout(() => { allowAutoClose = true; }, 250);
+
+      // Snap correction after final layout
+      setTimeout(() => scrollToTimelineStart('auto'), 0);
+    };
+
     const onEnd = (e) => {
-      if (e.propertyName === 'max-height') {
-        zone.style.maxHeight = 'none';
-        bootTimelineHeavyOnce();
-        // SNAP FIX after layout is final (prevents “blank screen” when clicked mid-viewport)
-        setTimeout(() => scrollToTimelineStart('auto'), 0);
-        zone.removeEventListener('transitionend', onEnd);
-
-        scrollToTimelineStart();
-        showTimelineToastOnce();
-
-        bootTimelineOnce();
-      }
+      if (e.propertyName !== 'max-height') return;
+      zone.removeEventListener('transitionend', onEnd);
+      finalizeOpen();
     };
     zone.addEventListener('transitionend', onEnd);
 
+    // Fallback if transitionend doesn't fire
     setTimeout(() => {
-      if (zone.style.maxHeight !== 'none') {
-        zone.style.maxHeight = 'none';
-        bootTimelineHeavyOnce();
-        setTimeout(() => scrollToTimelineStart('auto'), 0);
-        scrollToTimelineStart();
-        showTimelineToastOnce();
-      }
-      if (!TIMELINE_BOOTED) bootTimelineOnce();
-    }, 900);
-
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      flyToTimeline(ccEls, staticCards);
-      carousel.style.opacity = '0';
-    }));
+      if (zone.style.maxHeight !== 'none') finalizeOpen();
+    }, 950);
   }
 
   function closeTimeline() {
     if (!open) return;
     open = false;
+
     work.classList.remove('timeline-open');
+
+    // Re-show carousel
     refurlCarousel(ccEls, staticCards);
     carousel.style.opacity = '1';
 
+    // Collapse
     zone.style.maxHeight = zone.scrollHeight + 'px';
     zone.getBoundingClientRect();
     zone.classList.remove('open');
@@ -493,6 +499,7 @@ function bootTimelineHeavyOnce() {
     requestAnimationFrame(() => scrollToWorkTop());
   }
 
+  // Track work section visibility
   new IntersectionObserver(entries => {
     workInView = entries[0].isIntersecting;
     if (!workInView) hideCue();
@@ -505,6 +512,7 @@ function bootTimelineHeavyOnce() {
     }
   }, { threshold: 0.35 }).observe(work);
 
+  // Scroll logic
   window.addEventListener('scroll', () => {
     const y = window.scrollY;
     const dir = (y < lastY) ? 'up' : 'down';
@@ -515,7 +523,8 @@ function bootTimelineHeavyOnce() {
     if (!open && workInView && (dir === 'up' || !passedWork)) showCue();
     if (dir === 'down') hideCue();
 
-    if (open && y < work.offsetTop + 80) closeTimeline();
+    // Only allow auto-close after open has settled
+    if (open && allowAutoClose && y < work.offsetTop + 80) closeTimeline();
   }, { passive: true });
 
   const wireActivate = (el) => {
@@ -531,7 +540,7 @@ function bootTimelineHeavyOnce() {
 
   wireActivate(carousel);
   wireActivate(cue);
-}
+} 
 
 function refurlCarousel(ccEls, staticCards) {
   ccEls.forEach((cc, i) => {
