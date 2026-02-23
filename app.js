@@ -141,22 +141,21 @@ extraHTML: `
 'boeing': {
   title: 'BOEING Ti-6Al-4V SUPPLY CHAIN · SOVERN',
   date: 'AUG 2024 – MAY 2025',
-  tags: ['Systems', 'Supply Chain', 'Graph Theory', 'HHI', 'Vulnerability', 'Resilience'],
+  tags: ['Systems', 'Supply Chain', 'Risk', 'Mitigation', 'Resilience'],
 
   overview:
-    'Supply-chain vulnerability evaluation for resilient aerospace networks. Modeled multi-material supply chains with multi-layer graph theory and used network metrics plus market concentration (HHI) to identify risk hotspots and mitigation levers.',
+    'Presented a Ti-6Al-4V supply chain risk and resilience study, framing mitigation actions across implementation layers from company-level readiness to pan-government coordination.',
 
   contributions: [
-    'Represented multi-material supply chains as layered graphs connected via shared suppliers',
-    'Applied graph-theory metrics to evaluate supplier vulnerability, single-point failures, and robustness',
-    'Used HHI (geographic node concentration) and vulnerability rankings to identify at-risk tiers',
-    'Structured mitigation strategies across implementation layers (company → partnerships → industry → government)'
+    'Synthesized mitigation strategy stack across tiers (company → partnerships → industry → government → pan-government)',
+    'Translated supply-risk findings into actionable levers matched to stakeholder scope and authority',
+    'Communicated recommendations in a stakeholder-facing briefing'
   ],
 
-  tech: ['Graph Theory', 'Network Metrics', 'HHI', 'Systems Analysis'],
+  tech: ['Systems Thinking', 'Supply Chain Risk', 'Mitigation Planning'],
   results: [
-    'Produced vulnerability/HHI views to rapidly identify tiers most at risk',
-    'Mapped mitigation actions by implementation layer to support resilience planning'
+    'Clear tiered mitigation roadmap to address scarcity and disruption risk',
+    'Stakeholder-ready narrative connecting risk drivers to feasible actions'
   ],
 
   hasMatrix: false,
@@ -165,33 +164,15 @@ extraHTML: `
   extraHTML: `
     <div class="modal-gallery">
       <div class="modal-figure modal-figure--contain">
-        <img data-zoom src="img/Me-SOS.jpeg" alt="Presenting the Boeing Ti-6Al-4V supply chain work to stakeholders" />
-        <div class="figcaption">Stakeholder briefing and design review discussion for the Ti-6Al-4V supply chain risk study.</div>
-      </div>
-    </div>
-
-    <div class="modal-gallery modal-gallery--hero" style="margin-top:1.1rem;">
-      <div class="modal-figure modal-figure--contain">
-        <img data-zoom src="img/s15_multilayer_supply_chain.png" alt="Multi-layer supply chain concept diagram" />
-        <div class="figcaption">Multi-layer supply chain model: material layers connected through shared suppliers.</div>
-      </div>
-      <div class="modal-figure modal-figure--contain">
-        <img data-zoom src="img/s15_network_metrics.png" alt="Supply chain network analysis metrics and HHI" />
-        <div class="figcaption">Network metrics (vulnerability, single-point failures, robustness) plus HHI concentration.</div>
+        <img data-zoom src="img/Me-SOS.jpeg" alt="Presenting the supply chain risk study to stakeholders" />
+        <div class="figcaption">Stakeholder briefing and review discussion for the Ti-6Al-4V supply chain resilience study.</div>
       </div>
     </div>
 
     <div class="modal-gallery" style="margin-top:1.1rem;">
       <div class="modal-figure modal-figure--contain">
-        <img data-zoom src="img/s15_hhi_vulnerability_rankings.png" alt="Vulnerability rankings and HHI index for titanium layer" />
-        <div class="figcaption">Vulnerability ranking + HHI index to identify the tiers most exposed to disruption.</div>
-      </div>
-    </div>
-
-    <div class="modal-gallery" style="margin-top:1.1rem;">
-      <div class="modal-figure modal-figure--contain">
-        <img data-zoom src="img/s15_mitigation_layers.png" alt="Layers of mitigation strategies" />
-        <div class="figcaption">Mitigation layers: company actions, partnerships, industry-wide coordination, and government levers.</div>
+        <img data-zoom src="img/s15_mitigation_layers.png" alt="Mitigation layers from company action to pan-government action" />
+        <div class="figcaption">Mitigation layers: actions mapped by scope from internal company readiness through partnerships, industry coordination, and government / pan-government initiatives.</div>
       </div>
     </div>
   `
@@ -1571,7 +1552,47 @@ function wireZoomImages(rootEl){
   });
 }
 
+/* ─── MODAL IMAGE LIGHTBOX (delegated, no data-zoom needed) ─── */
+function setupModalImageLightbox() {
+  // Create lightbox once
+  let lb = document.getElementById('imgLightbox');
+  if (!lb) {
+    lb = document.createElement('div');
+    lb.id = 'imgLightbox';
+    lb.className = 'img-lightbox';
+    lb.innerHTML = `
+      <button class="lb-close" type="button" aria-label="Close">×</button>
+      <img alt="" />
+    `;
+    document.body.appendChild(lb);
 
+    const close = () => lb.classList.remove('open');
+    lb.querySelector('.lb-close').addEventListener('click', close);
+    lb.addEventListener('click', (e) => { if (e.target === lb) close(); });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && lb.classList.contains('open')) close();
+    });
+  }
+
+  const lbImg = lb.querySelector('img');
+
+  // Delegate clicks: ANY image inside an active modal figure opens
+  if (document.body.dataset.lbBound === '1') return;
+  document.body.dataset.lbBound = '1';
+
+  document.addEventListener('click', (e) => {
+    const img = e.target.closest('.project-modal.active .modal-figure img');
+    if (!img) return;
+
+    // Prevent any other click behavior
+    e.preventDefault();
+
+    lbImg.src = img.currentSrc || img.src;
+    lbImg.alt = img.alt || '';
+    lb.classList.add('open');
+  });
+}
 
 function initProjectModals() {
   const modal = document.getElementById('projectModal');
