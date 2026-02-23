@@ -47,26 +47,149 @@ const PROJECT_DATA = {
     `
   },
 
-  'option-pricing': {
-    title: 'OPTION PRICING · FNO',
-    date: 'MAY – AUG 2025',
-    tags: ['Deep Learning', 'PyTorch', 'FNO', 'Physics-Informed'],
-    overview: 'Designed hybrid surrogate pricing engine for European options under Heston stochastic volatility using physics-informed Reduced-Order Model with Fourier Neural Operator residual learner.',
-    contributions: [
-      'Applied Lift & Learn framework for arbitrage-free ROM (99.9% variance)',
-      'Generated 240 high-fidelity price surfaces via Latin Hypercube sampling',
-      'Integrated real ORCL option chain data from 2019-2025',
-      'Trained FNO on ROM-market residuals for enhanced predictions'
-    ],
-    tech: ['PyTorch', 'Fourier Neural Operator', 'NumPy', 'SciPy', 'Heston Model'],
-    results: [
-      '77% reduction in relative L2 error',
-      '0.3 ms inference time',
-      'Arbitrage-free pricing maintained',
-      'Captured market volatility smiles and skews'
-    ],
-    hasMatrix: true
-  },
+  // ─────────────────────────────────────────────────────────────
+// REPLACE your existing 'option-pricing' entry with this:
+// ─────────────────────────────────────────────────────────────
+'option-pricing': {
+  title: 'OPTION PRICING · HYBRID HESTON (ROM + FNO)',
+  date: 'MAY – AUG 2025',
+  tags: ['Deep Learning', 'PyTorch', 'FNO', 'Physics-Informed', 'Heston'],
+
+  overview:
+    'Built a hybrid surrogate for Heston option pricing using a physics-informed reduced-order model (Lift & Learn ROM) plus a neural-operator residual corrector trained on market option chains to recover skews/smiles while preserving arbitrage structure from the ROM.',
+
+  contributions: [
+    'Designed a two-stage pricing architecture: physics-informed ROM baseline + neural residual correction',
+    'Constructed a market data pipeline that converts scattered implied-volatility data into smooth continuous surfaces on a fixed grid',
+    'Benchmarked hybrid variants (hybrid FNO vs FNO+residual) using surface-level diagnostics and volatility-smile checks'
+  ],
+
+  tech: ['PyTorch', 'Fourier Neural Operator (FNO)', 'Heston PDE', 'Lift & Learn ROM', 'POD/Galerkin ROM', 'Python'],
+  results: [
+    'Hybrid residual approach captures market smile/skew behavior that a pure Heston baseline misses',
+    'Maintains physics/arbitrage structure from the ROM while correcting market effects via learned residuals'
+  ],
+
+  hasMatrix: true,
+  modalSize: 'xl',
+  extraPosition: 'top',
+  extraHTML: `
+    <div class="modal-gallery modal-gallery--hero">
+      <div class="modal-figure modal-figure--contain">
+        <img src="img/dl7643_fig1_pipeline_iv.png" alt="Implied volatility pipeline: raw scattered IV to smoothed surfaces" />
+        <div class="figcaption">Market IV pipeline: scattered IV data → smoothed continuous surfaces (calls/puts).</div>
+      </div>
+      <div class="modal-figure modal-figure--contain">
+        <img src="img/dl7643_fig2_model_comparison.png" alt="Model comparison: hybrid FNO vs residual model on surface and smile" />
+        <div class="figcaption">Model diagnostics: surface comparison + volatility-smile check (hybrid vs residual).</div>
+      </div>
+    </div>
+  `
+},
+
+
+// ─────────────────────────────────────────────────────────────
+// ADD this NEW entry for your data-project-id="afrl" card:
+// ─────────────────────────────────────────────────────────────
+'afrl': {
+  title: 'AFRL TACTICAL MOBILITY AIRCRAFT · MBSE-ENABLED MDAO',
+  date: 'AUG 2024 – MAY 2025',
+  tags: ['OpenMDAO', 'MBSE', 'MDAO', 'DoE', 'Hybrid-Electric', 'TOFL'],
+
+  overview:
+    'MBSE-enabled MDAO workflow to verify feasibility of requirements early by closing the loop between requirements/architecture (RFLP) and analysis (MDAO + DoE + response plots). Demonstrated requirement trade exploration for takeoff-field-length (TOFL) using an interactive design-space dashboard.',
+
+  contributions: [
+    'Implemented/used a systematic MBSE→MDAO process flow (RFLP decomposition → MDAO framework → analysis → DoE/surrogates → requirement mapping)',
+    'Ran design-space exploration with response plots to evaluate TOFL requirement compliance (< 3,000)',
+    'Compared conventional vs battery-assisted hybrid configuration behavior for TOFL feasibility across takeoff weights'
+  ],
+
+  tech: ['OpenMDAO', 'DoE / Surrogates', 'Requirements Mapping', 'Hybrid-Electric Concepts'],
+  results: [
+    'Conventional configuration could not satisfy TOFL requirement even at high thrust settings in the explored space',
+    'Battery-assisted hybrid configuration meets TOFL requirement across takeoff weights at similar thrust levels'
+  ],
+
+  hasMatrix: false,
+  modalSize: 'xl',
+  extraPosition: 'top',
+  extraHTML: `
+    <div class="modal-gallery modal-gallery--hero">
+      <div class="modal-figure modal-figure--contain">
+        <img src="img/afrl_mbse_mdao_process.png" alt="Systematic MBSE-MDAO process diagram" />
+        <div class="figcaption">Systematic MBSE–MDAO loop: requirements → architecture → MDAO → DoE/surrogates → requirement mapping.</div>
+      </div>
+      <div class="modal-figure modal-figure--contain">
+        <img src="img/afrl_dse_response_plots.png" alt="Design space exploration response plots for TOFL requirement" />
+        <div class="figcaption">TOFL feasibility exploration via response plots (conventional configuration).</div>
+      </div>
+    </div>
+
+    <div class="modal-gallery" style="margin-top:1.1rem;">
+      <div class="modal-figure modal-figure--contain">
+        <img src="img/afrl_dse_config_table.png" alt="Configuration table showing battery-assisted hybrid options" />
+        <div class="figcaption">Configuration alternatives including battery-assisted takeoff options for meeting TOFL.</div>
+      </div>
+    </div>
+  `
+},
+
+
+// ─────────────────────────────────────────────────────────────
+// REPLACE your existing 'boeing' entry with this (S15 deck):
+// ─────────────────────────────────────────────────────────────
+'boeing': {
+  title: 'BOEING Ti-6Al-4V SUPPLY CHAIN · SOVERN',
+  date: 'AUG 2024 – MAY 2025',
+  tags: ['Systems', 'Supply Chain', 'Graph Theory', 'HHI', 'Vulnerability', 'Resilience'],
+
+  overview:
+    'Supply-chain optimization and vulnerability evaluation for resilient aerospace networks. Modeled multi-material supply chains with multi-layer graph theory and used network metrics (vulnerability, single-point failures, robustness) plus market concentration (HHI) to identify risk hotspots and mitigation levers.',
+
+  contributions: [
+    'Represented multi-material supply chains as layered graphs connected via shared suppliers',
+    'Applied graph-theory metrics to evaluate supplier vulnerability, single-point failures, and supply-chain robustness',
+    'Used HHI (geographic node concentration) and vulnerability rankings to identify at-risk tiers',
+    'Structured mitigation strategies across organizational layers (company → partnerships → industry → government)'
+  ],
+
+  tech: ['Graph Theory', 'Network Metrics', 'HHI', 'Systems Analysis'],
+  results: [
+    'Produced vulnerability/HHI views to quickly identify tiers most at risk',
+    'Mapped mitigation actions by implementation layer to support resilience planning'
+  ],
+
+  hasMatrix: false,
+  modalSize: 'xl',
+  extraPosition: 'top',
+  extraHTML: `
+    <div class="modal-gallery modal-gallery--hero">
+      <div class="modal-figure modal-figure--contain">
+        <img src="img/s15_multilayer_supply_chain.png" alt="Multi-layer supply chain concept diagram" />
+        <div class="figcaption">Multi-layer supply chains: combine material layers through shared suppliers.</div>
+      </div>
+      <div class="modal-figure modal-figure--contain">
+        <img src="img/s15_network_metrics.png" alt="Supply chain network analysis metrics and HHI mention" />
+        <div class="figcaption">Network metrics: vulnerability, single-point failures, robustness + HHI market concentration.</div>
+      </div>
+    </div>
+
+    <div class="modal-gallery" style="margin-top:1.1rem;">
+      <div class="modal-figure modal-figure--contain">
+        <img src="img/s15_hhi_vulnerability_rankings.png" alt="Vulnerability rankings and HHI index for titanium layer" />
+        <div class="figcaption">Vulnerability rankings + HHI index to determine tiers most at risk.</div>
+      </div>
+    </div>
+
+    <div class="modal-gallery" style="margin-top:1.1rem;">
+      <div class="modal-figure modal-figure--contain">
+        <img src="img/s15_mitigation_layers.png" alt="Layers of mitigation strategies" />
+        <div class="figcaption">Mitigation layers: company, partnerships, industry, government, pan-government.</div>
+      </div>
+    </div>
+  `
+},
   
   'ben-zinn': {
     title: 'BEN T. ZINN COMBUSTION LAB',
@@ -201,32 +324,7 @@ const PROJECT_DATA = {
   `
 },
 
-'boeing': {
-  title: 'BOEING Ti-6Al-4V SUPPLY CHAIN',
-  date: 'AUG 2024 – MAY 2025',
-  tags: ['Systems', 'Risk Analysis', 'Supply Chain'],
-  overview: 'Supply chain vulnerability assessment for Ti-6Al-4V using network/concentration structure to identify risk hotspots and mitigation levers.',
-  contributions: [
-    'Structured the supply chain into a dependency view',
-    'Assessed concentration-driven vulnerability patterns',
-    'Converted analysis into mitigation themes'
-  ],
-  tech: ['Systems Thinking', 'Network Modeling', 'Risk Metrics'],
-  results: [
-    'Identified major vulnerability hotspots',
-    'Produced mitigation narrative tied to structure'
-  ],
-  modalSize: 'xl',
-  extraPosition: 'top',
-  extraHTML: `
-    <div class="modal-gallery">
-      <div class="modal-figure modal-figure--contain">
-        <img src="img/Me-SOS.jpeg" alt="Boeing project image" />
-        <div class="figcaption">Project snapshot</div>
-      </div>
-    </div>
-  `
-},
+
 
 'hyperloop': {
   title: 'HYPERLOOP POD DESIGN',
