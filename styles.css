@@ -550,45 +550,64 @@ a { color:inherit; text-decoration:none; }
 
 /* Use integer-frame sprite math (no fractional frame heights)
    Sheet: assets/cat_sprite_fixed.png = 408 x 1976 (13 frames @ 152px) */
-.cat{
+/* ── Education cat (idle + run from sliced assets) ───────── */
+
+:root{
+  --cat-run-w: 306px;
+  --cat-run-h: 138px;
+  --cat-run-frames: 12;
+  --cat-scale: 0.40;  /* tweak if needed */
+}
+
+#eduCat.cat{
   position:absolute;
   top:50%;
   left:0px;
 
-  width:408px;
-  height:152px;
+  width:var(--cat-run-w);
+  height:var(--cat-run-h);
 
-  /* scale down to the on-page size, keep frame math integer */
-  transform:translateY(-60%) scaleX(-1) scale(0.38);
+  /* If direction is wrong, remove scaleX(-1) */
+  transform:translateY(-55%) scaleX(-1) scale(var(--cat-scale));
   transform-origin:left center;
 
-  background:url('assets/cat_sprite_fixed.png') 0 0 no-repeat;
-  background-size:408px 1976px;
+  background-repeat:no-repeat;
+  background-position:center;
 
   opacity:0;
   z-index:2;
   pointer-events:none;
-  will-change:background-position,left;
+  will-change:left, background-position;
 }
 
-.edu-panel.grown .cat{ opacity:1; }
+.edu-panel.grown #eduCat.cat{ opacity:1; }
 
-/* Idle at BITS (frame 10) */
-.cat.idle{ animation:none !important; background-position:0 -1520px; }
-
-/* Run cycle (frames 0→12) */
-.cat.run{ animation: cat-frames 0.9s steps(13) infinite; }
-
-/* Idle at GT (frame 6) */
-.cat.idle.arrived{
+/* Sitting at BITS */
+#eduCat.idle{
   animation:none !important;
-  background-position:0 -912px;
+  background-image:url('assets/cat_idle_bits.png');
+  background-size:contain;
+}
+
+/* Running */
+#eduCat.run{
+  background-image:url('assets/cat_run.png');
+  background-size: var(--cat-run-w) 1656px;
+  background-position: 0 0;
+  animation: edu-cat-run 900ms steps(12) infinite;
+}
+
+/* Sitting at GT */
+#eduCat.idle.arrived{
+  animation:none !important;
+  background-image:url('assets/cat_idle_gt.png');
+  background-size:contain;
   filter:drop-shadow(0 0 10px rgba(255,77,0,0.20));
 }
 
-@keyframes cat-frames{
-  from{ background-position:0 0; }
-  to  { background-position:0 -1824px; } /* 12 * 152 */
+@keyframes edu-cat-run{
+  from { background-position:0 0; }
+  to   { background-position:0 -1656px; }
 }
 
 /* ─── SKILLS ────────────────────────────────────────────── */
