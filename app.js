@@ -73,18 +73,17 @@ const PROJECT_DATA = {
   hasMatrix: true,
   modalSize: 'xl',
   extraPosition: 'top',
-  extraHTML: `
-    <div class="modal-gallery modal-gallery--hero">
-      <div class="modal-figure modal-figure--contain">
-        <img src="img/dl7643_fig1_pipeline_iv.png" alt="Implied volatility pipeline: raw scattered IV to smoothed surfaces" />
-        <div class="figcaption">Market IV pipeline: scattered IV data → smoothed continuous surfaces (calls/puts).</div>
-      </div>
-      <div class="modal-figure modal-figure--contain">
-        <img src="img/dl7643_fig2_model_comparison.png" alt="Model comparison: hybrid FNO vs residual model on surface and smile" />
-        <div class="figcaption">Model diagnostics: surface comparison + volatility-smile check (hybrid vs residual).</div>
+extraHTML: `
+  <div class="modal-gallery">
+    <div class="modal-figure modal-figure--contain">
+      <img data-zoom src="img/output2.png" alt="Raw vs reconstructed implied volatility surfaces (calls and puts) on 2019-02-16" />
+      <div class="figcaption">
+        Raw implied-volatility quotes (scatter) vs reconstructed continuous IV surfaces (surface) for calls and puts on 2019-02-16.
+        Axes: log-moneyness and time-to-maturity (years).
       </div>
     </div>
-  `
+  </div>
+`
 },
 
 
