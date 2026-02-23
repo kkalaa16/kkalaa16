@@ -116,8 +116,8 @@ a { color:inherit; text-decoration:none; }
   min-height:100dvh;
 
   display:grid;
-  grid-template-columns:1fr;         /* single column */
-  justify-items:center;              /* center the column */
+  grid-template-columns:1fr;
+  justify-items:center;
   align-items:center;
 
   gap:2.6rem;
@@ -127,6 +127,11 @@ a { color:inherit; text-decoration:none; }
   transition:opacity 800ms ease 300ms;
 }
 .hero.visible{ opacity:1; }
+
+.hero-left{
+  width:100%;
+  max-width:880px;
+}
 
 .hero-eyebrow{
   font-family:'Space Mono',monospace;
@@ -147,29 +152,33 @@ a { color:inherit; text-decoration:none; }
   text-align:center;
 }
 
-/* Role line centered */
+/* Role line: center the whole row reliably */
 .hero-role{
-  display:inline-flex;              /* shrink-to-fit instead of stretching */
+  width:100%;
+  display:flex;
   justify-content:center;
   align-items:baseline;
-  gap:0.35rem;                      /* actual spacing */
-  margin: 0 auto 1.05rem;           /* keep centered */
+  gap:0.45rem;
+  margin:0 auto 1.05rem;
   text-align:center;
-  width:auto;
 }
 
-.role-prefix{ color:rgba(255,255,255,0.55); }
+.role-prefix{ color:rgba(255,255,255,0.62); }
 
+/* Make the typed role pop blue again */
 .role-animated{
-  min-width:0 !important;
-  width:auto !important;
-  display:inline;
-  white-space:nowrap;               /* keep role on one line */
+  color:#00bfff;
+  font-weight:700;
+  display:inline-block;
+  white-space:nowrap;
+  text-shadow:0 0 14px rgba(0,191,255,0.22);
 }
 
+/* Cursor matches */
 .role-cursor{
   color:#00bfff;
   font-weight:300;
+  text-shadow:0 0 14px rgba(0,191,255,0.22);
   animation:blink 1s step-end infinite;
 }
 
@@ -185,8 +194,6 @@ a { color:inherit; text-decoration:none; }
   text-align:center;
 }
 
-/* Optional quirky highlight spans inside bio:
-   wrap phrases with <span class="bio-hl"> ... </span> */
 .hero-bio .bio-hl{
   color:rgba(255,255,255,0.92);
   padding:0.08rem 0.28rem;
@@ -218,12 +225,11 @@ a { color:inherit; text-decoration:none; }
 .hero-right{ display:none !important; }
 .metric-card{ display:none !important; }
 
-/* Responsive tweak: reduce forced min width on role on small screens */
+/* Responsive tweak */
 @media (max-width:640px){
-  .role-animated{ min-width:0; }
   .hero{ padding:7.5rem 6vw 5.5rem; }
   .hero-bio{ font-size:0.95rem; }
-}}
+}
 
 /* ─── WORK TRIGGER  (two-column, huge heading) ──────────── */
 .work-trigger {
