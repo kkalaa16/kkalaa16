@@ -1005,73 +1005,148 @@ a { color:inherit; text-decoration:none; }
 
 /* ─── CONTACT ───────────────────────────────────────────── */
 .contact-section {
-  padding:7rem 8vw; position:relative; z-index:10;
+  padding:7rem 8vw;
+  position:relative;
+  z-index:10;
   border-top:1px solid var(--line);
 }
-.contact-container {
-  display:grid; grid-template-columns:1fr 1.2fr; gap:3rem;
-  max-width:1000px; margin:0 auto;
-}
-.contact-info { display:flex; flex-direction:column; gap:1.2rem; }
-.contact-item {
-  display:flex; align-items:center; gap:1rem;
-  padding:0.9rem 1.2rem; background:var(--surface);
-  border:1px solid var(--line); border-radius:8px;
-  transition:border-color 200ms;
-}
-.contact-item:hover { border-color:var(--accent-md); }
-.contact-icon {
-  width:40px; height:40px; border-radius:50%;
-  display:grid; place-items:center; flex-shrink:0;
-  background:var(--accent-lo); border:1px solid var(--accent-md);
-}
-.contact-icon svg { width:20px; height:20px; color:var(--accent); }
-.contact-item a { color:var(--text); transition:color 200ms; }
-.contact-item a:hover { color:var(--accent); }
 
-.contact-status {
-  display:flex; align-items:center; gap:0.8rem;
-  padding:1rem 1.2rem; background:rgba(0,255,65,0.08);
-  border:1px solid rgba(0,255,65,0.2); border-radius:8px;
-  font-size:0.78rem; color:var(--green);
+/* 2-card layout (email + linkedin) */
+.contact-container {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1.4rem;
+  max-width:980px;
+  margin:0 auto;
+  align-items:stretch;
 }
+
+/* We no longer use a separate left column wrapper, but if it exists it won't break */
+.contact-info {
+  display:contents;
+}
+
+/* Card base */
+.contact-item {
+  display:flex;
+  align-items:center;
+  gap:1rem;
+
+  padding:1.35rem 1.55rem;          /* bigger */
+  min-height:92px;                  /* big boxes */
+  background:var(--surface);
+
+  border:1px solid var(--line);
+  border-radius:12px;
+  transition:border-color 200ms, transform 200ms, box-shadow 200ms;
+  cursor:pointer;
+  text-decoration:none;
+}
+
+.contact-item:hover {
+  border-color:var(--accent-md);
+  transform:translateY(-2px);
+  box-shadow:0 10px 34px rgba(0,0,0,0.55);
+}
+
+/* Icon */
+.contact-icon {
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  flex-shrink:0;
+
+  background:var(--accent-lo);
+  border:1px solid var(--accent-md);
+}
+
+.contact-icon svg {
+  width:22px;
+  height:22px;
+  color:var(--accent);
+}
+
+/* Text block inside the card */
+.contact-text {
+  display:flex;
+  flex-direction:column;
+  gap:.25rem;
+  min-width:0;
+}
+
+.contact-label {
+  font-family:'Space Mono',monospace;
+  font-size:.65rem;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+
+.contact-value {
+  font-size:1.05rem;
+  color:rgba(255,255,255,0.90);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* remove old anchor styling assumptions (we're using <a class="contact-item"> now) */
+.contact-item a { color:inherit; text-decoration:none; }
+
+/* Status + location: keep same, but center to the same max width */
+.contact-status {
+  display:flex;
+  align-items:center;
+  gap:0.8rem;
+
+  padding:1rem 1.2rem;
+  background:rgba(0,255,65,0.08);
+  border:1px solid rgba(0,255,65,0.2);
+  border-radius:8px;
+
+  font-size:0.78rem;
+  color:var(--green);
+
+  max-width:980px;
+  margin:1.4rem auto 0;
+}
+
 .status-dot {
-  width:10px; height:10px; border-radius:50%;
-  background:var(--green); box-shadow:0 0 12px var(--green);
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 12px var(--green);
   animation:pulse-dot 2s ease-in-out infinite;
 }
+
 @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
 .contact-location {
-  display:flex; align-items:center; gap:0.6rem;
-  font-size:0.75rem; color:var(--dim);
+  display:flex;
+  align-items:center;
+  gap:0.6rem;
+
+  font-size:0.75rem;
+  color:var(--dim);
+
+  max-width:980px;
+  margin:0.9rem auto 0;
 }
+
 .contact-location svg { width:16px; height:16px; }
 
-.contact-form {
-  display:flex; flex-direction:column; gap:1rem;
+/* Form removed (kept only to avoid stray styles if old markup still exists) */
+.contact-form { display:none !important; }
+
+/* Responsive */
+@media (max-width:900px) {
+  .contact-container {
+    grid-template-columns:1fr;
+  }
 }
-.contact-form input, .contact-form textarea {
-  padding:1rem 1.2rem; background:var(--surface);
-  border:1px solid var(--line); border-radius:8px;
-  font-family:'Space Grotesk',sans-serif; font-size:0.85rem;
-  color:var(--text); transition:border-color 200ms;
-}
-.contact-form input:focus, .contact-form textarea:focus {
-  outline:none; border-color:var(--accent);
-}
-.contact-form button {
-  display:flex; align-items:center; justify-content:center; gap:0.8rem;
-  padding:1rem 2rem; background:var(--accent); color:#fff;
-  border:none; border-radius:8px; font-family:'Space Mono',monospace;
-  font-size:0.8rem; font-weight:700; letter-spacing:0.08em;
-  text-transform:uppercase; cursor:pointer;
-  transition:background 200ms, transform 200ms;
-}
-.contact-form button:hover {
-  background:#ff6a1a; transform:translateY(-2px);
-}
-.contact-form button svg { width:18px; height:18px; }
 
 /* ─── RESPONSIVE (new sections) ─────────────────────────── */
 @media (max-width:900px) {
