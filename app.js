@@ -188,7 +188,6 @@ window.addEventListener('load', () => {
     initSkillsGlobe();
     initProjectModals();
     initAchievements();
-    initContact();
     initDownloadResume();
   }, 500); // Small delay to ensure DOM is ready
 });
@@ -1535,29 +1534,7 @@ function initAchievements() {
   io.observe(section);
 }
 
-/* ══ CONTACT FORM ══════════════════════════════════════════ */
-function initContact() {
-  const form = document.getElementById('contactForm');
-  if (!form) return;
 
-  form.addEventListener('submit', e => {
-    e.preventDefault();
-    const btn = form.querySelector('button');
-    const orig = btn.innerHTML;
-
-    btn.innerHTML = '<span>Sending...</span>';
-    btn.disabled = true;
-
-    setTimeout(() => {
-      btn.innerHTML = '<span>Sent!</span>';
-      form.reset();
-      setTimeout(() => {
-        btn.innerHTML = orig;
-        btn.disabled = false;
-      }, 2000);
-    }, 1000);
-  });
-}
 
 /* ══ DOWNLOAD RESUME ═══════════════════════════════════════ */
 function initDownloadResume() {
