@@ -754,67 +754,58 @@ function initEducation() {
   let played = false;
 
   function playCatSequence() {
-  // reset state
   cat.classList.remove('run', 'arrived');
   cat.classList.add('idle');
   cat.style.transition = 'none';
 
-  const panelRect = panel.getBoundingClientRect();
-  const runwayRect = runway.getBoundingClientRect();
+  const w = runway.clientWidth || 1;
 
-  // runway-local left is measured from runway's left edge
-  const runwayLeftInPanel = runwayRect.left - panelRect.left;
-
-  // Effective cat width = unscaled layout width * css scale
+  // effective on-screen width
   const baseW = cat.offsetWidth || 150;
   const cssScale =
     parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cat-scale')) || 0.40;
   const catW = baseW * cssScale;
 
-  // find logo centers in PANEL coordinates (not runway)
-  const logos = [...panel.querySelectorAll('.edu-inst-logo')].map(el => el.getBoundingClientRect());
   const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
+  const maxLeft = Math.max(0, w - catW);
 
-  let bitsCenterPanel = (runwayLeftInPanel + runway.clientWidth * 0.14);
-  let gtCenterPanel   = (runwayLeftInPanel + runway.clientWidth * 0.86);
+  // ---- dotted line endpoints ----
+  const line = panel.querySelector('.edu-dotted-line');
+  let lineLeft = w * 0.10;
+  let lineRight = w * 0.90;
 
-  if (logos.length >= 2) {
-    logos.sort((a,b) => a.left - b.left);
-    const leftLogo  = logos[0];
-    const rightLogo = logos[logos.length - 1];
+  if (line) {
+    const runwayRect = runway.getBoundingClientRect();
+    const lineRect = line.getBoundingClientRect();
 
-    bitsCenterPanel = (leftLogo.left  + leftLogo.width  / 2) - panelRect.left;
-    gtCenterPanel   = (rightLogo.left + rightLogo.width / 2) - panelRect.left;
+    // convert viewport -> runway-local coordinates
+    lineLeft  = (lineRect.left  - runwayRect.left);
+    lineRight = (lineRect.right - runwayRect.left);
   }
 
-  // Convert PANEL center targets -> RUNWAY-local left
-  const GT_BIAS_PX = 22; // tune 10–45
-  const startRaw = (bitsCenterPanel - runwayLeftInPanel) - catW / 2;
-  const endRaw   = (gtCenterPanel   - runwayLeftInPanel) - catW / 2 + GT_BIAS_PX;
+  // keep cat fully within runway, but aligned to the line
+  const START_PAD = 6;  // tiny inset so it doesn't touch the first dash
+  const END_PAD   = 6;
 
-  // Clamp to PANEL bounds (so it can reach the logo even if it's outside runway)
-  const minLeft = -runwayLeftInPanel + 6; // allow moving left beyond runway a bit
-  const maxLeft = (panelRect.width - runwayLeftInPanel) - catW - 6;
+  const start = clamp(lineLeft + START_PAD, 0, maxLeft);
+  const end   = clamp(lineRight - END_PAD - catW, 0, maxLeft);
 
-  const start = clamp(startRaw, minLeft, maxLeft);
-  const end   = clamp(endRaw,   minLeft, maxLeft);
-
-  // 1) sit at BITS
+  // 1) sit at BITS (at dotted line start)
   cat.style.left = `${start}px`;
   cat.classList.remove('arrived');
   cat.classList.add('idle');
 
-  // 2) run to GT
+  // 2) run to GT (to dotted line end)
   setTimeout(() => {
-    cat.classList.remove('idle','arrived');
+    cat.classList.remove('idle', 'arrived');
     cat.classList.add('run');
 
     const dist = Math.abs(end - start);
-    const duration = Math.max(2200, Math.min(3400, 2200 + (dist / (panelRect.width || 1)) * 1200));
+    const duration = Math.max(2200, Math.min(3400, 2200 + (dist / w) * 1200));
 
     const finish = () => {
       cat.classList.remove('run');
-      cat.classList.add('idle','arrived');
+      cat.classList.add('idle', 'arrived');
       cat.style.left = `${end}px`;
     };
 
