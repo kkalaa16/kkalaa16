@@ -168,6 +168,121 @@ const PROJECT_DATA = {
     `
   }
 
+  ,
+
+'vawt': {
+  title: 'VERTICAL AXIS WIND TURBINE',
+  date: 'JUL 2021 – JUN 2022',
+  tags: ['CFD', 'VAWT', 'Parametric Study'],
+  overview: 'CFD-driven parametric study of a vertical-axis wind turbine to understand performance trends and design sensitivities.',
+  contributions: [
+    'Built a repeatable CFD workflow for geometry/condition sweeps',
+    'Compared design variants and extracted performance trends',
+    'Summarized results into design recommendations'
+  ],
+  tech: ['CFD', 'Post-processing', 'Design iteration'],
+  results: [
+    'Ranked variants by performance trend and robustness',
+    'Reusable workflow for future rotor studies'
+  ],
+  modalSize: 'xl',
+  extraPosition: 'top',
+  extraHTML: `
+    <div class="modal-gallery modal-gallery--hero">
+      <div class="modal-figure modal-figure--contain">
+        <img src="img/1.JPG" alt="VAWT image 1" />
+        <div class="figcaption">VAWT snapshot 1</div>
+      </div>
+      <div class="modal-figure modal-figure--contain">
+        <img src="img/2.JPG" alt="VAWT image 2" />
+        <div class="figcaption">VAWT snapshot 2</div>
+      </div>
+    </div>
+  `
+},
+
+'boeing': {
+  title: 'BOEING Ti-6Al-4V SUPPLY CHAIN',
+  date: 'AUG 2024 – MAY 2025',
+  tags: ['Systems', 'Risk Analysis', 'Supply Chain'],
+  overview: 'Supply chain vulnerability assessment for Ti-6Al-4V using network/concentration structure to identify risk hotspots and mitigation levers.',
+  contributions: [
+    'Structured the supply chain into a dependency view',
+    'Assessed concentration-driven vulnerability patterns',
+    'Converted analysis into mitigation themes'
+  ],
+  tech: ['Systems Thinking', 'Network Modeling', 'Risk Metrics'],
+  results: [
+    'Identified major vulnerability hotspots',
+    'Produced mitigation narrative tied to structure'
+  ],
+  modalSize: 'xl',
+  extraPosition: 'top',
+  extraHTML: `
+    <div class="modal-gallery">
+      <div class="modal-figure modal-figure--contain">
+        <img src="img/Me-SOS.jpeg" alt="Boeing project image" />
+        <div class="figcaption">Project snapshot</div>
+      </div>
+    </div>
+  `
+},
+
+'hyperloop': {
+  title: 'HYPERLOOP POD DESIGN',
+  date: 'JUL 2021 – JUN 2022',
+  tags: ['Propulsion', 'System Integration', 'CAD'],
+  overview: 'Subsystem integration work on a Hyperloop pod concept with focus on propulsion-related compatibility and packaging constraints.',
+  contributions: [
+    'Supported subsystem integration and interface checks',
+    'Contributed to iteration loops with compatibility review',
+    'Documented constraints and design decisions'
+  ],
+  tech: ['CAD', 'Subsystem Integration'],
+  results: [
+    'Improved interface clarity across iterations'
+  ],
+  modalSize: 'xl',
+  extraPosition: 'top',
+  extraHTML: `
+    <div class="modal-gallery">
+      <div class="modal-figure modal-figure--contain">
+        <img src="img/cold%20gas%20thruster.PNG" alt="Cold gas thruster" />
+        <div class="figcaption">Cold gas thruster reference</div>
+      </div>
+    </div>
+  `
+},
+
+'gas-turbine': {
+  title: 'GAS TURBINE CYCLE DESIGN · ENGINE SIZING',
+  date: 'AUG – DEC 2025',
+  tags: ['Thermodynamics', 'Cycle Analysis', 'Design Sweep'],
+  overview: '1D cycle sizing workflow to compare configurations and sensitivities for design decisions.',
+  contributions: [
+    'Implemented a sizing workflow for cycle performance sweeps',
+    'Compared configurations and summarized sensitivities',
+    'Packaged results into decision-ready plots'
+  ],
+  tech: ['Thermodynamics', 'Cycle Modeling', 'Parametric Sweeps'],
+  results: [
+    'Reusable cycle sizing workflow for rapid comparisons'
+  ],
+  modalSize: 'xl',
+  extraPosition: 'top',
+  extraHTML: `
+    <div class="modal-gallery modal-gallery--hero">
+      <div class="modal-figure modal-figure--contain">
+        <img src="img/comparison3D.jpg" alt="3D comparison" />
+        <div class="figcaption">3D comparison</div>
+      </div>
+      <div class="modal-figure modal-figure--contain">
+        <img src="img/comparison2D.jpg" alt="2D comparison" />
+        <div class="figcaption">2D comparison</div>
+      </div>
+    </div>
+  `
+}
   // Add more projects as needed
 };
 
