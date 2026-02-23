@@ -754,75 +754,102 @@ function initEducation() {
   let played = false;
 
   function playCatSequence() {
-  cat.classList.remove('run', 'arrived');
-  cat.classList.add('idle');
-  cat.style.transition = 'none';
-
+  const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
   const w = runway.clientWidth || 1;
 
-  // effective on-screen width
+  // effective on-screen width (unscaled width * css scale)
   const baseW = cat.offsetWidth || 150;
   const cssScale =
     parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cat-scale')) || 0.40;
   const catW = baseW * cssScale;
-
-  const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
   const maxLeft = Math.max(0, w - catW);
 
-  // ---- dotted line endpoints ----
-  const line = panel.querySelector('.edu-dotted-line');
-  let lineLeft = w * 0.10;
-  let lineRight = w * 0.90;
-
-  if (line) {
-    const runwayRect = runway.getBoundingClientRect();
-    const lineRect = line.getBoundingClientRect();
-
-    // convert viewport -> runway-local coordinates
-    lineLeft  = (lineRect.left  - runwayRect.left);
-    lineRight = (lineRect.right - runwayRect.left);
-  }
-
-  // keep cat fully within runway, but aligned to the line
-  const START_PAD = 6;  // tiny inset so it doesn't touch the first dash
+  const START_PAD = 6;
   const END_PAD   = 6;
 
-  const start = clamp(lineLeft + START_PAD, 0, maxLeft);
-  const end   = clamp(lineRight - END_PAD - catW, 0, maxLeft);
+  const runwayRect = runway.getBoundingClientRect();
+  const line = panel.querySelector('.edu-dotted-line');
 
-  // 1) sit at BITS (at dotted line start)
-  cat.style.left = `${start}px`;
-  cat.classList.remove('arrived');
-  cat.classList.add('idle');
+  const getLineBounds = () => {
+    if (!line) return { left: 0, right: w }; // fallback: whole runway
+    const r = line.getBoundingClientRect();
+    const left  = (r.left  - runwayRect.left);
+    const right = (r.right - runwayRect.left);
+    return { left, right, width: r.width };
+  };
 
-  // 2) run to GT (to dotted line end)
-  setTimeout(() => {
-    cat.classList.remove('idle', 'arrived');
-    cat.classList.add('run');
+  const placeIdleAtStart = () => {
+    const b = getLineBounds();
+    const start = clamp(b.left + START_PAD, 0, maxLeft);
+    cat.classList.remove('run', 'arrived');
+    cat.classList.add('idle');
+    cat.style.transition = 'none';
+    cat.style.left = `${start}px`;
+  };
 
-    const dist = Math.abs(end - start);
-    const duration = Math.max(2200, Math.min(3400, 2200 + (dist / w) * 1200));
-
-    const finish = () => {
-      cat.classList.remove('run');
-      cat.classList.add('idle', 'arrived');
-      cat.style.left = `${end}px`;
-    };
-
-    if (typeof cat.animate === 'function') {
-      const anim = cat.animate(
-        [{ left: `${start}px` }, { left: `${end}px` }],
-        { duration, easing: 'linear', fill: 'forwards' }
-      );
-      anim.onfinish = finish;
-    } else {
-      cat.style.transition = `left ${duration}ms linear`;
-      requestAnimationFrame(() => {
-        cat.style.left = `${end}px`;
-        setTimeout(finish, duration + 60);
-      });
+  const runToEnd = () => {
+    const b = getLineBounds();
+    // If line is still tiny (still growing), bail and try again next frame
+    if (b.width !== undefined && b.width < Math.max(60, catW + 40)) {
+      requestAnimationFrame(runToEnd);
+      return;
     }
-  }, 900);
+
+    const start = clamp(b.left + START_PAD, 0, maxLeft);
+    const end   = clamp(b.right - END_PAD - catW, 0, maxLeft);
+
+    // make sure start is set (sitting at BITS)
+    cat.style.left = `${start}px`;
+    cat.classList.remove('run', 'arrived');
+    cat.classList.add('idle');
+
+    setTimeout(() => {
+      cat.classList.remove('idle', 'arrived');
+      cat.classList.add('run');
+
+      const dist = Math.abs(end - start);
+      const duration = Math.max(2200, Math.min(3400, 2200 + (dist / w) * 1200));
+
+      const finish = () => {
+        cat.classList.remove('run');
+        cat.classList.add('idle', 'arrived');
+        cat.style.left = `${end}px`;
+      };
+
+      if (typeof cat.animate === 'function') {
+        const anim = cat.animate(
+          [{ left: `${start}px` }, { left: `${end}px` }],
+          { duration, easing: 'linear', fill: 'forwards' }
+        );
+        anim.onfinish = finish;
+      } else {
+        cat.style.transition = `left ${duration}ms linear`;
+        requestAnimationFrame(() => {
+          cat.style.left = `${end}px`;
+          setTimeout(finish, duration + 60);
+        });
+      }
+    }, 900);
+  };
+
+  // Sit at start immediately
+  placeIdleAtStart();
+
+  // Start the run exactly when the dotted line finishes expanding
+  if (line) {
+    const onEnd = (e) => {
+      if (e.propertyName !== 'width') return;
+      line.removeEventListener('transitionend', onEnd);
+      runToEnd();
+    };
+    line.addEventListener('transitionend', onEnd);
+
+    // safety fallback in case transitionend doesn’t fire
+    setTimeout(runToEnd, 1600);
+  } else {
+    // no line element found, just run along runway
+    setTimeout(runToEnd, 650);
+  }
 }
 
   new IntersectionObserver(entries => {
