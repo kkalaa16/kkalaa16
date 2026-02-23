@@ -149,27 +149,22 @@ a { color:inherit; text-decoration:none; }
 
 /* Role line centered */
 .hero-role{
-  font-size:1.05rem;
-  color:rgba(255,255,255,0.70);
-  letter-spacing:.04em;
-  margin-bottom:1.05rem;
-
-  display:flex;
+  display:inline-flex;              /* shrink-to-fit instead of stretching */
   justify-content:center;
   align-items:baseline;
-  gap:0.45rem;
-
+  gap:0.35rem;                      /* actual spacing */
+  margin: 0 auto 1.05rem;           /* keep centered */
   text-align:center;
+  width:auto;
 }
 
 .role-prefix{ color:rgba(255,255,255,0.55); }
 
 .role-animated{
-  color:#00bfff;
-  font-weight:600;
-  min-width:320px;
-  display:inline-block;
-  filter:drop-shadow(0 0 10px rgba(0,191,255,0.18));
+  min-width:0 !important;
+  width:auto !important;
+  display:inline;
+  white-space:nowrap;               /* keep role on one line */
 }
 
 .role-cursor{
@@ -1553,4 +1548,31 @@ a { color:inherit; text-decoration:none; }
 /* Optional: your rows have big padding-top; reduce only the first row */
 #work-section.timeline-open .tl-row:first-child {
   padding-top: 1.6rem;
+}
+
+/* ─── WORK: restore two-column layout + keep padding ───────── */
+.work-trigger{
+  padding:7rem 8vw !important;
+  display:grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  align-items:center !important;
+  gap:3rem !important;
+}
+
+.wt-text{ justify-self:start; }
+.carousel-stage{
+  justify-self:end;
+  margin-top:0 !important;
+  height:70vh !important;
+  min-height:420px;
+}
+
+/* Keep stacking only on real small screens */
+@media (max-width: 900px){
+  .work-trigger{ grid-template-columns:1fr !important; }
+  .carousel-stage{
+    justify-self:center;
+    height:55vw !important;
+    min-height:300px;
+  }
 }
