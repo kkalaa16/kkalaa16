@@ -1582,3 +1582,13 @@ a { color:inherit; text-decoration:none; }
     min-height:300px;
   }
 }
+
+/* Hide Resume button while intro overlay is active */
+body.lock-scroll .download-resume{
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(-10px);
+}
+.download-resume{
+  transition: opacity 240ms ease, transform 240ms ease;
+}
