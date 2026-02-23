@@ -759,45 +759,45 @@ function initEducation() {
   cat.classList.add('idle');
   cat.style.transition = 'none';
 
+  const panelRect = panel.getBoundingClientRect();
   const runwayRect = runway.getBoundingClientRect();
-  const w = runway.clientWidth || 1;
 
-  // Use unscaled width + CSS scale for reliable positioning
+  // runway-local left is measured from runway's left edge
+  const runwayLeftInPanel = runwayRect.left - panelRect.left;
+
+  // Effective cat width = unscaled layout width * css scale
   const baseW = cat.offsetWidth || 150;
   const cssScale =
     parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cat-scale')) || 0.40;
   const catW = baseW * cssScale;
 
+  // find logo centers in PANEL coordinates (not runway)
+  const logos = [...panel.querySelectorAll('.edu-inst-logo')].map(el => el.getBoundingClientRect());
   const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
-  const maxLeft = Math.max(0, w - catW);
 
-  // Find logo centers (preferred)
-  const logos = [...panel.querySelectorAll('.edu-inst-logo')];
-  let bitsCenter = w * 0.14;
-  let gtCenter   = w * 0.86;
+  let bitsCenterPanel = (runwayLeftInPanel + runway.clientWidth * 0.14);
+  let gtCenterPanel   = (runwayLeftInPanel + runway.clientWidth * 0.86);
 
   if (logos.length >= 2) {
-    const sorted = logos
-      .map(el => el.getBoundingClientRect())
-      .sort((a, b) => a.left - b.left);
+    logos.sort((a,b) => a.left - b.left);
+    const leftLogo  = logos[0];
+    const rightLogo = logos[logos.length - 1];
 
-    const leftLogo  = sorted[0];
-    const rightLogo = sorted[sorted.length - 1];
-
-    bitsCenter = (leftLogo.left  + leftLogo.width  / 2) - runwayRect.left;
-    gtCenter   = (rightLogo.left + rightLogo.width / 2) - runwayRect.left;
-  } else if (logos.length === 1) {
-    const r = logos[0].getBoundingClientRect();
-    // assume the single logo is the left one
-    bitsCenter = (r.left + r.width / 2) - runwayRect.left;
+    bitsCenterPanel = (leftLogo.left  + leftLogo.width  / 2) - panelRect.left;
+    gtCenterPanel   = (rightLogo.left + rightLogo.width / 2) - panelRect.left;
   }
 
-  // Start: centered under BITS logo
-  const start = clamp(bitsCenter - catW / 2, 0, maxLeft);
+  // Convert PANEL center targets -> RUNWAY-local left
+  const GT_BIAS_PX = 22; // tune 10–45
+  const startRaw = (bitsCenterPanel - runwayLeftInPanel) - catW / 2;
+  const endRaw   = (gtCenterPanel   - runwayLeftInPanel) - catW / 2 + GT_BIAS_PX;
 
-  // End: centered under GT logo, with a small bias towards the logo (tune visually)
-  const GT_BIAS_PX = 22; // increase if you want it a bit more to the right
-  const end = clamp(gtCenter - catW / 2 + GT_BIAS_PX, 0, maxLeft);
+  // Clamp to PANEL bounds (so it can reach the logo even if it's outside runway)
+  const minLeft = -runwayLeftInPanel + 6; // allow moving left beyond runway a bit
+  const maxLeft = (panelRect.width - runwayLeftInPanel) - catW - 6;
+
+  const start = clamp(startRaw, minLeft, maxLeft);
+  const end   = clamp(endRaw,   minLeft, maxLeft);
 
   // 1) sit at BITS
   cat.style.left = `${start}px`;
@@ -806,15 +806,15 @@ function initEducation() {
 
   // 2) run to GT
   setTimeout(() => {
-    cat.classList.remove('idle', 'arrived');
+    cat.classList.remove('idle','arrived');
     cat.classList.add('run');
 
     const dist = Math.abs(end - start);
-    const duration = Math.max(2200, Math.min(3400, 2200 + (dist / w) * 1200));
+    const duration = Math.max(2200, Math.min(3400, 2200 + (dist / (panelRect.width || 1)) * 1200));
 
     const finish = () => {
       cat.classList.remove('run');
-      cat.classList.add('idle', 'arrived');
+      cat.classList.add('idle','arrived');
       cat.style.left = `${end}px`;
     };
 
