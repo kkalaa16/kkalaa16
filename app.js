@@ -754,102 +754,100 @@ function initEducation() {
   let played = false;
 
   function playCatSequence() {
-  const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
-  const w = runway.clientWidth || 1;
+  const line = document.getElementById('eduDottedLine');
+  if (!line) return;
 
-  // effective on-screen width (unscaled width * css scale)
-  const baseW = cat.offsetWidth || 150;
+  const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
+
+  // runway geometry
+  const w = runway.clientWidth || 1;
+  const runwayRect = runway.getBoundingClientRect();
+
+  // visible cat width = layout width * scale (because transform scaling does NOT affect layout)
+  const baseW = cat.offsetWidth || 306;
   const cssScale =
     parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cat-scale')) || 0.40;
-  const catW = baseW * cssScale;
-  const maxLeft = Math.max(0, w - catW);
+  const visW = baseW * cssScale;
 
-  const START_PAD = 6;
-  const END_PAD   = 6;
+  // allow the visible cat to reach the right end
+  const maxLeft = Math.max(0, w - visW);
 
-  const runwayRect = runway.getBoundingClientRect();
-  const line = panel.querySelector('.edu-dotted-line');
+  const START_PAD = 8;  // padding inside the dotted line
+  const END_PAD   = 8;
 
-  const getLineBounds = () => {
-    if (!line) return { left: 0, right: w }; // fallback: whole runway
+  const lineBounds = () => {
     const r = line.getBoundingClientRect();
-    const left  = (r.left  - runwayRect.left);
-    const right = (r.right - runwayRect.left);
-    return { left, right, width: r.width };
+    return {
+      left:  r.left  - runwayRect.left,
+      right: r.right - runwayRect.left,
+      width: r.width
+    };
   };
 
-  const placeIdleAtStart = () => {
-    const b = getLineBounds();
-    const start = clamp(b.left + START_PAD, 0, maxLeft);
-    cat.classList.remove('run', 'arrived');
-    cat.classList.add('idle');
-    cat.style.transition = 'none';
-    cat.style.left = `${start}px`;
-  };
+  // Convert a target x on the line to a left value such that the cat CENTER sits on x
+  const leftForCenterAt = (x) => clamp(x - visW / 2, 0, maxLeft);
 
-  const runToEnd = () => {
-    const b = getLineBounds();
-    // If line is still tiny (still growing), bail and try again next frame
-    if (b.width !== undefined && b.width < Math.max(60, catW + 40)) {
-      requestAnimationFrame(runToEnd);
+  // 1) sit at the START of the dotted line immediately (left edge is stable even while width grows)
+  const b0 = lineBounds();
+  const startLeft = leftForCenterAt(b0.left + START_PAD);
+
+  cat.classList.remove('run', 'arrived');
+  cat.classList.add('idle');
+  cat.style.transition = 'none';
+  cat.style.left = `${startLeft}px`;
+
+  // 2) once the dotted line finishes growing, run to the END of the dotted line
+  const beginRun = () => {
+    const b = lineBounds();
+
+    // If still mid-growth for any reason, retry next frame
+    if (b.width < 80) {
+      requestAnimationFrame(beginRun);
       return;
     }
 
-    const start = clamp((b.left  + START_PAD) - catW/2, 0, maxLeft);
-    const end   = clamp((b.right - END_PAD)   - catW/2, 0, maxLeft);
-
-    // make sure start is set (sitting at BITS)
-    cat.style.left = `${start}px`;
-    cat.classList.remove('run', 'arrived');
-    cat.classList.add('idle');
+    const endLeft = leftForCenterAt(b.right - END_PAD);
 
     setTimeout(() => {
       cat.classList.remove('idle', 'arrived');
       cat.classList.add('run');
 
-      const dist = Math.abs(end - start);
+      const dist = Math.abs(endLeft - startLeft);
       const duration = Math.max(2200, Math.min(3400, 2200 + (dist / w) * 1200));
 
       const finish = () => {
         cat.classList.remove('run');
         cat.classList.add('idle', 'arrived');
-        cat.style.left = `${end}px`;
+        cat.style.left = `${endLeft}px`;
       };
 
       if (typeof cat.animate === 'function') {
         const anim = cat.animate(
-          [{ left: `${start}px` }, { left: `${end}px` }],
+          [{ left: `${startLeft}px` }, { left: `${endLeft}px` }],
           { duration, easing: 'linear', fill: 'forwards' }
         );
         anim.onfinish = finish;
       } else {
         cat.style.transition = `left ${duration}ms linear`;
         requestAnimationFrame(() => {
-          cat.style.left = `${end}px`;
+          cat.style.left = `${endLeft}px`;
           setTimeout(finish, duration + 60);
         });
       }
     }, 900);
   };
 
-  // Sit at start immediately
-  placeIdleAtStart();
-
-  // Start the run exactly when the dotted line finishes expanding
-  if (line) {
-    const onEnd = (e) => {
-      if (e.propertyName !== 'width') return;
-      line.removeEventListener('transitionend', onEnd);
-      runToEnd();
-    };
-    line.addEventListener('transitionend', onEnd);
-
-    // safety fallback in case transitionend doesn’t fire
-    setTimeout(runToEnd, 1600);
-  } else {
-    // no line element found, just run along runway
-    setTimeout(runToEnd, 650);
-  }
+  // Start running on dotted-line transition end (width), with fallback
+  const onEnd = (e) => {
+    if (e.propertyName !== 'width') return;
+    line.removeEventListener('transitionend', onEnd);
+    beginRun();
+  };
+  line.addEventListener('transitionend', onEnd);
+  setTimeout(() => {
+    line.removeEventListener('transitionend', onEnd);
+    beginRun();
+  }, 1700);
 }
 
   new IntersectionObserver(entries => {
