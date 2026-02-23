@@ -762,33 +762,42 @@ function initEducation() {
   const runwayRect = runway.getBoundingClientRect();
   const w = runway.clientWidth || 1;
 
-  // IMPORTANT: use the element's *layout* width (unscaled), then apply scale manually
+  // Use unscaled width + CSS scale for reliable positioning
   const baseW = cat.offsetWidth || 150;
-
-  // Read scale from CSS var --cat-scale (fallback 0.40)
-  const cssScale = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cat-scale')) || 0.40;
-  const catW = baseW * cssScale; // effective on-screen width
+  const cssScale =
+    parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cat-scale')) || 0.40;
+  const catW = baseW * cssScale;
 
   const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
   const maxLeft = Math.max(0, w - catW);
 
-  // Start near BITS logo center (good), end near the runway right end (whole way)
+  // Find logo centers (preferred)
   const logos = [...panel.querySelectorAll('.edu-inst-logo')];
   let bitsCenter = w * 0.14;
+  let gtCenter   = w * 0.86;
 
-  if (logos.length >= 1) {
+  if (logos.length >= 2) {
     const sorted = logos
       .map(el => el.getBoundingClientRect())
       .sort((a, b) => a.left - b.left);
-    const leftLogo = sorted[0];
-    bitsCenter = (leftLogo.left + leftLogo.width / 2) - runwayRect.left;
+
+    const leftLogo  = sorted[0];
+    const rightLogo = sorted[sorted.length - 1];
+
+    bitsCenter = (leftLogo.left  + leftLogo.width  / 2) - runwayRect.left;
+    gtCenter   = (rightLogo.left + rightLogo.width / 2) - runwayRect.left;
+  } else if (logos.length === 1) {
+    const r = logos[0].getBoundingClientRect();
+    // assume the single logo is the left one
+    bitsCenter = (r.left + r.width / 2) - runwayRect.left;
   }
 
+  // Start: centered under BITS logo
   const start = clamp(bitsCenter - catW / 2, 0, maxLeft);
 
-  // GO THE WHOLE WAY: stop slightly before the right edge so it doesn't clip
-  const rightPaddingPx = 10;  // tweak if needed
-  const end = clamp(maxLeft - rightPaddingPx, 0, maxLeft);
+  // End: centered under GT logo, with a small bias towards the logo (tune visually)
+  const GT_BIAS_PX = 22; // increase if you want it a bit more to the right
+  const end = clamp(gtCenter - catW / 2 + GT_BIAS_PX, 0, maxLeft);
 
   // 1) sit at BITS
   cat.style.left = `${start}px`;
