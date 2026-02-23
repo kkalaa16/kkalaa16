@@ -1,8 +1,7 @@
 'use strict';
 
-/* ══ PROJECT DATA FOR MODALS ═══════════════════════════════ */
+/* ══ PROJECT DATA FOR MODALS ══════════════════════════════ */
 const PROJECT_DATA = {
-
   'f1-ai': {
     title: 'F1 STRATEGY AI',
     date: 'MAY – AUG 2025',
@@ -47,142 +46,139 @@ const PROJECT_DATA = {
     `
   },
 
-  // ─────────────────────────────────────────────────────────────
-// REPLACE your existing 'option-pricing' entry with this:
-// ─────────────────────────────────────────────────────────────
-'option-pricing': {
-  title: 'OPTION PRICING · HYBRID HESTON (ROM + FNO)',
-  date: 'MAY – AUG 2025',
-  tags: ['Deep Learning', 'PyTorch', 'FNO', 'Physics-Informed', 'Heston'],
+  'option-pricing': {
+    title: 'OPTION PRICING · HYBRID HESTON (ROM + FNO)',
+    date: 'MAY – AUG 2025',
+    tags: ['Deep Learning', 'PyTorch', 'FNO', 'Physics-Informed', 'Heston'],
 
-  overview:
-    'Built a hybrid surrogate for Heston option pricing using a physics-informed reduced-order model (Lift & Learn ROM) plus a neural-operator residual corrector trained on market option chains to recover skews/smiles while preserving arbitrage structure from the ROM.',
+    overview:
+      'Built a hybrid surrogate for Heston option pricing using a physics-informed reduced-order model (Lift & Learn ROM) plus a neural-operator residual corrector trained on market option chains to recover skews/smiles while preserving arbitrage structure from the ROM.',
 
-  contributions: [
-    'Designed a two-stage pricing architecture: physics-informed ROM baseline + neural residual correction',
-    'Constructed a market data pipeline that converts scattered implied-volatility data into smooth continuous surfaces on a fixed grid',
-    'Benchmarked hybrid variants (hybrid FNO vs FNO+residual) using surface-level diagnostics and volatility-smile checks'
-  ],
+    contributions: [
+      'Designed a two-stage pricing architecture: physics-informed ROM baseline + neural residual correction',
+      'Constructed a market data pipeline that converts scattered implied-volatility data into smooth continuous surfaces on a fixed grid',
+      'Benchmarked hybrid variants (hybrid FNO vs FNO+residual) using surface-level diagnostics and volatility-smile checks'
+    ],
 
-  tech: ['PyTorch', 'Fourier Neural Operator (FNO)', 'Heston PDE', 'Lift & Learn ROM', 'POD/Galerkin ROM', 'Python'],
-  results: [
-    'Hybrid residual approach captures market smile/skew behavior that a pure Heston baseline misses',
-    'Maintains physics/arbitrage structure from the ROM while correcting market effects via learned residuals'
-  ],
+    tech: [
+      'PyTorch',
+      'Fourier Neural Operator (FNO)',
+      'Heston PDE',
+      'Lift & Learn ROM',
+      'POD/Galerkin ROM',
+      'Python'
+    ],
+    results: [
+      'Hybrid residual approach captures market smile/skew behavior that a pure Heston baseline misses',
+      'Maintains physics/arbitrage structure from the ROM while correcting market effects via learned residuals'
+    ],
 
-  hasMatrix: true,
-  modalSize: 'xl',
-  extraPosition: 'top',
-extraHTML: `
-  <div class="modal-gallery">
-    <div class="modal-figure modal-figure--contain">
-      <img data-zoom src="img/output2.png" alt="Raw vs reconstructed implied volatility surfaces (calls and puts) on 2019-02-16" />
-      <div class="figcaption">
-        Raw implied-volatility quotes (scatter) vs reconstructed continuous IV surfaces (surface) for calls and puts on 2019-02-16.
-        Axes: log-moneyness and time-to-maturity (years).
+    hasMatrix: true,
+    modalSize: 'xl',
+    extraPosition: 'top',
+    extraHTML: `
+      <div class="modal-gallery">
+        <div class="modal-figure modal-figure--contain">
+          <img src="img/output2.png" alt="Raw vs reconstructed implied volatility surfaces (calls and puts) on 2019-02-16" />
+          <div class="figcaption">
+            Raw implied-volatility quotes (scatter) vs reconstructed continuous IV surfaces (surface) for calls and puts on 2019-02-16.
+            Axes: log-moneyness and time-to-maturity (years).
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-`
-},
+    `
+  },
 
+  'afrl': {
+    title: 'AFRL TACTICAL MOBILITY AIRCRAFT · MBSE-ENABLED MDAO',
+    date: 'AUG 2024 – MAY 2025',
+    tags: ['OpenMDAO', 'MBSE', 'MDAO', 'DoE', 'Hybrid-Electric', 'TOFL'],
 
-// ─────────────────────────────────────────────────────────────
-// ADD this NEW entry for your data-project-id="afrl" card:
-// ─────────────────────────────────────────────────────────────
-'afrl': {
-  title: 'AFRL TACTICAL MOBILITY AIRCRAFT · MBSE-ENABLED MDAO',
-  date: 'AUG 2024 – MAY 2025',
-  tags: ['OpenMDAO', 'MBSE', 'MDAO', 'DoE', 'Hybrid-Electric', 'TOFL'],
+    overview:
+      'MBSE-enabled MDAO workflow to verify feasibility of requirements early by closing the loop between requirements/architecture (RFLP) and analysis (MDAO + DoE + response plots). Demonstrated requirement trade exploration for takeoff-field-length (TOFL) using an interactive design-space dashboard.',
 
-  overview:
-    'MBSE-enabled MDAO workflow to verify feasibility of requirements early by closing the loop between requirements/architecture (RFLP) and analysis (MDAO + DoE + response plots). Demonstrated requirement trade exploration for takeoff-field-length (TOFL) using an interactive design-space dashboard.',
+    contributions: [
+      'Implemented/used a systematic MBSE→MDAO process flow (RFLP decomposition → MDAO framework → analysis → DoE/surrogates → requirement mapping)',
+      'Ran design-space exploration with response plots to evaluate TOFL requirement compliance (< 3,000)',
+      'Compared conventional vs battery-assisted hybrid configuration behavior for TOFL feasibility across takeoff weights'
+    ],
 
-  contributions: [
-    'Implemented/used a systematic MBSE→MDAO process flow (RFLP decomposition → MDAO framework → analysis → DoE/surrogates → requirement mapping)',
-    'Ran design-space exploration with response plots to evaluate TOFL requirement compliance (< 3,000)',
-    'Compared conventional vs battery-assisted hybrid configuration behavior for TOFL feasibility across takeoff weights'
-  ],
+    tech: ['OpenMDAO', 'DoE / Surrogates', 'Requirements Mapping', 'Hybrid-Electric Concepts'],
+    results: [
+      'Conventional configuration could not satisfy TOFL requirement even at high thrust settings in the explored space',
+      'Battery-assisted hybrid configuration meets TOFL requirement across takeoff weights at similar thrust levels'
+    ],
 
-  tech: ['OpenMDAO', 'DoE / Surrogates', 'Requirements Mapping', 'Hybrid-Electric Concepts'],
-  results: [
-    'Conventional configuration could not satisfy TOFL requirement even at high thrust settings in the explored space',
-    'Battery-assisted hybrid configuration meets TOFL requirement across takeoff weights at similar thrust levels'
-  ],
-
-  hasMatrix: false,
-  modalSize: 'xl',
-  extraPosition: 'top',
-  extraHTML: `
-    <div class="modal-gallery modal-gallery--hero">
-      <div class="modal-figure modal-figure--contain">
-        <img src="img/afrl_mbse_mdao_process.png" alt="Systematic MBSE-MDAO process diagram" />
-        <div class="figcaption">Systematic MBSE–MDAO loop: requirements → architecture → MDAO → DoE/surrogates → requirement mapping.</div>
+    hasMatrix: false,
+    modalSize: 'xl',
+    extraPosition: 'top',
+    extraHTML: `
+      <div class="modal-gallery modal-gallery--hero">
+        <div class="modal-figure modal-figure--contain">
+          <img src="img/afrl_mbse_mdao_process.png" alt="Systematic MBSE-MDAO process diagram" />
+          <div class="figcaption">Systematic MBSE–MDAO loop: requirements → architecture → MDAO → DoE/surrogates → requirement mapping.</div>
+        </div>
+        <div class="modal-figure modal-figure--contain">
+          <img src="img/afrl_dse_response_plots.png" alt="Design space exploration response plots for TOFL requirement" />
+          <div class="figcaption">TOFL feasibility exploration via response plots (conventional configuration).</div>
+        </div>
       </div>
-      <div class="modal-figure modal-figure--contain">
-        <img src="img/afrl_dse_response_plots.png" alt="Design space exploration response plots for TOFL requirement" />
-        <div class="figcaption">TOFL feasibility exploration via response plots (conventional configuration).</div>
+
+      <div class="modal-gallery" style="margin-top:1.1rem;">
+        <div class="modal-figure modal-figure--contain">
+          <img src="img/afrl_dse_config_table.png" alt="Configuration table showing battery-assisted hybrid options" />
+          <div class="figcaption">Configuration alternatives including battery-assisted takeoff options for meeting TOFL.</div>
+        </div>
       </div>
-    </div>
+    `
+  },
 
-    <div class="modal-gallery" style="margin-top:1.1rem;">
-      <div class="modal-figure modal-figure--contain">
-        <img src="img/afrl_dse_config_table.png" alt="Configuration table showing battery-assisted hybrid options" />
-        <div class="figcaption">Configuration alternatives including battery-assisted takeoff options for meeting TOFL.</div>
+  'boeing': {
+    title: 'BOEING Ti-6Al-4V SUPPLY CHAIN · SOVERN',
+    date: 'AUG 2024 – MAY 2025',
+    tags: ['Systems', 'Supply Chain', 'Risk', 'Mitigation', 'Resilience'],
+
+    overview:
+      'Presented a Ti-6Al-4V supply chain risk and resilience study, framing mitigation actions across implementation layers from company-level readiness to pan-government coordination.',
+
+    contributions: [
+      'Synthesized mitigation strategy stack across tiers (company → partnerships → industry → government → pan-government)',
+      'Translated supply-risk findings into actionable levers matched to stakeholder scope and authority',
+      'Communicated recommendations in a stakeholder-facing briefing'
+    ],
+
+    tech: ['Systems Thinking', 'Supply Chain Risk', 'Mitigation Planning'],
+    results: [
+      'Clear tiered mitigation roadmap to address scarcity and disruption risk',
+      'Stakeholder-ready narrative connecting risk drivers to feasible actions'
+    ],
+
+    hasMatrix: false,
+    modalSize: 'xl',
+    extraPosition: 'top',
+    extraHTML: `
+      <div class="modal-gallery">
+        <div class="modal-figure modal-figure--contain">
+          <img src="img/Me-SOS.jpeg" alt="Presenting the supply chain risk study to stakeholders" />
+          <div class="figcaption">Stakeholder briefing and review discussion for the Ti-6Al-4V supply chain resilience study.</div>
+        </div>
       </div>
-    </div>
-  `
-},
 
-
-// ─────────────────────────────────────────────────────────────
-// REPLACE your existing 'boeing' entry with this (S15 deck):
-// ─────────────────────────────────────────────────────────────
-'boeing': {
-  title: 'BOEING Ti-6Al-4V SUPPLY CHAIN · SOVERN',
-  date: 'AUG 2024 – MAY 2025',
-  tags: ['Systems', 'Supply Chain', 'Risk', 'Mitigation', 'Resilience'],
-
-  overview:
-    'Presented a Ti-6Al-4V supply chain risk and resilience study, framing mitigation actions across implementation layers from company-level readiness to pan-government coordination.',
-
-  contributions: [
-    'Synthesized mitigation strategy stack across tiers (company → partnerships → industry → government → pan-government)',
-    'Translated supply-risk findings into actionable levers matched to stakeholder scope and authority',
-    'Communicated recommendations in a stakeholder-facing briefing'
-  ],
-
-  tech: ['Systems Thinking', 'Supply Chain Risk', 'Mitigation Planning'],
-  results: [
-    'Clear tiered mitigation roadmap to address scarcity and disruption risk',
-    'Stakeholder-ready narrative connecting risk drivers to feasible actions'
-  ],
-
-  hasMatrix: false,
-  modalSize: 'xl',
-  extraPosition: 'top',
-  extraHTML: `
-    <div class="modal-gallery">
-      <div class="modal-figure modal-figure--contain">
-        <img data-zoom src="img/Me-SOS.jpeg" alt="Presenting the supply chain risk study to stakeholders" />
-        <div class="figcaption">Stakeholder briefing and review discussion for the Ti-6Al-4V supply chain resilience study.</div>
+      <div class="modal-gallery" style="margin-top:1.1rem;">
+        <div class="modal-figure modal-figure--contain">
+          <img src="img/s15_mitigation_layers.png" alt="Mitigation layers from company action to pan-government action" />
+          <div class="figcaption">Mitigation layers: actions mapped by scope from internal company readiness through partnerships, industry coordination, and government / pan-government initiatives.</div>
+        </div>
       </div>
-    </div>
+    `
+  },
 
-    <div class="modal-gallery" style="margin-top:1.1rem;">
-      <div class="modal-figure modal-figure--contain">
-        <img data-zoom src="img/s15_mitigation_layers.png" alt="Mitigation layers from company action to pan-government action" />
-        <div class="figcaption">Mitigation layers: actions mapped by scope from internal company readiness through partnerships, industry coordination, and government / pan-government initiatives.</div>
-      </div>
-    </div>
-  `
-},
-  
   'ben-zinn': {
     title: 'BEN T. ZINN COMBUSTION LAB',
     date: 'JUN 2025 – PRESENT',
     tags: ['LES', 'ANSYS', 'Thermodynamics', 'Sandia-D'],
-    overview: 'Developing entropy-generation analysis framework for turbulent diffusion flames using canonical Sandia-D flame as baseline to quantify thermodynamic irreversibilities from resolved temperature and species fields.',
+    overview:
+      'Developing entropy-generation analysis framework for turbulent diffusion flames using canonical Sandia-D flame as baseline to quantify thermodynamic irreversibilities from resolved temperature and species fields.',
     contributions: [
       'Built ANSYS reacting-flow CFD model validated against Sandia-D',
       'Achieved 3-digit agreement at multiple axial/radial locations',
@@ -202,7 +198,8 @@ extraHTML: `
     title: 'TU/e BAKER HUGHES · FGM',
     date: 'AUG 2023 – AUG 2024',
     tags: ['FGM', 'ANSYS', 'Reacting Flows', 'Ammonia-Hydrogen'],
-    overview: 'Evaluated computational performance of Flamelet Generated Manifold (FGM) methodology in ANSYS for turbulent Ammonia-Hydrogen combustion compared to conventional LES methods.',
+    overview:
+      'Evaluated computational performance of Flamelet Generated Manifold (FGM) methodology in ANSYS for turbulent Ammonia-Hydrogen combustion compared to conventional LES methods.',
     contributions: [
       'Achieved 86.7% reduction in simulation runtime via FGM',
       'Calibrated model with experimental flame progression data',
@@ -223,7 +220,8 @@ extraHTML: `
     title: 'DRONE BLADE ANALYSIS · UNDERGRADUATE THESIS',
     date: 'AUG 2022 – MAY 2023',
     tags: ['OpenFOAM', 'RANS (k-ω SST)', 'CyclicAMI', 'Experiment + CFD'],
-    overview: 'Built a low-cost experimental rig and a matching OpenFOAM workflow to quantify downwash / upthrust differences between 2-blade and 3-blade fixed-pitch drone rotors. Validated the CFD trends against vane-anemometer measurements collected at multiple downstream locations.',
+    overview:
+      'Built a low-cost experimental rig and a matching OpenFOAM workflow to quantify downwash / upthrust differences between 2-blade and 3-blade fixed-pitch drone rotors. Validated the CFD trends against vane-anemometer measurements collected at multiple downstream locations.',
     contributions: [
       'Developed a Raspberry Pi 3B PWM control loop (Python) to command BLDC RPM through an ESC + 11.1 V battery pack',
       'Set up OpenFOAM v2106 RANS (kOmegaSST) case; ran transient simulations with Δt=0.001 s over 5 s at 1500 rpm',
@@ -231,7 +229,15 @@ extraHTML: `
       'Attempted 3D scanning with EinScan-SP; mitigated gloss with matte coating, then pivoted to OEM STL geometry for accuracy',
       'Compared experimental wake-velocity statistics between 2-blade and 3-blade rotors to interpret aerodynamic consistency'
     ],
-    tech: ['OpenFOAM (blockMesh/snappyHexMesh)', 'CyclicAMI', 'kOmegaSST', 'Raspberry Pi', 'PWM + ESC', 'Python', '3D Scanning'],
+    tech: [
+      'OpenFOAM (blockMesh/snappyHexMesh)',
+      'CyclicAMI',
+      'kOmegaSST',
+      'Raspberry Pi',
+      'PWM + ESC',
+      'Python',
+      '3D Scanning'
+    ],
     results: [
       'Three-blade rotor produced higher upthrust and a more consistent wake (lower velocity variation) than the two-blade rotor',
       'Experimental measurements qualitatively agreed with CFD downwash profiles, supporting the model setup',
@@ -276,99 +282,89 @@ extraHTML: `
         (blockMesh/snappyHexMesh) that can be adapted to other small-rotor configurations.
       </p>
     `
+  },
+
+  'vawt': {
+    title: 'VERTICAL AXIS WIND TURBINE',
+    date: 'JUL 2021 – JUN 2022',
+    tags: ['CFD', 'VAWT', 'Parametric Study'],
+    overview:
+      'CFD-driven parametric study of a vertical-axis wind turbine to understand performance trends and design sensitivities.',
+    contributions: [
+      'Built a repeatable CFD workflow for geometry/condition sweeps',
+      'Compared design variants and extracted performance trends',
+      'Summarized results into design recommendations'
+    ],
+    tech: ['CFD', 'Post-processing', 'Design iteration'],
+    results: ['Ranked variants by performance trend and robustness', 'Reusable workflow for future rotor studies'],
+    modalSize: 'xl',
+    extraPosition: 'top',
+    extraHTML: `
+      <div class="modal-gallery modal-gallery--hero">
+        <div class="modal-figure modal-figure--contain">
+          <img src="img/1.JPG" alt="VAWT image 1" />
+          <div class="figcaption">VAWT snapshot 1</div>
+        </div>
+        <div class="modal-figure modal-figure--contain">
+          <img src="img/2.JPG" alt="VAWT image 2" />
+          <div class="figcaption">VAWT snapshot 2</div>
+        </div>
+      </div>
+    `
+  },
+
+  'hyperloop': {
+    title: 'HYPERLOOP POD DESIGN',
+    date: 'JUL 2021 – JUN 2022',
+    tags: ['Propulsion', 'System Integration', 'CAD'],
+    overview:
+      'Subsystem integration work on a Hyperloop pod concept with focus on propulsion-related compatibility and packaging constraints.',
+    contributions: [
+      'Supported subsystem integration and interface checks',
+      'Contributed to iteration loops with compatibility review',
+      'Documented constraints and design decisions'
+    ],
+    tech: ['CAD', 'Subsystem Integration'],
+    results: ['Improved interface clarity across iterations'],
+    modalSize: 'xl',
+    extraPosition: 'top',
+    extraHTML: `
+      <div class="modal-gallery">
+        <div class="modal-figure modal-figure--contain">
+          <img src="img/cold%20gas%20thruster.PNG" alt="Cold gas thruster" />
+          <div class="figcaption">Cold gas thruster reference</div>
+        </div>
+      </div>
+    `
+  },
+
+  'gas-turbine': {
+    title: 'GAS TURBINE CYCLE DESIGN · ENGINE SIZING',
+    date: 'AUG – DEC 2025',
+    tags: ['Thermodynamics', 'Cycle Analysis', 'Design Sweep'],
+    overview: '1D cycle sizing workflow to compare configurations and sensitivities for design decisions.',
+    contributions: [
+      'Implemented a sizing workflow for cycle performance sweeps',
+      'Compared configurations and summarized sensitivities',
+      'Packaged results into decision-ready plots'
+    ],
+    tech: ['Thermodynamics', 'Cycle Modeling', 'Parametric Sweeps'],
+    results: ['Reusable cycle sizing workflow for rapid comparisons'],
+    modalSize: 'xl',
+    extraPosition: 'top',
+    extraHTML: `
+      <div class="modal-gallery modal-gallery--hero">
+        <div class="modal-figure modal-figure--contain">
+          <img src="img/comparison3D.jpg" alt="3D comparison" />
+          <div class="figcaption">3D comparison</div>
+        </div>
+        <div class="modal-figure modal-figure--contain">
+          <img src="img/comparison2D.jpg" alt="2D comparison" />
+          <div class="figcaption">2D comparison</div>
+        </div>
+      </div>
+    `
   }
-
-  ,
-
-'vawt': {
-  title: 'VERTICAL AXIS WIND TURBINE',
-  date: 'JUL 2021 – JUN 2022',
-  tags: ['CFD', 'VAWT', 'Parametric Study'],
-  overview: 'CFD-driven parametric study of a vertical-axis wind turbine to understand performance trends and design sensitivities.',
-  contributions: [
-    'Built a repeatable CFD workflow for geometry/condition sweeps',
-    'Compared design variants and extracted performance trends',
-    'Summarized results into design recommendations'
-  ],
-  tech: ['CFD', 'Post-processing', 'Design iteration'],
-  results: [
-    'Ranked variants by performance trend and robustness',
-    'Reusable workflow for future rotor studies'
-  ],
-  modalSize: 'xl',
-  extraPosition: 'top',
-  extraHTML: `
-    <div class="modal-gallery modal-gallery--hero">
-      <div class="modal-figure modal-figure--contain">
-        <img src="img/1.JPG" alt="VAWT image 1" />
-        <div class="figcaption">VAWT snapshot 1</div>
-      </div>
-      <div class="modal-figure modal-figure--contain">
-        <img src="img/2.JPG" alt="VAWT image 2" />
-        <div class="figcaption">VAWT snapshot 2</div>
-      </div>
-    </div>
-  `
-},
-
-
-
-'hyperloop': {
-  title: 'HYPERLOOP POD DESIGN',
-  date: 'JUL 2021 – JUN 2022',
-  tags: ['Propulsion', 'System Integration', 'CAD'],
-  overview: 'Subsystem integration work on a Hyperloop pod concept with focus on propulsion-related compatibility and packaging constraints.',
-  contributions: [
-    'Supported subsystem integration and interface checks',
-    'Contributed to iteration loops with compatibility review',
-    'Documented constraints and design decisions'
-  ],
-  tech: ['CAD', 'Subsystem Integration'],
-  results: [
-    'Improved interface clarity across iterations'
-  ],
-  modalSize: 'xl',
-  extraPosition: 'top',
-  extraHTML: `
-    <div class="modal-gallery">
-      <div class="modal-figure modal-figure--contain">
-        <img src="img/cold%20gas%20thruster.PNG" alt="Cold gas thruster" />
-        <div class="figcaption">Cold gas thruster reference</div>
-      </div>
-    </div>
-  `
-},
-
-'gas-turbine': {
-  title: 'GAS TURBINE CYCLE DESIGN · ENGINE SIZING',
-  date: 'AUG – DEC 2025',
-  tags: ['Thermodynamics', 'Cycle Analysis', 'Design Sweep'],
-  overview: '1D cycle sizing workflow to compare configurations and sensitivities for design decisions.',
-  contributions: [
-    'Implemented a sizing workflow for cycle performance sweeps',
-    'Compared configurations and summarized sensitivities',
-    'Packaged results into decision-ready plots'
-  ],
-  tech: ['Thermodynamics', 'Cycle Modeling', 'Parametric Sweeps'],
-  results: [
-    'Reusable cycle sizing workflow for rapid comparisons'
-  ],
-  modalSize: 'xl',
-  extraPosition: 'top',
-  extraHTML: `
-    <div class="modal-gallery modal-gallery--hero">
-      <div class="modal-figure modal-figure--contain">
-        <img src="img/comparison3D.jpg" alt="3D comparison" />
-        <div class="figcaption">3D comparison</div>
-      </div>
-      <div class="modal-figure modal-figure--contain">
-        <img src="img/comparison2D.jpg" alt="2D comparison" />
-        <div class="figcaption">2D comparison</div>
-      </div>
-    </div>
-  `
-}
-  // Add more projects as needed
 };
 
 // Timeline heavy visual effects are booted only after the user opts in.
@@ -382,14 +378,14 @@ window.addEventListener('load', () => {
   initEducation();
   initNav();
   document.getElementById('work-section')?.classList.remove('timeline-open');
-  // New sections
+
   setTimeout(() => {
     initRoleAnimation();
     initSkillsGlobe();
     initProjectModals();
     initAchievements();
     initDownloadResume();
-  }, 500); // Small delay to ensure DOM is ready
+  }, 500);
 });
 
 /* ══ FLUID ══════════════════════════════════════════════════ */
@@ -472,7 +468,6 @@ function startExperience() {
 
   const ccEls = buildCarousel(cardData);
   initUnravel(ccEls, staticCards);
-  // NOTE: buildSandSpine / year stamps / reveal are intentionally deferred until unfurl.
 }
 
 /* ══ 3-D RING CAROUSEL ══════════════════════════════════════ */
@@ -529,7 +524,6 @@ function initUnravel(ccEls, staticCards) {
   const toastClose = document.getElementById('timelineToastClose');
   if (!work || !carousel || !zone) return;
 
-  // Start collapsed
   zone.classList.remove('open');
   zone.style.maxHeight = '0px';
   zone.inert = true;
@@ -541,7 +535,6 @@ function initUnravel(ccEls, staticCards) {
   let lastY = window.scrollY;
   let cueTimer = null;
 
-  // Prevent the "auto close" rule from firing during programmatic scroll/layout settle
   let allowAutoClose = true;
 
   const showCue = () => {
@@ -552,7 +545,6 @@ function initUnravel(ccEls, staticCards) {
     if (cue) cue.classList.remove('show');
   };
 
-  // ---- boot flags ----
   let TIMELINE_LIGHT_BOOTED = false;
   let TIMELINE_HEAVY_BOOTED = false;
 
@@ -560,11 +552,9 @@ function initUnravel(ccEls, staticCards) {
     if (TIMELINE_LIGHT_BOOTED) return;
     TIMELINE_LIGHT_BOOTED = true;
 
-    // Make cards eligible to show immediately
     initYearStamps();
     initCardReveal();
 
-    // Hard safety: ensure no "blank" even before IO runs
     zone.querySelectorAll('.tl-card').forEach(c => {
       c.classList.remove('out-view');
       c.classList.add('in-view');
@@ -575,7 +565,6 @@ function initUnravel(ccEls, staticCards) {
     if (TIMELINE_HEAVY_BOOTED) return;
     TIMELINE_HEAVY_BOOTED = true;
 
-    // Needs final layout sizes
     requestAnimationFrame(() => requestAnimationFrame(() => {
       buildSandSpine();
     }));
@@ -627,7 +616,6 @@ function initUnravel(ccEls, staticCards) {
     if (open) return;
     open = true;
 
-    // Block auto-close while we expand + scroll
     allowAutoClose = false;
 
     bootTimelineLightOnce();
@@ -638,14 +626,11 @@ function initUnravel(ccEls, staticCards) {
     zone.setAttribute('aria-hidden', 'false');
     zone.classList.add('open');
 
-    // Expand
     zone.style.maxHeight = zone.scrollHeight + 'px';
 
-    // KEY: immediately bring timeline into view BEFORE fading carousel
     requestAnimationFrame(() => {
       scrollToTimelineStart('auto');
 
-      // now run the fly + fade
       requestAnimationFrame(() => {
         flyToTimeline(ccEls, staticCards);
         carousel.style.opacity = '0';
@@ -657,10 +642,7 @@ function initUnravel(ccEls, staticCards) {
       bootTimelineHeavyOnce();
       showTimelineToastOnce();
 
-      // Allow auto-close again after everything is stable
       setTimeout(() => { allowAutoClose = true; }, 250);
-
-      // Snap correction after final layout
       setTimeout(() => scrollToTimelineStart('auto'), 0);
     };
 
@@ -671,7 +653,6 @@ function initUnravel(ccEls, staticCards) {
     };
     zone.addEventListener('transitionend', onEnd);
 
-    // Fallback if transitionend doesn't fire
     setTimeout(() => {
       if (zone.style.maxHeight !== 'none') finalizeOpen();
     }, 950);
@@ -683,11 +664,9 @@ function initUnravel(ccEls, staticCards) {
 
     work.classList.remove('timeline-open');
 
-    // Re-show carousel
     refurlCarousel(ccEls, staticCards);
     carousel.style.opacity = '1';
 
-    // Collapse
     zone.style.maxHeight = zone.scrollHeight + 'px';
     zone.getBoundingClientRect();
     zone.classList.remove('open');
@@ -698,7 +677,6 @@ function initUnravel(ccEls, staticCards) {
     requestAnimationFrame(() => scrollToWorkTop());
   }
 
-  // Track work section visibility
   new IntersectionObserver(entries => {
     workInView = entries[0].isIntersecting;
     if (!workInView) hideCue();
@@ -711,7 +689,6 @@ function initUnravel(ccEls, staticCards) {
     }
   }, { threshold: 0.35 }).observe(work);
 
-  // Scroll logic
   window.addEventListener('scroll', () => {
     const y = window.scrollY;
     const dir = (y < lastY) ? 'up' : 'down';
@@ -722,7 +699,6 @@ function initUnravel(ccEls, staticCards) {
     if (!open && workInView && (dir === 'up' || !passedWork)) showCue();
     if (dir === 'down') hideCue();
 
-    // Only allow auto-close after open has settled
     if (open && allowAutoClose && y < work.offsetTop + 80) closeTimeline();
   }, { passive: true });
 
@@ -739,7 +715,7 @@ function initUnravel(ccEls, staticCards) {
 
   wireActivate(carousel);
   wireActivate(cue);
-} 
+}
 
 function refurlCarousel(ccEls, staticCards) {
   ccEls.forEach((cc, i) => {
@@ -953,120 +929,106 @@ function initEducation() {
   let played = false;
 
   function playCatSequence() {
-  const line = document.getElementById('eduDottedLine');
-  if (!line) return;
+    const line = document.getElementById('eduDottedLine');
+    if (!line) return;
 
-  const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
+    const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
+    const runwayRect = runway.getBoundingClientRect();
+    const w = runway.clientWidth || 1;
 
-  const runwayRect = runway.getBoundingClientRect();
-  const w = runway.clientWidth || 1;
-
-  // Get actual scaleX from computed transform (handles scaleX(-1) * scale(.4))
-  function getScaleXSignAndMag() {
-    const t = getComputedStyle(cat).transform;
-    if (!t || t === 'none') return { sign: 1, mag: 1 };
-    const vals = t.includes('matrix3d')
-      ? t.match(/matrix3d\((.+)\)/)[1].split(',').map(Number)
-      : t.match(/matrix\((.+)\)/)[1].split(',').map(Number);
-    const a = vals[0]; // scaleX (no rotation in your case)
-    return { sign: a < 0 ? -1 : 1, mag: Math.abs(a) || 1 };
-  }
-
-  const { sign, mag } = getScaleXSignAndMag();
-
-  // Visible width (because transform scaling doesn't change layout width)
-  const baseW = cat.offsetWidth || 306;       // 306 from your CSS var
-  const visW  = baseW * mag;
-
-  // dotted line bounds in runway-local coords
-  const bounds = () => {
-    const r = line.getBoundingClientRect();
-    return {
-      left:  r.left  - runwayRect.left,
-      right: r.right - runwayRect.left,
-      width: r.width
-    };
-  };
-
-  const START_PAD = 10;
-  const END_PAD   = 10;
-
-  // Map desired visual CENTER x -> CSS left
-  // Normal (not flipped): visual spans [left, left+visW], center = left + visW/2
-  // Flipped with origin at left: visual spans [left-visW, left], center = left - visW/2
-  const leftForCenterAt = (x) => {
-    if (sign > 0) return x - visW / 2;
-    return x + visW / 2;
-  };
-
-  // Clamp range so the *visible* cat stays inside runway
-  // Normal: left in [0, w-visW]
-  // Flipped: left in [visW, w]
-  const minLeft = sign > 0 ? 0 : visW;
-  const maxLeft = sign > 0 ? (w - visW) : w;
-
-  // Place idle at start immediately (left edge exists even while width grows)
-  const b0 = bounds();
-  const startX = b0.left + START_PAD;
-  const startLeft = clamp(leftForCenterAt(startX), minLeft, maxLeft);
-
-  cat.classList.remove('run', 'arrived');
-  cat.classList.add('idle');
-  cat.style.transition = 'none';
-  cat.style.left = `${startLeft}px`;
-
-  // Run once line is fully grown
-  const beginRun = () => {
-    const b = bounds();
-    if (b.width < 120) { // still growing or not measured yet
-      requestAnimationFrame(beginRun);
-      return;
+    function getScaleXSignAndMag() {
+      const t = getComputedStyle(cat).transform;
+      if (!t || t === 'none') return { sign: 1, mag: 1 };
+      const vals = t.includes('matrix3d')
+        ? t.match(/matrix3d\((.+)\)/)[1].split(',').map(Number)
+        : t.match(/matrix\((.+)\)/)[1].split(',').map(Number);
+      const a = vals[0];
+      return { sign: a < 0 ? -1 : 1, mag: Math.abs(a) || 1 };
     }
 
-    const endX = b.right - END_PAD;
-    const endLeft = clamp(leftForCenterAt(endX), minLeft, maxLeft);
+    const { sign, mag } = getScaleXSignAndMag();
+    const baseW = cat.offsetWidth || 306;
+    const visW  = baseW * mag;
 
-    setTimeout(() => {
-      cat.classList.remove('idle', 'arrived');
-      cat.classList.add('run');
-
-      const dist = Math.abs(endLeft - startLeft);
-      const duration = Math.max(2200, Math.min(3400, 2200 + (dist / w) * 1200));
-
-      const finish = () => {
-        cat.classList.remove('run');
-        cat.classList.add('idle', 'arrived');
-        cat.style.left = `${endLeft}px`;
+    const bounds = () => {
+      const r = line.getBoundingClientRect();
+      return {
+        left:  r.left  - runwayRect.left,
+        right: r.right - runwayRect.left,
+        width: r.width
       };
+    };
 
-      if (typeof cat.animate === 'function') {
-        const anim = cat.animate(
-          [{ left: `${startLeft}px` }, { left: `${endLeft}px` }],
-          { duration, easing: 'linear', fill: 'forwards' }
-        );
-        anim.onfinish = finish;
-      } else {
-        cat.style.transition = `left ${duration}ms linear`;
-        requestAnimationFrame(() => {
-          cat.style.left = `${endLeft}px`;
-          setTimeout(finish, duration + 60);
-        });
+    const START_PAD = 10;
+    const END_PAD   = 10;
+
+    const leftForCenterAt = (x) => {
+      if (sign > 0) return x - visW / 2;
+      return x + visW / 2;
+    };
+
+    const minLeft = sign > 0 ? 0 : visW;
+    const maxLeft = sign > 0 ? (w - visW) : w;
+
+    const b0 = bounds();
+    const startX = b0.left + START_PAD;
+    const startLeft = clamp(leftForCenterAt(startX), minLeft, maxLeft);
+
+    cat.classList.remove('run', 'arrived');
+    cat.classList.add('idle');
+    cat.style.transition = 'none';
+    cat.style.left = `${startLeft}px`;
+
+    const beginRun = () => {
+      const b = bounds();
+      if (b.width < 120) {
+        requestAnimationFrame(beginRun);
+        return;
       }
-    }, 900);
-  };
 
-  // Transition-end on dotted line width + fallback
-  const onEnd = (e) => {
-    if (e.propertyName !== 'width') return;
-    line.removeEventListener('transitionend', onEnd);
-    beginRun();
-  };
-  line.addEventListener('transitionend', onEnd);
-  setTimeout(() => {
-    line.removeEventListener('transitionend', onEnd);
-    beginRun();
-  }, 1700);
-}
+      const endX = b.right - END_PAD;
+      const endLeft = clamp(leftForCenterAt(endX), minLeft, maxLeft);
+
+      setTimeout(() => {
+        cat.classList.remove('idle', 'arrived');
+        cat.classList.add('run');
+
+        const dist = Math.abs(endLeft - startLeft);
+        const duration = Math.max(2200, Math.min(3400, 2200 + (dist / w) * 1200));
+
+        const finish = () => {
+          cat.classList.remove('run');
+          cat.classList.add('idle', 'arrived');
+          cat.style.left = `${endLeft}px`;
+        };
+
+        if (typeof cat.animate === 'function') {
+          const anim = cat.animate(
+            [{ left: `${startLeft}px` }, { left: `${endLeft}px` }],
+            { duration, easing: 'linear', fill: 'forwards' }
+          );
+          anim.onfinish = finish;
+        } else {
+          cat.style.transition = `left ${duration}ms linear`;
+          requestAnimationFrame(() => {
+            cat.style.left = `${endLeft}px`;
+            setTimeout(finish, duration + 60);
+          });
+        }
+      }, 900);
+    };
+
+    const onEnd = (e) => {
+      if (e.propertyName !== 'width') return;
+      line.removeEventListener('transitionend', onEnd);
+      beginRun();
+    };
+    line.addEventListener('transitionend', onEnd);
+    setTimeout(() => {
+      line.removeEventListener('transitionend', onEnd);
+      beginRun();
+    }, 1700);
+  }
 
   new IntersectionObserver(entries => {
     if (!entries[0].isIntersecting || played) return;
@@ -1150,7 +1112,7 @@ function initRoleAnimation() {
 
   function type() {
     const currentRole = roles[currentIndex];
-    
+
     if (!isDeleting) {
       roleEl.innerHTML = currentRole.substring(0, charIndex + 1) + '<span style="color:#00bfff;animation:blink 1s step-end infinite;">|</span>';
       charIndex++;
@@ -1211,8 +1173,6 @@ function initSkillsGlobe() {
     return new THREE.Vector3(x, y, z);
   }
 
-  // Badge canvas that draws ONLY the halo/border and the icon (no text ever).
-  // Sprite is hidden until icon is drawn to prevent any flash/overlap.
   function makeBadgeTextureNoText(skill, onReady) {
     const c = document.createElement('canvas');
     c.width = 128; c.height = 128;
@@ -1223,13 +1183,11 @@ function initSkillsGlobe() {
     function drawBase() {
       ctx.clearRect(0, 0, 128, 128);
 
-      // dark halo
       ctx.beginPath();
       ctx.arc(64, 64, 60, 0, Math.PI * 2);
       ctx.fillStyle = 'rgba(0,0,0,0.55)';
       ctx.fill();
 
-      // colored tint
       ctx.beginPath();
       ctx.arc(64, 64, 52, 0, Math.PI * 2);
       ctx.fillStyle = col;
@@ -1237,7 +1195,6 @@ function initSkillsGlobe() {
       ctx.fill();
       ctx.globalAlpha = 1;
 
-      // border
       ctx.beginPath();
       ctx.arc(64, 64, 52, 0, Math.PI * 2);
       ctx.strokeStyle = 'rgba(255,255,255,0.30)';
@@ -1249,7 +1206,6 @@ function initSkillsGlobe() {
     const tex = new THREE.CanvasTexture(c);
     tex.needsUpdate = true;
 
-    // Three.js version compatibility: colorSpace vs encoding
     if ('colorSpace' in tex && THREE.SRGBColorSpace) {
       tex.colorSpace = THREE.SRGBColorSpace;
     } else if ('encoding' in tex && THREE.sRGBEncoding) {
@@ -1257,7 +1213,6 @@ function initSkillsGlobe() {
     }
 
     if (!skill.iconUrl) {
-      // No icon -> leave hidden (images-only policy)
       if (typeof onReady === 'function') onReady(false);
       return tex;
     }
@@ -1266,7 +1221,6 @@ function initSkillsGlobe() {
     img.onload = () => {
       drawBase();
 
-      // clip inner circle then draw icon
       ctx.save();
       ctx.beginPath();
       ctx.arc(64, 64, 38, 0, Math.PI * 2);
@@ -1282,7 +1236,6 @@ function initSkillsGlobe() {
       if (typeof onReady === 'function') onReady(true);
     };
     img.onerror = () => {
-      // Icon failed -> keep hidden (images-only)
       if (typeof onReady === 'function') onReady(false);
     };
 
@@ -1301,7 +1254,6 @@ function initSkillsGlobe() {
   renderer.setSize(w0, h0);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 
-  // compatibility: outputColorSpace vs outputEncoding
   if ('outputColorSpace' in renderer && THREE.SRGBColorSpace) {
     renderer.outputColorSpace = THREE.SRGBColorSpace;
   } else if ('outputEncoding' in renderer && THREE.sRGBEncoding) {
@@ -1345,11 +1297,10 @@ function initSkillsGlobe() {
     const iconPos = latLonToVec3(skill.lat, skill.lon, ICON_R);
     const pinPos  = latLonToVec3(skill.lat, skill.lon, PIN_R);
 
-    // Create sprite material hidden until icon loads
     const spriteMat = new THREE.SpriteMaterial({
       map: null,
       transparent: true,
-      opacity: 0,            // hidden at start (prevents any overlap/flash)
+      opacity: 0,
       depthTest: false,
       depthWrite: false
     });
@@ -1365,10 +1316,8 @@ function initSkillsGlobe() {
       baseOpacity: 0.90
     };
 
-    // Build texture and show sprite only when icon is drawn
     const tex = makeBadgeTextureNoText(skill, (ok) => {
-      if (ok) spriteMat.opacity = 0.95;   // show only if icon exists and loaded
-      else spriteMat.opacity = 0;         // images-only policy: hide if missing
+      spriteMat.opacity = ok ? 0.95 : 0;
     });
     spriteMat.map = tex;
     spriteMat.needsUpdate = true;
@@ -1511,98 +1460,68 @@ function initSkillsGlobe() {
   });
 }
 
-/* ══ PROJECT MODAL SYSTEM ══════════════════════════════════ */
-function ensureImageLightbox(){
-  let lb = document.getElementById('imgLightbox');
-  if (lb) return lb;
-
-  lb = document.createElement('div');
-  lb.id = 'imgLightbox';
-  lb.className = 'img-lightbox';
-  lb.innerHTML = `
-    <button class="lb-close" type="button" aria-label="Close">×</button>
-    <img alt="" />
-  `;
-  document.body.appendChild(lb);
-
-  const img = lb.querySelector('img');
-  const closeBtn = lb.querySelector('.lb-close');
-
-  const close = () => lb.classList.remove('open');
-  closeBtn.addEventListener('click', close);
-  lb.addEventListener('click', (e) => { if (e.target === lb) close(); });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && lb.classList.contains('open')) close();
-  });
-
-  lb.openWith = (src, alt='') => {
-    img.src = src;
-    img.alt = alt;
-    lb.classList.add('open');
-  };
-
-  return lb;
-}
-
-function wireZoomImages(rootEl){
-  const lb = ensureImageLightbox();
-  rootEl.querySelectorAll('img[data-zoom]').forEach(im => {
-    im.addEventListener('click', () => lb.openWith(im.src, im.alt || ''));
-  });
-}
-
-/* ─── MODAL IMAGE LIGHTBOX (delegated, no data-zoom needed) ─── */
-function setupModalImageLightbox() {
-  // Create lightbox once
+/* ══ MODAL IMAGE LIGHTBOX (SAFE + LOCAL, DOES NOT BREAK TIMELINE) ═════ */
+function ensureImgLightbox() {
   let lb = document.getElementById('imgLightbox');
   if (!lb) {
     lb = document.createElement('div');
     lb.id = 'imgLightbox';
     lb.className = 'img-lightbox';
-    lb.innerHTML = `
-      <button class="lb-close" type="button" aria-label="Close">×</button>
-      <img alt="" />
-    `;
+    lb.innerHTML = `<button class="lb-close" type="button" aria-label="Close">×</button><img alt="" />`;
     document.body.appendChild(lb);
+  }
 
-    const close = () => lb.classList.remove('open');
-    lb.querySelector('.lb-close').addEventListener('click', close);
+  const img = lb.querySelector('img');
+  const closeBtn = lb.querySelector('.lb-close');
+
+  function close() { lb.classList.remove('open'); }
+
+  if (!lb.dataset.bound) {
+    lb.dataset.bound = '1';
+    closeBtn?.addEventListener('click', close);
     lb.addEventListener('click', (e) => { if (e.target === lb) close(); });
-
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && lb.classList.contains('open')) close();
     });
   }
 
-  const lbImg = lb.querySelector('img');
+  return {
+    open: (src, alt='') => {
+      img.src = src;
+      img.alt = alt;
+      lb.classList.add('open');
+    },
+    close
+  };
+}
 
-  // Delegate clicks: ANY image inside an active modal figure opens
-  if (document.body.dataset.lbBound === '1') return;
-  document.body.dataset.lbBound = '1';
+function wireModalZoomImages(rootEl) {
+  if (!rootEl) return;
+  const lb = ensureImgLightbox();
 
-  document.addEventListener('click', (e) => {
-    const img = e.target.closest('.project-modal.active .modal-figure img');
-    if (!img) return;
+  const imgs = rootEl.querySelectorAll('.modal-figure img, .figure-grid img');
+  imgs.forEach((im) => {
+    if (im.dataset.zoomBound === '1') return;
+    im.dataset.zoomBound = '1';
+    im.style.cursor = 'zoom-in';
 
-    // Prevent any other click behavior
-    e.preventDefault();
-
-    lbImg.src = img.currentSrc || img.src;
-    lbImg.alt = img.alt || '';
-    lb.classList.add('open');
+    im.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation(); // crucial: don't trigger modal/backdrop handlers
+      lb.open(im.currentSrc || im.src, im.alt || '');
+    });
   });
 }
 
+/* ══ PROJECT MODAL SYSTEM ══════════════════════════════════ */
 function initProjectModals() {
   const modal = document.getElementById('projectModal');
   const modalBackdrop = document.getElementById('modalBackdrop');
   const modalClose = document.getElementById('modalClose');
   const modalContent = document.getElementById('modalContent');
-  const modalMatrixBg = document.getElementById('modalMatrixBg');
-  
+
   if (!modal) return;
-  
+
   document.querySelectorAll('[data-project-id]').forEach(card => {
     if (!card.hasAttribute('tabindex')) card.setAttribute('tabindex', '0');
 
@@ -1641,7 +1560,7 @@ function initProjectModals() {
       hasMatrix: matrixHint
     };
   }
-  
+
   function openModal(data) {
     const modalBody = modal.querySelector('.modal-body');
     const grid = modal.querySelector('.modal-grid');
@@ -1681,7 +1600,6 @@ function initProjectModals() {
 
     if (extra) {
       extra.innerHTML = data.extraHTML || '';
-      wireZoomImages(modal);
       extra.classList.remove('is-top', 'is-after-overview');
 
       const pos = data.extraPosition || 'bottom';
@@ -1698,6 +1616,9 @@ function initProjectModals() {
       } else {
         if (modalBody) modalBody.appendChild(extra);
       }
+
+      // IMPORTANT: bind zoom clicks only inside the injected modal content
+      wireModalZoomImages(extra);
     }
 
     if (data.hasMatrix) {
@@ -1723,11 +1644,15 @@ function initProjectModals() {
 
     const extra = document.getElementById('modalExtra');
     if (extra) extra.innerHTML = '';
+
+    // Close lightbox if it’s open
+    const lb = document.getElementById('imgLightbox');
+    if (lb) lb.classList.remove('open');
   }
-  
-  modalClose.addEventListener('click', closeModal);
-  modalBackdrop.addEventListener('click', closeModal);
-  
+
+  modalClose?.addEventListener('click', closeModal);
+  modalBackdrop?.addEventListener('click', closeModal);
+
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && modal.classList.contains('active')) {
       closeModal();
@@ -1742,22 +1667,22 @@ function initModalMatrix() {
 
   if (canvas.dataset.running === '1') return;
   canvas.dataset.running = '1';
-  
+
   const ctx = canvas.getContext('2d');
   canvas.width = canvas.parentElement.offsetWidth;
   canvas.height = canvas.parentElement.offsetHeight;
-  
+
   const chars = '01CFDML0123456789';
   const fontSize = 12;
   const columns = Math.floor(canvas.width / fontSize);
   const drops = Array(columns).fill(1);
-  
+
   function draw() {
     ctx.fillStyle = 'rgba(0,0,0,0.05)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = 'rgba(0,255,65,0.6)';
     ctx.font = `${fontSize}px "Space Mono",monospace`;
-    
+
     for (let i = 0; i < drops.length; i++) {
       const text = chars[Math.floor(Math.random() * chars.length)];
       ctx.fillText(text, i * fontSize, drops[i] * fontSize);
@@ -1767,9 +1692,9 @@ function initModalMatrix() {
       drops[i]++;
     }
   }
-  
+
   const interval = setInterval(draw, 50);
-  
+
   const modal = document.getElementById('projectModal');
   const observer = new MutationObserver(() => {
     if (!modal.classList.contains('active')) {
@@ -1817,8 +1742,6 @@ function initAchievements() {
   io.observe(section);
 }
 
-
-
 /* ══ DOWNLOAD RESUME ═══════════════════════════════════════ */
 function initDownloadResume() {
   const btn = document.getElementById('downloadResume');
@@ -1826,12 +1749,12 @@ function initDownloadResume() {
 
   btn.addEventListener('click', e => {
     e.preventDefault();
-    
+
     const link = document.createElement('a');
     link.href = 'Krtin_Kala_Resume.pdf';
     link.download = 'Krtin_Kala_Resume.pdf';
     link.click();
-    
+
     btn.style.transform = 'scale(0.95)';
     setTimeout(() => btn.style.transform = '', 200);
   });
