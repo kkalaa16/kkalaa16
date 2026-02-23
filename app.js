@@ -144,18 +144,18 @@ extraHTML: `
   tags: ['Systems', 'Supply Chain', 'Graph Theory', 'HHI', 'Vulnerability', 'Resilience'],
 
   overview:
-    'Supply-chain optimization and vulnerability evaluation for resilient aerospace networks. Modeled multi-material supply chains with multi-layer graph theory and used network metrics (vulnerability, single-point failures, robustness) plus market concentration (HHI) to identify risk hotspots and mitigation levers.',
+    'Supply-chain vulnerability evaluation for resilient aerospace networks. Modeled multi-material supply chains with multi-layer graph theory and used network metrics plus market concentration (HHI) to identify risk hotspots and mitigation levers.',
 
   contributions: [
     'Represented multi-material supply chains as layered graphs connected via shared suppliers',
-    'Applied graph-theory metrics to evaluate supplier vulnerability, single-point failures, and supply-chain robustness',
+    'Applied graph-theory metrics to evaluate supplier vulnerability, single-point failures, and robustness',
     'Used HHI (geographic node concentration) and vulnerability rankings to identify at-risk tiers',
-    'Structured mitigation strategies across organizational layers (company → partnerships → industry → government)'
+    'Structured mitigation strategies across implementation layers (company → partnerships → industry → government)'
   ],
 
   tech: ['Graph Theory', 'Network Metrics', 'HHI', 'Systems Analysis'],
   results: [
-    'Produced vulnerability/HHI views to quickly identify tiers most at risk',
+    'Produced vulnerability/HHI views to rapidly identify tiers most at risk',
     'Mapped mitigation actions by implementation layer to support resilience planning'
   ],
 
@@ -163,28 +163,35 @@ extraHTML: `
   modalSize: 'xl',
   extraPosition: 'top',
   extraHTML: `
-    <div class="modal-gallery modal-gallery--hero">
+    <div class="modal-gallery">
       <div class="modal-figure modal-figure--contain">
-        <img src="img/s15_multilayer_supply_chain.png" alt="Multi-layer supply chain concept diagram" />
-        <div class="figcaption">Multi-layer supply chains: combine material layers through shared suppliers.</div>
+        <img data-zoom src="img/Me-SOS.jpeg" alt="Presenting the Boeing Ti-6Al-4V supply chain work to stakeholders" />
+        <div class="figcaption">Stakeholder briefing and design review discussion for the Ti-6Al-4V supply chain risk study.</div>
+      </div>
+    </div>
+
+    <div class="modal-gallery modal-gallery--hero" style="margin-top:1.1rem;">
+      <div class="modal-figure modal-figure--contain">
+        <img data-zoom src="img/s15_multilayer_supply_chain.png" alt="Multi-layer supply chain concept diagram" />
+        <div class="figcaption">Multi-layer supply chain model: material layers connected through shared suppliers.</div>
       </div>
       <div class="modal-figure modal-figure--contain">
-        <img src="img/s15_network_metrics.png" alt="Supply chain network analysis metrics and HHI mention" />
-        <div class="figcaption">Network metrics: vulnerability, single-point failures, robustness + HHI market concentration.</div>
+        <img data-zoom src="img/s15_network_metrics.png" alt="Supply chain network analysis metrics and HHI" />
+        <div class="figcaption">Network metrics (vulnerability, single-point failures, robustness) plus HHI concentration.</div>
       </div>
     </div>
 
     <div class="modal-gallery" style="margin-top:1.1rem;">
       <div class="modal-figure modal-figure--contain">
-        <img src="img/s15_hhi_vulnerability_rankings.png" alt="Vulnerability rankings and HHI index for titanium layer" />
-        <div class="figcaption">Vulnerability rankings + HHI index to determine tiers most at risk.</div>
+        <img data-zoom src="img/s15_hhi_vulnerability_rankings.png" alt="Vulnerability rankings and HHI index for titanium layer" />
+        <div class="figcaption">Vulnerability ranking + HHI index to identify the tiers most exposed to disruption.</div>
       </div>
     </div>
 
     <div class="modal-gallery" style="margin-top:1.1rem;">
       <div class="modal-figure modal-figure--contain">
-        <img src="img/s15_mitigation_layers.png" alt="Layers of mitigation strategies" />
-        <div class="figcaption">Mitigation layers: company, partnerships, industry, government, pan-government.</div>
+        <img data-zoom src="img/s15_mitigation_layers.png" alt="Layers of mitigation strategies" />
+        <div class="figcaption">Mitigation layers: company actions, partnerships, industry-wide coordination, and government levers.</div>
       </div>
     </div>
   `
