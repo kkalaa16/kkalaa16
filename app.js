@@ -754,72 +754,76 @@ function initEducation() {
   let played = false;
 
   function playCatSequence() {
-    // reset state
-    cat.classList.remove('run', 'arrived');
-    cat.classList.add('idle');
-    cat.style.transition = 'none';
+  // reset state
+  cat.classList.remove('run', 'arrived');
+  cat.classList.add('idle');
+  cat.style.transition = 'none';
 
-    const runwayRect = runway.getBoundingClientRect();
-    const w = runway.clientWidth || 1;
+  const runwayRect = runway.getBoundingClientRect();
+  const w = runway.clientWidth || 1;
 
-    // width including transform scale
-    const catW = cat.getBoundingClientRect().width || 120;
+  // IMPORTANT: use the element's *layout* width (unscaled), then apply scale manually
+  const baseW = cat.offsetWidth || 150;
 
-    // Prefer real logo centers (more accurate than hardcoded %)
-    const logos = [...panel.querySelectorAll('.edu-inst-logo')];
-    let bitsCenter = w * 0.14;
-    let gtCenter   = w * 0.86;
+  // Read scale from CSS var --cat-scale (fallback 0.40)
+  const cssScale = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cat-scale')) || 0.40;
+  const catW = baseW * cssScale; // effective on-screen width
 
-    if (logos.length >= 2) {
-      const sorted = logos
-        .map(el => el.getBoundingClientRect())
-        .sort((a,b) => a.left - b.left);
+  const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
+  const maxLeft = Math.max(0, w - catW);
 
-      const leftLogo  = sorted[0];
-      const rightLogo = sorted[sorted.length - 1];
+  // Start near BITS logo center (good), end near the runway right end (whole way)
+  const logos = [...panel.querySelectorAll('.edu-inst-logo')];
+  let bitsCenter = w * 0.14;
 
-      bitsCenter = (leftLogo.left + leftLogo.width/2) - runwayRect.left;
-      gtCenter   = (rightLogo.left + rightLogo.width/2) - runwayRect.left;
-    }
-
-    const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
-    const start = clamp(bitsCenter - catW/2, 0, Math.max(0, w - catW));
-    const end   = clamp(gtCenter   - catW/2, 0, Math.max(0, w - catW));
-
-    // 1) sit at BITS
-    cat.style.left = `${start}px`;
-    cat.classList.remove('arrived');
-    cat.classList.add('idle');
-
-    // 2) run to GT
-    setTimeout(() => {
-      cat.classList.remove('idle', 'arrived');
-      cat.classList.add('run');
-
-      const dist = Math.abs(end - start);
-      const duration = Math.max(2200, Math.min(3200, 2200 + (dist / w) * 900));
-
-      const finish = () => {
-        cat.classList.remove('run');
-        cat.classList.add('idle', 'arrived');
-        cat.style.left = `${end}px`;
-      };
-
-      if (typeof cat.animate === 'function') {
-        const anim = cat.animate(
-          [{ left: `${start}px` }, { left: `${end}px` }],
-          { duration, easing: 'linear', fill: 'forwards' }
-        );
-        anim.onfinish = finish;
-      } else {
-        cat.style.transition = `left ${duration}ms linear`;
-        requestAnimationFrame(() => {
-          cat.style.left = `${end}px`;
-          setTimeout(finish, duration + 50);
-        });
-      }
-    }, 900);
+  if (logos.length >= 1) {
+    const sorted = logos
+      .map(el => el.getBoundingClientRect())
+      .sort((a, b) => a.left - b.left);
+    const leftLogo = sorted[0];
+    bitsCenter = (leftLogo.left + leftLogo.width / 2) - runwayRect.left;
   }
+
+  const start = clamp(bitsCenter - catW / 2, 0, maxLeft);
+
+  // GO THE WHOLE WAY: stop slightly before the right edge so it doesn't clip
+  const rightPaddingPx = 10;  // tweak if needed
+  const end = clamp(maxLeft - rightPaddingPx, 0, maxLeft);
+
+  // 1) sit at BITS
+  cat.style.left = `${start}px`;
+  cat.classList.remove('arrived');
+  cat.classList.add('idle');
+
+  // 2) run to GT
+  setTimeout(() => {
+    cat.classList.remove('idle', 'arrived');
+    cat.classList.add('run');
+
+    const dist = Math.abs(end - start);
+    const duration = Math.max(2200, Math.min(3400, 2200 + (dist / w) * 1200));
+
+    const finish = () => {
+      cat.classList.remove('run');
+      cat.classList.add('idle', 'arrived');
+      cat.style.left = `${end}px`;
+    };
+
+    if (typeof cat.animate === 'function') {
+      const anim = cat.animate(
+        [{ left: `${start}px` }, { left: `${end}px` }],
+        { duration, easing: 'linear', fill: 'forwards' }
+      );
+      anim.onfinish = finish;
+    } else {
+      cat.style.transition = `left ${duration}ms linear`;
+      requestAnimationFrame(() => {
+        cat.style.left = `${end}px`;
+        setTimeout(finish, duration + 60);
+      });
+    }
+  }, 900);
+}
 
   new IntersectionObserver(entries => {
     if (!entries[0].isIntersecting || played) return;
