@@ -384,14 +384,15 @@ window.addEventListener('load', () => {
   document.getElementById('work-section')?.classList.remove('timeline-open');
   // New sections
   setTimeout(() => {
-    initRoleAnimation();
-    initSkillsGlobe();
-    initProjectModals();
-    initAchievements();
-    initDownloadResume();
-  }, 500); // Small delay to ensure DOM is ready
-});
-
+  initRoleAnimation();
+  initSkillsGlobe();
+  initProjectModals();
+  installModalImageLightbox();   // ← ADD THIS LINE
+  initAchievements();
+  initContact();
+  initDownloadResume();
+}, 500);
+  
 /* ══ FLUID ══════════════════════════════════════════════════ */
 function initFluid() {
   const cv = document.getElementById('fluid-canvas');
@@ -1512,6 +1513,49 @@ function initSkillsGlobe() {
 }
 
 /* ══ PROJECT MODAL SYSTEM ══════════════════════════════════ */
+/* ─── MODAL IMAGE LIGHTBOX (robust delegated click) ───────── */
+function installModalImageLightbox() {
+  // Install only once
+  if (window.__MODAL_LB_INSTALLED__) return;
+  window.__MODAL_LB_INSTALLED__ = true;
+
+  // Create lightbox once
+  let lb = document.querySelector('.img-lightbox');
+  if (!lb) {
+    lb = document.createElement('div');
+    lb.className = 'img-lightbox';
+    lb.innerHTML = `
+      <button class="lb-close" type="button" aria-label="Close">×</button>
+      <img alt="" />
+    `;
+    document.body.appendChild(lb);
+  }
+
+  const lbImg = lb.querySelector('img');
+  const closeBtn = lb.querySelector('.lb-close');
+
+  const close = () => lb.classList.remove('open');
+  closeBtn?.addEventListener('click', close);
+  lb.addEventListener('click', (e) => { if (e.target === lb) close(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && lb.classList.contains('open')) close();
+  });
+
+  // Delegated click: ANY image inside the OPEN modal triggers zoom
+  document.addEventListener('click', (e) => {
+    const img = e.target.closest('#projectModal.active .modal-figure img, #projectModal.active .figure-grid img');
+    if (!img) return;
+
+    // IMPORTANT: prevent other click handlers
+    e.preventDefault();
+    e.stopPropagation();
+
+    lbImg.src = img.currentSrc || img.src;
+    lbImg.alt = img.alt || '';
+    lb.classList.add('open');
+  }, true); // capture phase to beat other listeners
+}
+
 function ensureImageLightbox(){
   let lb = document.getElementById('imgLightbox');
   if (lb) return lb;
