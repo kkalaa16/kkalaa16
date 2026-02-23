@@ -1236,31 +1236,49 @@ a { color:inherit; text-decoration:none; }
 }
 
 /* Hero gallery row (used in the undergraduate thesis) */
-.modal-gallery--hero {
+/* Hero gallery row */
+.modal-gallery--hero{
   grid-template-columns: 1fr 1fr;
   align-items: stretch;
 }
 
-.modal-gallery--hero .modal-figure img {
+/* If you're using --contain figures in hero, do NOT force 260px cropping */
+.modal-gallery--hero .modal-figure--contain img{
+  height: auto;
+  width: 100%;
+  max-height: 640px;          /* bigger plots */
+  object-fit: contain;
+  background: rgba(0,0,0,0.25);
+}
+
+/* Only apply fixed-height crop to NON-contain hero figures (like your thesis photos) */
+.modal-gallery--hero .modal-figure:not(.modal-figure--contain) img{
   height: 260px;
+  width: 100%;
   object-fit: cover;
 }
 
-.modal-gallery--hero .modal-figure--double .figure-grid {
+.modal-gallery--hero .modal-figure--double .figure-grid{
   height: 260px;
 }
 
-@media (max-width: 900px) {
-  .modal-gallery--hero {
-    grid-template-columns: 1fr;
+/* Global contain (outside hero too) — increase this so plots can be big */
+.modal-figure--contain img{
+  max-height: 640px;          /* was 420px */
+  object-fit: contain;
+  background: rgba(0,0,0,0.25);
+}
+
+@media (max-width: 900px){
+  .modal-gallery--hero{ grid-template-columns: 1fr; }
+
+  /* On mobile, allow contain figures to stay tall but not insane */
+  .modal-gallery--hero .modal-figure--contain img,
+  .modal-figure--contain img{
+    max-height: 520px;
   }
-  .modal-gallery--hero .modal-figure img {
-    height: auto;
-    object-fit: contain;
-  }
-  .modal-gallery--hero .modal-figure--double .figure-grid {
-    height: auto;
-  }
+
+  .modal-gallery--hero .modal-figure--double .figure-grid{ height: auto; }
 }
 
 .modal-figure {
