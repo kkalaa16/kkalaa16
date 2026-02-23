@@ -795,8 +795,8 @@ function initEducation() {
       return;
     }
 
-    const start = clamp(b.left + START_PAD, 0, maxLeft);
-    const end   = clamp(b.right - END_PAD - catW, 0, maxLeft);
+    const start = clamp((b.left  + START_PAD) - catW/2, 0, maxLeft);
+    const end   = clamp((b.right - END_PAD)   - catW/2, 0, maxLeft);
 
     // make sure start is set (sitting at BITS)
     cat.style.left = `${start}px`;
