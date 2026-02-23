@@ -759,23 +759,28 @@ function initEducation() {
 
   const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
 
-  // runway geometry
-  const w = runway.clientWidth || 1;
   const runwayRect = runway.getBoundingClientRect();
+  const w = runway.clientWidth || 1;
 
-  // visible cat width = layout width * scale (because transform scaling does NOT affect layout)
-  const baseW = cat.offsetWidth || 306;
-  const cssScale =
-    parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cat-scale')) || 0.40;
-  const visW = baseW * cssScale;
+  // Get actual scaleX from computed transform (handles scaleX(-1) * scale(.4))
+  function getScaleXSignAndMag() {
+    const t = getComputedStyle(cat).transform;
+    if (!t || t === 'none') return { sign: 1, mag: 1 };
+    const vals = t.includes('matrix3d')
+      ? t.match(/matrix3d\((.+)\)/)[1].split(',').map(Number)
+      : t.match(/matrix\((.+)\)/)[1].split(',').map(Number);
+    const a = vals[0]; // scaleX (no rotation in your case)
+    return { sign: a < 0 ? -1 : 1, mag: Math.abs(a) || 1 };
+  }
 
-  // allow the visible cat to reach the right end
-  const maxLeft = Math.max(0, w - visW);
+  const { sign, mag } = getScaleXSignAndMag();
 
-  const START_PAD = 8;  // padding inside the dotted line
-  const END_PAD   = 8;
+  // Visible width (because transform scaling doesn't change layout width)
+  const baseW = cat.offsetWidth || 306;       // 306 from your CSS var
+  const visW  = baseW * mag;
 
-  const lineBounds = () => {
+  // dotted line bounds in runway-local coords
+  const bounds = () => {
     const r = line.getBoundingClientRect();
     return {
       left:  r.left  - runwayRect.left,
@@ -784,29 +789,43 @@ function initEducation() {
     };
   };
 
-  // Convert a target x on the line to a left value such that the cat CENTER sits on x
-  const leftForCenterAt = (x) => clamp(x - visW / 2, 0, maxLeft);
+  const START_PAD = 10;
+  const END_PAD   = 10;
 
-  // 1) sit at the START of the dotted line immediately (left edge is stable even while width grows)
-  const b0 = lineBounds();
-  const startLeft = leftForCenterAt(b0.left + START_PAD);
+  // Map desired visual CENTER x -> CSS left
+  // Normal (not flipped): visual spans [left, left+visW], center = left + visW/2
+  // Flipped with origin at left: visual spans [left-visW, left], center = left - visW/2
+  const leftForCenterAt = (x) => {
+    if (sign > 0) return x - visW / 2;
+    return x + visW / 2;
+  };
+
+  // Clamp range so the *visible* cat stays inside runway
+  // Normal: left in [0, w-visW]
+  // Flipped: left in [visW, w]
+  const minLeft = sign > 0 ? 0 : visW;
+  const maxLeft = sign > 0 ? (w - visW) : w;
+
+  // Place idle at start immediately (left edge exists even while width grows)
+  const b0 = bounds();
+  const startX = b0.left + START_PAD;
+  const startLeft = clamp(leftForCenterAt(startX), minLeft, maxLeft);
 
   cat.classList.remove('run', 'arrived');
   cat.classList.add('idle');
   cat.style.transition = 'none';
   cat.style.left = `${startLeft}px`;
 
-  // 2) once the dotted line finishes growing, run to the END of the dotted line
+  // Run once line is fully grown
   const beginRun = () => {
-    const b = lineBounds();
-
-    // If still mid-growth for any reason, retry next frame
-    if (b.width < 80) {
+    const b = bounds();
+    if (b.width < 120) { // still growing or not measured yet
       requestAnimationFrame(beginRun);
       return;
     }
 
-    const endLeft = leftForCenterAt(b.right - END_PAD);
+    const endX = b.right - END_PAD;
+    const endLeft = clamp(leftForCenterAt(endX), minLeft, maxLeft);
 
     setTimeout(() => {
       cat.classList.remove('idle', 'arrived');
@@ -837,7 +856,7 @@ function initEducation() {
     }, 900);
   };
 
-  // Start running on dotted-line transition end (width), with fallback
+  // Transition-end on dotted line width + fallback
   const onEnd = (e) => {
     if (e.propertyName !== 'width') return;
     line.removeEventListener('transitionend', onEnd);
