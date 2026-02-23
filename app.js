@@ -181,7 +181,7 @@ window.addEventListener('load', () => {
   initMatrix();
   initEducation();
   initNav();
-  
+  document.getElementById('work-section')?.classList.remove('timeline-open');
   // New sections
   setTimeout(() => {
     initRoleAnimation();
