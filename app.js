@@ -207,26 +207,64 @@ const PROJECT_DATA = {
   },
 
   'tue': {
-    title: 'TU/e BAKER HUGHES · FGM',
-    date: 'AUG 2023 – AUG 2024',
-    tags: ['FGM', 'ANSYS', 'Reacting Flows', 'Ammonia-Hydrogen'],
-    overview:
-      'Evaluated computational performance of Flamelet Generated Manifold (FGM) methodology in ANSYS for turbulent Ammonia-Hydrogen combustion compared to conventional LES methods.',
-    contributions: [
-      'Achieved 86.7% reduction in simulation runtime via FGM',
-      'Calibrated model with experimental flame progression data',
-      'Achieved 92.66% F1 score in validation',
-      'Projected ML integration for Look-Up Table generation (99.55% accuracy)'
-    ],
-    tech: ['ANSYS Fluent', 'FGM', 'LES', 'Python', 'Machine Learning'],
-    results: [
-      '86.7% runtime reduction',
-      '92.66% F1 validation score',
-      'Enabled rapid design iterations',
-      'Data-driven combustion modeling framework'
-    ],
-    hasMatrix: false
-  },
+  title: 'TU/e BAKER HUGHES · FGM (NH₃/H₂)',
+  date: 'AUG 2023 – AUG 2024',
+  tags: ['FGM', 'ANSYS Fluent', 'Reacting Flows', 'Ammonia-Hydrogen', 'LES Baseline'],
+
+  overview:
+    'Evaluated Flamelet Generated Manifold (FGM) modeling in ANSYS Fluent for turbulent NH₃/H₂ combustion by building/managing the LUT pipeline and benchmarking behavior against high-fidelity field outputs. Emphasis: making combustion CFD faster while preserving decision-relevant fidelity.',
+
+  contributions: [
+    'Built and executed the LUT/FGM workflow: flamelet equations → manifold storage → CFD interpolation of thermo-chemical properties',
+    'Ran reacting-flow simulations and extracted resolved fields for comparison (temperature and key species trends)',
+    'Quantified computational benefits and documented an analysis-ready pipeline for future ML/LUT acceleration'
+  ],
+
+  tech: ['ANSYS Fluent', 'FGM / Flamelet', 'Reacting Flow CFD', 'Post-processing', 'Python'],
+  results: [
+    '86.7% reduction in runtime vs higher-cost baselines (project benchmark)',
+    'Preserved physically consistent temperature/species field behavior for comparison and validation work'
+  ],
+
+  hasMatrix: false,
+  modalSize: 'xl',
+  extraPosition: 'top',
+  extraHTML: `
+    <div class="modal-gallery">
+      <div class="modal-figure modal-figure--contain">
+        <img data-zoom src="img/TUE1.png" alt="FGM LUT generation and CFD interpolation workflow" />
+        <div class="figcaption">
+          FGM pipeline: flamelet equations generate a manifold (LUT), then CFD solves flow equations while interpolating thermo-chemical properties from the LUT.
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-gallery modal-gallery--hero" style="margin-top:1.1rem;">
+      <div class="modal-figure modal-figure--contain">
+        <img data-zoom src="img/Static%20Temperature_LES_1000.jpg" alt="Static temperature field (LES) for reacting flow" />
+        <div class="figcaption">
+          Representative reacting-flow field: static temperature distribution used for qualitative comparison and sanity checks.
+        </div>
+      </div>
+
+      <div class="modal-figure modal-figure--contain">
+        <img data-zoom src="img/O2%20Mole%20fraction_LES_1000.jpg" alt="O2 mole fraction field (LES) for reacting flow" />
+        <div class="figcaption">
+          Species-field behavior: O₂ mole fraction distribution highlighting mixing/consumption trends in the combustor.
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-gallery" style="margin-top:1.1rem;">
+      <div class="modal-figure modal-figure--contain">
+        <img data-zoom src="img/NO%20Mole%20fraction_LES_1000.jpg" alt="NO mole fraction field (LES) for reacting flow" />
+        <div class="figcaption">
+          Emissions-relevant field: NO mole fraction contours used to interpret where formation is strongest in the flowfield.
+        </div>
+      </div>
+    </div>
+  `
+},
 
   'drone': {
     title: 'DRONE BLADE ANALYSIS · UNDERGRADUATE THESIS',
