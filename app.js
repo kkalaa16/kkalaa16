@@ -90,24 +90,23 @@ const PROJECT_DATA = {
   },
 
   'afrl': {
-  title: 'AFRL TACTICAL MOBILITY AIRCRAFT · MBSE → MDAO TOOLCHAIN',
+  title: 'AFRL TACTICAL MOBILITY AIRCRAFT · PROPULSION SIZING (MDAO CONTEXT)',
   date: 'AUG 2024 – MAY 2025',
-  tags: ['OpenMDAO', 'MDAO', 'MBSE', 'NPSS', 'FLOPS', 'Hybrid-Electric', 'DoE'],
+  tags: ['Propulsion Sizing', 'NPSS', 'OpenMDAO', 'Hybrid-Electric', 'TOFL', 'Trade Studies'],
 
   overview:
-    'Developed an MBSE-to-MDAO workflow to connect architecture decisions to analysis quickly. Implemented an IPPT MDA-style framework in OpenMDAO linking mission/sizing, propulsion, power, and thermal models (NPSS/FLOPS + custom components), then used design exploration/DoE and requirement mapping to evaluate feasibility and hybridization options.',
+    'Contributed the propulsion sizing portion of a broader MBSE-informed MDAO workflow for a tactical mobility aircraft concept. My responsibility was building/using the propulsion sizing logic and producing propulsion-level outputs that fed system-level requirement trades (e.g., takeoff field length feasibility).',
 
   contributions: [
-    'Built the integrated MDAO dependency structure (XDSM/N2) to couple mission/sizing, propulsion, power, and thermal subsystems',
-    'Implemented subsystem-level analysis blocks and stitched them into an executable OpenMDAO workflow for architecture evaluation',
-    'Ran design exploration/DoE-style sweeps to understand sensitivity and requirement feasibility under different hybridization assumptions',
-    'Documented inputs → sizing logic → outputs to keep the tool interpretable and decision-ready'
+    'Owned the propulsion sizing component: generated thrust / fuel / engine-state outputs across operating points for system trades',
+    'Supported hybrid-electric takeoff-assist concept exploration by comparing propulsion sizing implications across configurations',
+    'Delivered propulsion-side data needed for requirement feasibility checks (e.g., TOFL) and design-space exploration'
   ],
 
-  tech: ['OpenMDAO', 'NPSS', 'FLOPS', 'Python', 'MDA / Coupled Analysis', 'Design Exploration'],
+  tech: ['NPSS (propulsion)', 'Python', 'OpenMDAO (integration context)', 'Parametric Sweeps', 'Trade Studies'],
   results: [
-    'Enabled fast architecture/requirement feasibility checks via a coupled analysis toolchain',
-    'Created a reusable workflow to compare hybridization modes and subsystem dependency impacts'
+    'Propulsion sizing outputs enabled requirement-level feasibility comparisons across conventional vs hybrid takeoff-assist concepts',
+    'Provided decision-ready propulsion trends used in broader DoE / requirement mapping activities'
   ],
 
   hasMatrix: false,
@@ -116,30 +115,30 @@ const PROJECT_DATA = {
   extraHTML: `
     <div class="modal-gallery modal-gallery--hero">
       <div class="modal-figure modal-figure--contain">
-        <img data-zoom src="img/MDAO1.png" alt="MDA framework and OpenMDAO dependency implementation (XDSM/N2 style)" />
-        <div class="figcaption">MDA framework: enabling subsystem-level analyses and linking dependencies through OpenMDAO (XDSM/N2-style coupling view).</div>
+        <img data-zoom src="img/afrl_mbse_mdao_process.png" alt="MBSE-informed MDAO workflow context diagram" />
+        <div class="figcaption">
+          Program context: MBSE-informed MDAO workflow. My contribution focused on the propulsion sizing element feeding the overall trade process.
+        </div>
       </div>
-
       <div class="modal-figure modal-figure--contain">
-        <img data-zoom src="img/MDAO2.png" alt="MBSE to MDAO flow: RFLP to MDAO creation, analysis, and design exploration" />
-        <div class="figcaption">MBSE → MDAO pipeline: RFLP decomposition and architecture selection feeding MDAO creation, analysis, DoE, and design exploration.</div>
+        <img data-zoom src="img/afrl_dse_response_plots.png" alt="Design space exploration response plots for TOFL requirement" />
+        <div class="figcaption">
+          System-level trade output (example): requirement feasibility exploration (TOFL) using propulsion sizing outputs within the broader workflow.
+        </div>
       </div>
     </div>
 
-    <div class="modal-gallery modal-gallery--hero" style="margin-top:1.1rem;">
+    <div class="modal-gallery" style="margin-top:1.1rem;">
       <div class="modal-figure modal-figure--contain">
-        <img data-zoom src="img/MDAO3.png" alt="Sizing workflow: inputs, what is sized, and outputs for hybrid sizing" />
-        <div class="figcaption">Tool structure: inputs → sizing targets (engine/motor/battery/nacelle/weight) → outputs used for decision-making.</div>
-      </div>
-
-      <div class="modal-figure modal-figure--contain">
-        <img data-zoom src="img/MDAO4.png" alt="Hybridization modes and subsystem coupling diagram" />
-        <div class="figcaption">Hybridization modes considered and dependency structure across propulsion/power/thermal for coupled evaluation.</div>
+        <img data-zoom src="img/afrl_dse_config_table.png" alt="Configuration table showing hybrid takeoff-assist options" />
+        <div class="figcaption">
+          Configuration alternatives (including battery-assisted takeoff options) evaluated for their propulsion sizing implications in the trade space.
+        </div>
       </div>
     </div>
   `
 },
-
+  
   'boeing': {
   title: 'BOEING Ti-6Al-4V SUPPLY CHAIN · SOVERN',
   date: 'AUG 2024 – MAY 2025',
