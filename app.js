@@ -90,89 +90,101 @@ const PROJECT_DATA = {
   },
 
   'afrl': {
-    title: 'AFRL TACTICAL MOBILITY AIRCRAFT · MBSE-ENABLED MDAO',
-    date: 'AUG 2024 – MAY 2025',
-    tags: ['OpenMDAO', 'MBSE', 'MDAO', 'DoE', 'Hybrid-Electric', 'TOFL'],
+  title: 'AFRL TACTICAL MOBILITY AIRCRAFT · MBSE → MDAO TOOLCHAIN',
+  date: 'AUG 2024 – MAY 2025',
+  tags: ['OpenMDAO', 'MDAO', 'MBSE', 'NPSS', 'FLOPS', 'Hybrid-Electric', 'DoE'],
 
-    overview:
-      'MBSE-enabled MDAO workflow to verify feasibility of requirements early by closing the loop between requirements/architecture (RFLP) and analysis (MDAO + DoE + response plots). Demonstrated requirement trade exploration for takeoff-field-length (TOFL) using an interactive design-space dashboard.',
+  overview:
+    'Developed an MBSE-to-MDAO workflow to connect architecture decisions to analysis quickly. Implemented an IPPT MDA-style framework in OpenMDAO linking mission/sizing, propulsion, power, and thermal models (NPSS/FLOPS + custom components), then used design exploration/DoE and requirement mapping to evaluate feasibility and hybridization options.',
 
-    contributions: [
-      'Implemented/used a systematic MBSE→MDAO process flow (RFLP decomposition → MDAO framework → analysis → DoE/surrogates → requirement mapping)',
-      'Ran design-space exploration with response plots to evaluate TOFL requirement compliance (< 3,000)',
-      'Compared conventional vs battery-assisted hybrid configuration behavior for TOFL feasibility across takeoff weights'
-    ],
+  contributions: [
+    'Built the integrated MDAO dependency structure (XDSM/N2) to couple mission/sizing, propulsion, power, and thermal subsystems',
+    'Implemented subsystem-level analysis blocks and stitched them into an executable OpenMDAO workflow for architecture evaluation',
+    'Ran design exploration/DoE-style sweeps to understand sensitivity and requirement feasibility under different hybridization assumptions',
+    'Documented inputs → sizing logic → outputs to keep the tool interpretable and decision-ready'
+  ],
 
-    tech: ['OpenMDAO', 'DoE / Surrogates', 'Requirements Mapping', 'Hybrid-Electric Concepts'],
-    results: [
-      'Conventional configuration could not satisfy TOFL requirement even at high thrust settings in the explored space',
-      'Battery-assisted hybrid configuration meets TOFL requirement across takeoff weights at similar thrust levels'
-    ],
+  tech: ['OpenMDAO', 'NPSS', 'FLOPS', 'Python', 'MDA / Coupled Analysis', 'Design Exploration'],
+  results: [
+    'Enabled fast architecture/requirement feasibility checks via a coupled analysis toolchain',
+    'Created a reusable workflow to compare hybridization modes and subsystem dependency impacts'
+  ],
 
-    hasMatrix: false,
-    modalSize: 'xl',
-    extraPosition: 'top',
-    extraHTML: `
-      <div class="modal-gallery modal-gallery--hero">
-        <div class="modal-figure modal-figure--contain">
-          <img src="img/afrl_mbse_mdao_process.png" alt="Systematic MBSE-MDAO process diagram" />
-          <div class="figcaption">Systematic MBSE–MDAO loop: requirements → architecture → MDAO → DoE/surrogates → requirement mapping.</div>
-        </div>
-        <div class="modal-figure modal-figure--contain">
-          <img src="img/afrl_dse_response_plots.png" alt="Design space exploration response plots for TOFL requirement" />
-          <div class="figcaption">TOFL feasibility exploration via response plots (conventional configuration).</div>
-        </div>
+  hasMatrix: false,
+  modalSize: 'xl',
+  extraPosition: 'top',
+  extraHTML: `
+    <div class="modal-gallery modal-gallery--hero">
+      <div class="modal-figure modal-figure--contain">
+        <img data-zoom src="img/MDAO1.png" alt="MDA framework and OpenMDAO dependency implementation (XDSM/N2 style)" />
+        <div class="figcaption">MDA framework: enabling subsystem-level analyses and linking dependencies through OpenMDAO (XDSM/N2-style coupling view).</div>
       </div>
 
-      <div class="modal-gallery" style="margin-top:1.1rem;">
-        <div class="modal-figure modal-figure--contain">
-          <img src="img/afrl_dse_config_table.png" alt="Configuration table showing battery-assisted hybrid options" />
-          <div class="figcaption">Configuration alternatives including battery-assisted takeoff options for meeting TOFL.</div>
-        </div>
+      <div class="modal-figure modal-figure--contain">
+        <img data-zoom src="img/MDAO2.png" alt="MBSE to MDAO flow: RFLP to MDAO creation, analysis, and design exploration" />
+        <div class="figcaption">MBSE → MDAO pipeline: RFLP decomposition and architecture selection feeding MDAO creation, analysis, DoE, and design exploration.</div>
       </div>
-    `
-  },
+    </div>
+
+    <div class="modal-gallery modal-gallery--hero" style="margin-top:1.1rem;">
+      <div class="modal-figure modal-figure--contain">
+        <img data-zoom src="img/MDAO3.png" alt="Sizing workflow: inputs, what is sized, and outputs for hybrid sizing" />
+        <div class="figcaption">Tool structure: inputs → sizing targets (engine/motor/battery/nacelle/weight) → outputs used for decision-making.</div>
+      </div>
+
+      <div class="modal-figure modal-figure--contain">
+        <img data-zoom src="img/MDAO4.png" alt="Hybridization modes and subsystem coupling diagram" />
+        <div class="figcaption">Hybridization modes considered and dependency structure across propulsion/power/thermal for coupled evaluation.</div>
+      </div>
+    </div>
+  `
+},
 
   'boeing': {
-    title: 'BOEING Ti-6Al-4V SUPPLY CHAIN · SOVERN',
-    date: 'AUG 2024 – MAY 2025',
-    tags: ['Systems', 'Supply Chain', 'Risk', 'Mitigation', 'Resilience'],
+  title: 'BOEING Ti-6Al-4V SUPPLY CHAIN · SOVERN',
+  date: 'AUG 2024 – MAY 2025',
+  tags: ['Systems', 'Supply Chain', 'Risk', 'Network Mapping', 'Mitigation'],
 
-    overview:
-      'Presented a Ti-6Al-4V supply chain risk and resilience study, framing mitigation actions across implementation layers from company-level readiness to pan-government coordination.',
+  overview:
+    'Built a structured supply-chain risk workflow for Ti-6Al-4V: define the supply chain of interest, collect supplier info, map supplier-to-supplier connections, merge material chains into a single network, and identify weak links. Converted findings into a tiered mitigation playbook aligned with stakeholder scope.',
 
-    contributions: [
-      'Synthesized mitigation strategy stack across tiers (company → partnerships → industry → government → pan-government)',
-      'Translated supply-risk findings into actionable levers matched to stakeholder scope and authority',
-      'Communicated recommendations in a stakeholder-facing briefing'
-    ],
+  contributions: [
+    'Defined “supply chain of interest” and decomposed the workflow into repeatable steps (supplier info → connections → merged network)',
+    'Identified weak links / vulnerability hotspots and the most concerning materials/suppliers in the network',
+    'Synthesized a tiered mitigation stack (company → partnerships → industry → government → pan-government) for stakeholder execution',
+    'Presented the study and recommendations in a stakeholder-facing briefing'
+  ],
 
-    tech: ['Systems Thinking', 'Supply Chain Risk', 'Mitigation Planning'],
-    results: [
-      'Clear tiered mitigation roadmap to address scarcity and disruption risk',
-      'Stakeholder-ready narrative connecting risk drivers to feasible actions'
-    ],
+  tech: ['Systems Thinking', 'Supply Chain Mapping', 'Risk / Mitigation Planning'],
+  results: [
+    'Produced a repeatable supply-chain mapping workflow and clear stakeholder-ready narrative',
+    'Delivered mitigation levers matched to implementation scope and authority'
+  ],
 
-    hasMatrix: false,
-    modalSize: 'xl',
-    extraPosition: 'top',
-    extraHTML: `
-      <div class="modal-gallery">
-        <div class="modal-figure modal-figure--contain">
-          <img src="img/Me-SOS.jpeg" alt="Presenting the supply chain risk study to stakeholders" />
-          <div class="figcaption">Stakeholder briefing and review discussion for the Ti-6Al-4V supply chain resilience study.</div>
-        </div>
+  hasMatrix: false,
+  modalSize: 'xl',
+  extraPosition: 'top',
+  extraHTML: `
+    <div class="modal-gallery">
+      <div class="modal-figure modal-figure--contain">
+        <img data-zoom src="img/Me-SOS.jpeg" alt="Presenting the Ti-6Al-4V supply chain study to stakeholders" />
+        <div class="figcaption">Stakeholder briefing: communicating risk structure and mitigation actions for Ti-6Al-4V supply resilience.</div>
+      </div>
+    </div>
+
+    <div class="modal-gallery modal-gallery--hero" style="margin-top:1.1rem;">
+      <div class="modal-figure modal-figure--contain">
+        <img data-zoom src="img/MBSE1.png" alt="Supply chain workflow: from defining scope to identifying weak links and mitigations" />
+        <div class="figcaption">Workflow used: define supply chain → collect suppliers → map supplier connections → merge chains → identify weak links → assess mitigation robustness.</div>
       </div>
 
-      <div class="modal-gallery" style="margin-top:1.1rem;">
-        <div class="modal-figure modal-figure--contain">
-          <img src="img/s15_mitigation_layers.png" alt="Mitigation layers from company action to pan-government action" />
-          <div class="figcaption">Mitigation layers: actions mapped by scope from internal company readiness through partnerships, industry coordination, and government / pan-government initiatives.</div>
-        </div>
+      <div class="modal-figure modal-figure--contain">
+        <img data-zoom src="img/s15_mitigation_layers.png" alt="Mitigation layers from company action to pan-government action" />
+        <div class="figcaption">Mitigation layers: actions mapped by scope from internal readiness through partnerships, industry coordination, and government / pan-government initiatives.</div>
       </div>
-    `
-  },
-
+    </div>
+  `
+},
   'ben-zinn': {
     title: 'BEN T. ZINN COMBUSTION LAB',
     date: 'JUN 2025 – PRESENT',
