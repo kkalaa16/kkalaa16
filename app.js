@@ -362,57 +362,58 @@ const PROJECT_DATA = {
     `
   },
 
-  'hyperloop': {
-  title: 'HYPERLOOP POD DESIGN',
-  date: 'JUL 2021 – JUN 2022',
-  tags: ['Propulsion', 'System Integration', 'LIM', 'Aerodynamics', 'CAD'],
+    'hyperloop': {
+    title: 'HYPERLOOP POD DESIGN',
+    date: 'JUL 2021 – JUN 2022',
+    tags: ['Propulsion', 'System Integration', 'LIM', 'Aerodynamics', 'CAD'],
 
-  overview:
-    'Worked on Hyperloop pod concept development with emphasis on propulsion-related subsystem compatibility and performance reasoning. Focus areas included cold-gas actuation/thruster integration, Linear Induction Motor (LIM) thrust behavior, and drag trends relevant to sizing and packaging decisions.',
+    overview:
+      'Worked on Hyperloop pod concept development with emphasis on propulsion-related subsystem compatibility and performance reasoning. Focus areas included cold-gas actuation/thruster integration, Linear Induction Motor (LIM) thrust behavior, and drag trends relevant to sizing and packaging decisions.',
 
-  contributions: [
-    'Supported propulsion subsystem integration with packaging/interface checks across pod architecture',
-    'Analyzed LIM thrust sensitivity vs slip to identify operating region around peak thrust',
-    'Reviewed drag-coefficient trends (Cd vs Mach) to support sizing/trade reasoning and design constraints',
-    'Documented assumptions, constraints, and design decisions into a stakeholder-ready narrative'
-  ],
+    contributions: [
+      'Supported propulsion subsystem integration with packaging/interface checks across pod architecture',
+      'Analyzed LIM thrust sensitivity vs slip to identify operating region around peak thrust',
+      'Reviewed drag-coefficient trends (Cd vs Mach) to support sizing/trade reasoning and design constraints',
+      'Documented assumptions, constraints, and design decisions into a stakeholder-ready narrative'
+    ],
 
-  tech: ['CAD', 'Subsystem Integration', 'Propulsion Concepts', 'Trade Studies'],
-  results: [
-    'Improved clarity on propulsion operating region (slip range) for stable thrust planning',
-    'Captured key aerodynamic/drag trend used for sizing and feasibility reasoning',
-    'Cleaned up integration story for propulsion-related interfaces'
-  ],
+    tech: ['CAD', 'Subsystem Integration', 'Propulsion Concepts', 'Trade Studies'],
+    results: [
+      'Improved clarity on propulsion operating region (slip range) for stable thrust planning',
+      'Captured key aerodynamic/drag trend used for sizing and feasibility reasoning',
+      'Cleaned up integration story for propulsion-related interfaces'
+    ],
 
-  modalSize: 'xl',
-  extraPosition: 'top',
-  extraHTML: `
-    <div class="modal-gallery modal-gallery--hero">
-      <div class="modal-figure modal-figure--contain">
-        <img data-zoom src="img/lim.png" alt="Normalized slip sensitivity of LIM thrust showing peak thrust region" />
-        <div class="figcaption">
-          LIM thrust sensitivity vs slip. Highlighted operating band around the peak-thrust region to guide feasible operating choices.
+    modalSize: 'xl',
+    extraPosition: 'top',
+    extraHTML: `
+      <div class="modal-gallery modal-gallery--hero">
+        <div class="modal-figure modal-figure--contain">
+          <img data-zoom src="img/lim.png" alt="Normalized slip sensitivity of LIM thrust showing peak thrust region" />
+          <div class="figcaption">
+            LIM thrust sensitivity vs slip. Highlighted operating band around the peak-thrust region to guide feasible operating choices.
+          </div>
+        </div>
+
+        <div class="modal-figure modal-figure--contain">
+          <img data-zoom src="img/Cd.png" alt="Drag coefficient trend versus Mach number" />
+          <div class="figcaption">
+            Drag trend (Cd vs Mach) used to support sizing/trade reasoning and constraint-aware subsystem decisions.
+          </div>
         </div>
       </div>
 
-      <div class="modal-figure modal-figure--contain">
-        <img data-zoom src="img/Cd.png" alt="Drag coefficient trend versus Mach number" />
-        <div class="figcaption">
-          Drag trend (Cd vs Mach) used to support sizing/trade reasoning and constraint-aware subsystem decisions.
+      <div class="modal-gallery" style="margin-top:1.1rem;">
+        <div class="modal-figure modal-figure--contain">
+          <img data-zoom src="img/cold%20gas%20thruster.PNG" alt="Cold gas thruster concept / reference" />
+          <div class="figcaption">
+            Cold-gas thruster reference used for integration and packaging discussion within the pod architecture.
+          </div>
         </div>
       </div>
-    </div>
-
-    <div class="modal-gallery" style="margin-top:1.1rem;">
-      <div class="modal-figure modal-figure--contain">
-        <img data-zoom src="img/cold%20gas%20thruster.PNG" alt="Cold gas thruster concept / reference" />
-        <div class="figcaption">
-          Cold-gas thruster reference used for integration and packaging discussion within the pod architecture.
-        </div>
-      </div>
-    </div>
-  `
-};
+    `
+  }
+}; // ✅ closes PROJECT_DATA correctly
 // Timeline heavy visual effects are booted only after the user opts in.
 let TIMELINE_BOOTED = false;
 
