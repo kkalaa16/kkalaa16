@@ -111,14 +111,52 @@ function initGateField(){
 }
 
 /* ============================================================
-   INTRO — rotator typewriter + gate dismiss
+   ROTATOR — typing forward, erasing backward, forever. Runs in
+   two places: once inside the gate (the first thing visible on
+   load) and, independently, permanently in the persistent hero
+   -- it never stops just because the gate closes. Matches the
+   original site's actual structure: initRoleAnimation() ran
+   separately from the one-time intro sequence, not inside it.
+   ============================================================ */
+var ROLES = ['Combustion Engineer', 'Propulsion Engineer', 'Systems Engineer', 'ML Engineer', 'CFD Engineer'];
+
+function startRotator(el){
+  if(!el) return;
+  if(reduce){ el.textContent = ROLES[0]; return; }
+  var ri = 0;
+  (function cycle(){
+    var word = ROLES[ri % ROLES.length];
+    var ci = 0;
+    el.textContent = '';
+    (function type(){
+      if(ci <= word.length){
+        el.textContent = word.slice(0, ci);
+        ci++;
+        setTimeout(type, 42);
+      } else {
+        setTimeout(erase, 1400);
+      }
+    })();
+    function erase(){
+      if(ci > 0){
+        ci--;
+        el.textContent = word.slice(0, ci);
+        setTimeout(erase, 26);
+      } else {
+        ri++;
+        setTimeout(cycle, 220);
+      }
+    }
+  })();
+}
+
+/* ============================================================
+   INTRO — gate dismiss
    ============================================================ */
 function runIntro(){
   var gate = document.getElementById('introGate');
   var header = document.getElementById('siteHeader');
   var hero = document.querySelector('.hero');
-  var rotatorWord = document.getElementById('rotatorWord');
-  var roles = ['Combustion Engineer', 'Propulsion Engineer', 'Systems Engineer', 'ML Engineer', 'CFD Engineer'];
 
   function dismiss(){
     if(gate.classList.contains('fading')) return;
@@ -135,38 +173,12 @@ function runIntro(){
   window.addEventListener('wheel', dismiss, { once:true, passive:true });
   window.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' ') dismiss(); }, { once:true });
 
+  startRotator(document.getElementById('rotatorWord'));
+  startRotator(document.getElementById('heroRotatorWord'));
+
   if(reduce){
-    if(rotatorWord) rotatorWord.textContent = roles[0];
     setTimeout(dismiss, 400);
     return;
-  }
-
-  if(rotatorWord){
-    var ri = 0;
-    (function cycle(){
-      var word = roles[ri % roles.length];
-      var ci = 0;
-      rotatorWord.textContent = '';
-      (function type(){
-        if(ci <= word.length){
-          rotatorWord.textContent = word.slice(0, ci);
-          ci++;
-          setTimeout(type, 42);
-        } else {
-          setTimeout(erase, 1400);
-        }
-      })();
-      function erase(){
-        if(ci > 0){
-          ci--;
-          rotatorWord.textContent = word.slice(0, ci);
-          setTimeout(erase, 26);
-        } else {
-          ri++;
-          setTimeout(cycle, 220);
-        }
-      }
-    })();
   }
 
   setTimeout(dismiss, 6200);
@@ -320,8 +332,11 @@ function initArchiveMechanic(){
     var ringRightEl = document.getElementById('ringRight');
     if(ringLeftEl) ringLeftEl.addEventListener('click', openArchive);
     if(ringRightEl) ringRightEl.addEventListener('click', openArchive);
+    var wasVisible = false;
     new IntersectionObserver(function(entries){
-      if(!entries[0].isIntersecting && !merged) openArchive();
+      var isIntersecting = entries[0].isIntersecting;
+      if(isIntersecting) wasVisible = true;
+      if(wasVisible && !isIntersecting && !merged) openArchive();
     }, { threshold:0, rootMargin:'0px 0px -40% 0px' }).observe(highlights);
   }
 
@@ -422,11 +437,18 @@ function initArchiveMechanic(){
 }
 
 /* ============================================================
-   SKILLS GLOBE — hand-rolled 3D sphere (no Three.js dependency),
-   drag-to-rotate with inertia, idle auto-rotate, hover tooltip.
-   Single-accent: dots are ink-dim by default, hovered skill lights
-   up in the accent color -- per the locked "color marks attention,
-   not decoration" rule.
+   SKILLS GLOBE — hand-rolled 3D sphere (no Three.js dependency).
+   The original site's actual globe (app.js initSkillsGlobe) reads
+   as a globe because of a visible WIREFRAME sphere -- a lat/lon
+   grid mesh, not just an outline circle with floating dots. That
+   grid is the part that was missing here; rebuilt below as
+   rotated, projected latitude rings + longitude meridians, each
+   segment's alpha graded by depth so the far side of the sphere
+   naturally fades (a cheap stand-in for backface culling).
+   Drag-to-rotate with inertia, idle auto-rotate, hover tooltip.
+   Single-accent: wireframe and badges are ink-dim, hovered skill
+   lights up in the accent color -- per the locked "color marks
+   attention, not decoration" rule.
    ============================================================ */
 function initGlobe(){
   var canvas = document.getElementById('globeCanvas');
@@ -459,6 +481,19 @@ function initGlobe(){
   }
   var R = 130;
   var pts = SKILLS.map(function(s){ var p = toXYZ(s.lat,s.lon,R); p.name = s.name; return p; });
+
+  var LAT_STEPS = [-60, -30, 0, 30, 60];
+  var LON_STEPS = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
+  var latRings = LAT_STEPS.map(function(lat){
+    var ring = [];
+    for(var i = 0; i <= 48; i++) ring.push(toXYZ(lat, i * (360/48), R));
+    return ring;
+  });
+  var lonRings = LON_STEPS.map(function(lon){
+    var ring = [];
+    for(var i = 0; i <= 24; i++) ring.push(toXYZ(-90 + i * (180/24), lon, R));
+    return ring;
+  });
 
   var ry = 0.4, rx = -0.15;
   var dragging = false, lastMX=0, lastMY=0, velY=0, velX=0;
@@ -504,6 +539,26 @@ function initGlobe(){
     }
   });
 
+  function project(p, focal, cx, cy){
+    var r = rotate(p, ry, rx);
+    var scale = focal/(focal+r.z);
+    return { sx:cx+r.x*scale, sy:cy-r.y*scale, z:r.z, scale:scale };
+  }
+
+  function drawWireRing(ring, focal, cx, cy){
+    var proj = ring.map(function(p){ return project(p, focal, cx, cy); });
+    for(var i = 0; i < proj.length - 1; i++){
+      var a = proj[i], b = proj[i+1];
+      var depth = Math.max(0, Math.min(1, ((a.z+b.z)/2 + R) / (2*R)));
+      ctx.beginPath();
+      ctx.moveTo(a.sx, a.sy);
+      ctx.lineTo(b.sx, b.sy);
+      ctx.strokeStyle = 'rgba(75,80,87,' + (depth * 0.5).toFixed(2) + ')';
+      ctx.lineWidth = dpr;
+      ctx.stroke();
+    }
+  }
+
   function frame(){
     if(!dragging){
       ry += velY*0.9 + 0.0009;
@@ -515,27 +570,33 @@ function initGlobe(){
     var cx = W/2, cy = H/2;
     var focal = 460*dpr;
 
-    var g = ctx.createRadialGradient(cx,cy,0,cx,cy,R*dpr*1.15);
-    g.addColorStop(0,'rgba(20,23,26,0.05)');
+    var g = ctx.createRadialGradient(cx,cy,0,cx,cy,R*dpr*1.2);
+    g.addColorStop(0,'rgba(20,23,26,0.07)');
     g.addColorStop(1,'rgba(20,23,26,0)');
     ctx.fillStyle = g;
-    ctx.beginPath(); ctx.arc(cx,cy,R*dpr*1.15,0,Math.PI*2); ctx.fill();
-    ctx.strokeStyle = 'rgba(20,23,26,0.16)'; ctx.lineWidth = 1*dpr;
-    ctx.beginPath(); ctx.arc(cx,cy,R*dpr,0,Math.PI*2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx,cy,R*dpr*1.2,0,Math.PI*2); ctx.fill();
+
+    latRings.forEach(function(ring){ drawWireRing(ring, focal, cx, cy); });
+    lonRings.forEach(function(ring){ drawWireRing(ring, focal, cx, cy); });
 
     lastProjected = pts.map(function(p){
-      var r = rotate(p, ry, rx);
-      var scale = focal/(focal+r.z);
-      return { sx:cx+r.x*scale, sy:cy-r.y*scale, z:r.z, name:r.name, scale:scale };
+      var pp = project(p, focal, cx, cy);
+      pp.name = p.name;
+      return pp;
     });
     var order = lastProjected.map(function(_,i){ return i; }).sort(function(a,b){ return lastProjected[a].z-lastProjected[b].z; });
     order.forEach(function(i){
       var pp = lastProjected[i];
       var depth = Math.max(0.15, Math.min(1,(pp.z+R)/(2*R)));
       var isHover = i===hoverIdx;
-      var rad = (isHover?6.5:4.5)*dpr*pp.scale;
+      var rad = (isHover?7:5.5)*dpr*pp.scale;
+      if(isHover){
+        ctx.beginPath(); ctx.arc(pp.sx,pp.sy,rad+3*dpr,0,Math.PI*2);
+        ctx.strokeStyle = 'rgba(193,58,29,' + (depth*0.6).toFixed(2) + ')';
+        ctx.lineWidth = 1.5*dpr; ctx.stroke();
+      }
       ctx.beginPath(); ctx.arc(pp.sx,pp.sy,rad,0,Math.PI*2);
-      ctx.fillStyle = isHover ? 'rgba(193,58,29,' + depth.toFixed(2) + ')' : 'rgba(75,80,87,' + (depth*0.85).toFixed(2) + ')';
+      ctx.fillStyle = isHover ? 'rgba(193,58,29,' + depth.toFixed(2) + ')' : 'rgba(75,80,87,' + (depth*0.9).toFixed(2) + ')';
       ctx.fill();
     });
     requestAnimationFrame(frame);
@@ -543,8 +604,9 @@ function initGlobe(){
   if(reduce){
     ctx.clearRect(0,0,W,H);
     var cx0=W/2, cy0=H/2;
-    ctx.strokeStyle='rgba(20,23,26,0.16)'; ctx.lineWidth=1*dpr;
-    ctx.beginPath(); ctx.arc(cx0,cy0,R*dpr,0,Math.PI*2); ctx.stroke();
+    var focal0 = 460*dpr;
+    latRings.forEach(function(ring){ drawWireRing(ring, focal0, cx0, cy0); });
+    lonRings.forEach(function(ring){ drawWireRing(ring, focal0, cx0, cy0); });
     pts.forEach(function(p){
       var r = rotate(p, 0.6, -0.2);
       var scale = 460*dpr/(460*dpr+r.z);
