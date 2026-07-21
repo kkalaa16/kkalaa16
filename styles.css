@@ -196,20 +196,27 @@ body.lock-scroll{ overflow:hidden; }
 }
 #eduCat.run{ left:calc(100% - 130px); }
 .cat-sprite{
-  width:306px; height:138px; transform:scale(.42); transform-origin:left center;
+  width:306px; height:138px; transform:scale(-.42,.42); transform-origin:center center;
   background-image:url('assets/cat_run.png'); background-repeat:no-repeat; background-size:306px 1656px;
   filter:contrast(1.1);
 }
-#eduCat.run .cat-sprite{ animation:catrun .6s steps(12) infinite; }
+/* Mirrored (negative x-scale): the raw sprite frames face left, but the cat
+   walks BITS (left) -> GT (right), so it needs to face its direction of
+   travel. Matches the real original site's own #eduCat.cat rule exactly
+   (transform: ... scaleX(-1) scale(var(--cat-scale)) -- confirmed in its
+   shipped CSS, not the simplified mockup). Mirroring around the sprite's
+   own center (not left edge) keeps its rendered position from shifting
+   relative to the outer element's left-position transition. */
+#eduCat.run .cat-sprite{ animation:catrun 900ms steps(12) infinite; }
 #eduCat.idle .cat-sprite{
   animation:none; background-image:url('assets/cat_idle_bits.png'); background-size:contain;
-  width:130px; height:71px; transform:scale(.42) translateY(48px);
+  width:130px; height:71px; transform:scale(-.42,.42) translateY(48px);
 }
-#eduCat.idle-gt .cat-sprite{ background-image:url('assets/cat_idle_gt.png'); }
+#eduCat.idle-gt .cat-sprite{ background-image:url('assets/cat_idle_gt.png'); filter:drop-shadow(0 0 10px rgba(193,58,29,0.25)); }
 @keyframes catrun{ from{ background-position-y:0; } to{ background-position-y:-1656px; } }
 @media (prefers-reduced-motion: reduce){
   #eduCat{ transition:none; left:calc(100% - 130px); }
-  #eduCat .cat-sprite{ animation:none !important; background-image:url('assets/cat_idle_gt.png'); background-size:contain; width:130px; height:71px; transform:scale(.42) translateY(48px); }
+  #eduCat .cat-sprite{ animation:none !important; background-image:url('assets/cat_idle_gt.png'); background-size:contain; width:130px; height:71px; transform:scale(-.42,.42) translateY(48px); }
 }
 
 /* ============================================================

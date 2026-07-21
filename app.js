@@ -263,6 +263,12 @@ function initArchiveMechanic(){
     var alive = true;
     new IntersectionObserver(function(e){ alive = e[0].isIntersecting; }, { threshold:0.02 }).observe(highlights);
     (function spin(){
+      // Skip repositioning entirely once merged: flyToArchive/refurlRing own
+      // these elements' styles from that point on. Without this check, this
+      // loop (which never stops) was clobbering the fly-out animation's
+      // transform/opacity on the very next frame, every frame -- the actual
+      // cause of the earlier chaotic/overlapping card positions.
+      if(merged) { requestAnimationFrame(spin); return; }
       if(alive) theta += (spinDir === 'left' ? 0.006 : -0.006);
       els.forEach(function(el,i){
         var a = (i/n) * Math.PI*2 + theta;
@@ -283,6 +289,18 @@ function initArchiveMechanic(){
   }
 
   var merged = false;
+  function refurlRing(els){
+    els.forEach(function(el){
+      el.style.display = '';
+      el.style.position = '';
+      el.style.left = '';
+      el.style.top = '';
+      el.style.zIndex = '';
+      el.style.transition = '';
+      el.style.transform = '';
+      el.style.opacity = '';
+    });
+  }
   function flyToArchive(sourceEls){
     sourceEls.forEach(function(el, i){
       var target = archiveZone.querySelector('.arc-card[data-id="' + el.dataset.id + '"]');
@@ -311,6 +329,7 @@ function initArchiveMechanic(){
   function openArchive(){
     if(merged) return;
     merged = true;
+    clearTimeout(maxHeightTimeout);
     archiveZone.classList.add('open');
     // CSS can't transition to/from `auto`, so the max-height target has to be
     // a real pixel value set from JS (the original site's own technique,
@@ -323,11 +342,26 @@ function initArchiveMechanic(){
         if(reduce){ buildSandSpine(); return; }
         flyToArchive(leftEls);
         flyToArchive(rightEls);
-        setTimeout(buildSandSpine, 500);
+        if(!spineBuilt){ spineBuilt = true; setTimeout(buildSandSpine, 500); }
       });
     });
-    setTimeout(function(){ archiveZone.style.maxHeight = 'none'; }, 950);
+    maxHeightTimeout = setTimeout(function(){ if(merged) archiveZone.style.maxHeight = 'none'; }, 950);
   }
+
+  function closeArchive(){
+    if(!merged) return;
+    merged = false;
+    clearTimeout(maxHeightTimeout);
+    refurlRing(leftEls);
+    refurlRing(rightEls);
+    archiveZone.style.maxHeight = archiveZone.scrollHeight + 'px';
+    archiveZone.getBoundingClientRect();
+    archiveZone.classList.remove('open');
+    archiveZone.style.maxHeight = '0px';
+  }
+
+  var maxHeightTimeout = null;
+  var spineBuilt = false;
 
   if(reduce){
     openArchive();
@@ -337,13 +371,14 @@ function initArchiveMechanic(){
     if(ringLeftEl) ringLeftEl.addEventListener('click', openArchive);
     if(ringRightEl) ringRightEl.addEventListener('click', openArchive);
     // Scroll-position trigger, not IntersectionObserver: simpler to reason
-    // about and doesn't depend on rootMargin/threshold edge cases. Fires once
-    // the ring section's bottom edge has scrolled above the vertical middle
-    // of the viewport, i.e. once you've genuinely scrolled past it.
+    // about and doesn't depend on rootMargin/threshold edge cases. Opens once
+    // scrolled genuinely past the ring section; closes (refurls) once
+    // scrolled back up near it again. The two thresholds are offset (0.5 vs
+    // 0.85) so it doesn't flicker open/close right at one boundary.
     window.addEventListener('scroll', function(){
-      if(merged) return;
       var rect = highlights.getBoundingClientRect();
-      if(rect.bottom < window.innerHeight * 0.5) openArchive();
+      if(!merged && rect.bottom < window.innerHeight * 0.5) openArchive();
+      else if(merged && rect.bottom > window.innerHeight * 0.85) closeArchive();
     }, { passive:true });
   }
 
@@ -410,9 +445,14 @@ function initArchiveMechanic(){
       return;
     }
 
-    var N = 160;
+    // Dense enough, bright enough, and barely faded except right at the
+    // viewport edges -- the earlier pass (160 sparse, dim particles, faded
+    // outside the middle 50% of the viewport) read as almost nothing on a
+    // path this long. This is meant to look like a continuous flowing
+    // dotted trail, not occasional random specks.
+    var N = 520;
     var parts = [];
-    for(var i=0;i<N;i++) parts.push({ t:i/N, size:0.6+Math.random()*1.0, alpha:0.22+Math.random()*0.5 });
+    for(var i=0;i<N;i++) parts.push({ t:i/N, size:1.0+Math.random()*1.3, alpha:0.45+Math.random()*0.45 });
     var scrollV = 0, lastSY = window.scrollY, baseT = 0;
     window.addEventListener('scroll', function(){
       var dy = window.scrollY - lastSY;
@@ -423,14 +463,14 @@ function initArchiveMechanic(){
     (function draw(){
       ctx.clearRect(0,0,canvas.width,canvas.height);
       scrollV *= 0.85;
-      baseT += scrollV + 0.00016;
+      baseT += scrollV + 0.00022;
       var zRect = zone.getBoundingClientRect();
       parts.forEach(function(p){
         var t = ((p.t+baseT)%1+1)%1;
         var pos = posAt(t);
         var screenY = zRect.top + pos.y;
         var vhFrac = screenY/window.innerHeight;
-        var fade = Math.min(1,Math.max(0,(1-vhFrac)/0.25)) * Math.min(1,Math.max(0,vhFrac/0.25));
+        var fade = Math.min(1,Math.max(0,(1-vhFrac)/0.06)) * Math.min(1,Math.max(0,vhFrac/0.06));
         var a = p.alpha*fade;
         if(a<0.02) return;
         ctx.beginPath();
