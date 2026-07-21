@@ -221,16 +221,14 @@ function initEduCat(){
    ARCHIVE MECHANIC — twin ring carousels fly into the
    spine-connected archive on scroll-past OR click of either ring
    ============================================================ */
-var PREVIEW_LEFT = ['mfg', 'gas-turbine', 'telemetry-ml', 'boeing'];
-var PREVIEW_RIGHT = ['option-pricing', 'bwb', 'iit', 'scramjet'];
+var PREVIEW_IDS = ['mfg', 'gas-turbine', 'gta', 'telemetry-ml', 'option-pricing', 'trajectory', 'boeing', 'bwb'];
 
 function initArchiveMechanic(){
   var highlights = document.getElementById('archivePreview');
   var archiveZone = document.getElementById('archiveZone');
   if(!highlights || !archiveZone) return;
 
-  var leftData = PREVIEW_LEFT.map(function(id){ return readArcCard(id); }).filter(Boolean);
-  var rightData = PREVIEW_RIGHT.map(function(id){ return readArcCard(id); }).filter(Boolean);
+  var previewData = PREVIEW_IDS.map(function(id){ return readArcCard(id); }).filter(Boolean);
 
   function readArcCard(id){
     var el = archiveZone.querySelector('.arc-card[data-id="' + id + '"]');
@@ -238,10 +236,9 @@ function initArchiveMechanic(){
     return { id:id, date: el.querySelector('.arc-date').textContent, title: el.querySelector('.arc-title').textContent };
   }
 
-  var leftEls = buildRing('ringLeft', leftData, 'left');
-  var rightEls = buildRing('ringRight', rightData, 'right');
+  var ringEls = buildRing('ring', previewData);
 
-  function buildRing(stageId, items, spinDir){
+  function buildRing(stageId, items){
     var stage = document.getElementById(stageId);
     if(!stage || !items.length) return [];
     var n = items.length, els = [];
@@ -258,8 +255,11 @@ function initArchiveMechanic(){
       stage.style.position='static'; stage.style.display='flex'; stage.style.flexDirection='column';
       return els;
     }
-    var RADIUS = 230, TILT = 22 * Math.PI / 180;
-    var theta = spinDir === 'left' ? 0 : Math.PI;
+    // Contained, single ring: radius sized to stay within the section instead
+    // of spilling past its edges (overflow:hidden on .archive-preview clips
+    // anything larger anyway).
+    var RADIUS = 190, TILT = 22 * Math.PI / 180;
+    var theta = 0;
     var alive = true;
     new IntersectionObserver(function(e){ alive = e[0].isIntersecting; }, { threshold:0.02 }).observe(highlights);
     (function spin(){
@@ -269,7 +269,7 @@ function initArchiveMechanic(){
       // transform/opacity on the very next frame, every frame -- the actual
       // cause of the earlier chaotic/overlapping card positions.
       if(merged) { requestAnimationFrame(spin); return; }
-      if(alive) theta += (spinDir === 'left' ? 0.006 : -0.006);
+      if(alive) theta += 0.006;
       els.forEach(function(el,i){
         var a = (i/n) * Math.PI*2 + theta;
         var x3 = Math.sin(a)*RADIUS;
@@ -340,8 +340,7 @@ function initArchiveMechanic(){
     requestAnimationFrame(function(){
       requestAnimationFrame(function(){
         if(reduce){ buildSandSpine(); return; }
-        flyToArchive(leftEls);
-        flyToArchive(rightEls);
+        flyToArchive(ringEls);
         if(!spineBuilt){ spineBuilt = true; setTimeout(buildSandSpine, 500); }
       });
     });
@@ -352,8 +351,7 @@ function initArchiveMechanic(){
     if(!merged) return;
     merged = false;
     clearTimeout(maxHeightTimeout);
-    refurlRing(leftEls);
-    refurlRing(rightEls);
+    refurlRing(ringEls);
     archiveZone.style.maxHeight = archiveZone.scrollHeight + 'px';
     archiveZone.getBoundingClientRect();
     archiveZone.classList.remove('open');
@@ -366,10 +364,8 @@ function initArchiveMechanic(){
   if(reduce){
     openArchive();
   } else {
-    var ringLeftEl = document.getElementById('ringLeft');
-    var ringRightEl = document.getElementById('ringRight');
-    if(ringLeftEl) ringLeftEl.addEventListener('click', openArchive);
-    if(ringRightEl) ringRightEl.addEventListener('click', openArchive);
+    var ringEl = document.getElementById('ring');
+    if(ringEl) ringEl.addEventListener('click', openArchive);
     // Scroll-position trigger, not IntersectionObserver: simpler to reason
     // about and doesn't depend on rootMargin/threshold edge cases. Opens once
     // scrolled genuinely past the ring section; closes (refurls) once

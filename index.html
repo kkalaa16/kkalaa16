@@ -182,40 +182,39 @@
   </div>
 </section>
 
-<!-- ══ ARCHIVE PREVIEW — twin ring carousels ══════════════ -->
+<!-- ══ ARCHIVE PREVIEW — single ring carousel, contained ══ -->
 <section class="archive-preview" id="archivePreview">
   <div class="archive-preview-heading">
     <h2>The rest of the record</h2>
     <p>16 more projects, internships, and courses</p>
   </div>
-  <div class="ring-slot left"><div class="ring-stage" id="ringLeft"></div></div>
-  <div class="ring-slot right"><div class="ring-stage" id="ringRight"></div></div>
-  <div class="archive-preview-cue">SCROLL OR CLICK EITHER RING TO OPEN THE FULL ARCHIVE</div>
+  <div class="ring-slot"><div class="ring-stage" id="ring"></div></div>
+  <div class="archive-preview-cue">SCROLL OR CLICK THE RING TO OPEN THE FULL ARCHIVE</div>
 </section>
 
-<!-- ══ ARCHIVE — full timeline ═════════════════════════════ -->
+<!-- ══ ARCHIVE — full timeline, most recent first ═════════ -->
 <section id="work-section">
   <div class="archive" id="archiveZone">
     <canvas id="spineCanvas"></canvas>
 
     <div class="arc-row">
+      <div class="arc-card" data-id="mfg">
+        <span class="arc-date">Jan - May 2026</span>
+        <span class="arc-title">Neural Mean-Field Game Simulator</span>
+        <p class="arc-summary">El Farol Bar problem as a Mean Field Game, 5-person team (CSE 6730). My scope: the Neural SDE implementation (adjoint-trained drift/diffusion networks), the 84-test suite, and the Phase 3 solver-comparison benchmark.</p>
+        <div class="arc-tags"><span>Neural SDEs</span><span>Mean Field Games</span><span>PyTorch</span></div>
+      </div>
       <div class="arc-card" data-id="gas-turbine">
         <span class="arc-date">Aug - Dec 2025</span>
         <span class="arc-title">Gas Turbine Cycle Design Tool</span>
         <p class="arc-summary">1D variable-heat-capacity turbojet/turbofan cycle tool; swept 3,800+ design combinations, corrected a 46% TSFC underestimate from constant-property assumptions.</p>
         <div class="arc-tags"><span>MATLAB</span><span>Thermodynamics</span><span>Cycle Analysis</span></div>
       </div>
-      <div class="arc-card" data-id="mfg">
-        <span class="arc-date">Jan - May 2026</span>
-        <span class="arc-title">Neural Mean-Field Game Simulator</span>
-        <p class="arc-summary">El Farol Bar problem as a Mean Field Game, 5-person team (CSE 6730). My scope: the Neural SDE implementation (adjoint-trained drift/diffusion networks) and its 77-test suite.</p>
-        <div class="arc-tags"><span>Neural SDEs</span><span>Mean Field Games</span><span>PyTorch</span></div>
-      </div>
-      <div class="arc-card" data-id="trajectory">
-        <span class="arc-date">Jan - May 2025</span>
-        <span class="arc-title">Minimum Time-to-Climb Trajectory Optimization</span>
-        <p class="arc-summary">Compared direct transcription against SLSQP single shooting; analytical block-banded Jacobian cut per-iteration cost by 60%.</p>
-        <div class="arc-tags"><span>NLP</span><span>SLSQP</span><span>Trajectory Optimization</span></div>
+      <div class="arc-card" data-id="gta">
+        <span class="arc-date">Aug - Dec 2025</span>
+        <span class="arc-title">GTA: AE 3330</span>
+        <p class="arc-summary">Teaching assistant for aerospace vehicle performance.</p>
+        <div class="arc-tags"><span>Mentorship</span><span>Georgia Tech</span></div>
       </div>
       <div class="arc-card" data-id="telemetry-ml">
         <span class="arc-date">May - Aug 2025</span>
@@ -232,6 +231,12 @@
         <p class="arc-summary">Physics-informed reduced-order model plus a Fourier Neural Operator residual, hybridized for PDE-governed option-pricing surfaces.</p>
         <div class="arc-tags"><span>FNO</span><span>PyTorch</span><span>Reduced-Order Modeling</span></div>
       </div>
+      <div class="arc-card" data-id="trajectory">
+        <span class="arc-date">Jan - May 2025</span>
+        <span class="arc-title">Minimum Time-to-Climb Trajectory Optimization</span>
+        <p class="arc-summary">Compared direct transcription against SLSQP single shooting; analytical block-banded Jacobian cut per-iteration cost by 60%.</p>
+        <div class="arc-tags"><span>NLP</span><span>SLSQP</span><span>Trajectory Optimization</span></div>
+      </div>
       <div class="arc-card" data-id="boeing">
         <span class="arc-date">Aug 2024 - May 2025</span>
         <span class="arc-title">Ti-6Al-4V Aerospace Supply Chain Risk</span>
@@ -243,12 +248,6 @@
         <span class="arc-title">Hydrogen Blended-Wing-Body MBSE Concept</span>
         <p class="arc-summary">MBSE/SysML conceptual design study for a hydrogen-powered blended-wing-body transport aircraft; QFD and TOPSIS-driven concept downselection.</p>
         <div class="arc-tags"><span>SysML</span><span>QFD</span><span>TOPSIS</span></div>
-      </div>
-      <div class="arc-card" data-id="gta">
-        <span class="arc-date">Aug - Dec 2025</span>
-        <span class="arc-title">GTA: AE 3330</span>
-        <p class="arc-summary">Teaching assistant for aerospace vehicle performance.</p>
-        <div class="arc-tags"><span>Mentorship</span><span>Georgia Tech</span></div>
       </div>
     </div>
 
@@ -265,26 +264,26 @@
         <p class="arc-summary">Fluid-structure interaction via OpenFOAM and CalculiX, coupled through preCICE.</p>
         <div class="arc-tags"><span>FSI</span><span>preCICE</span></div>
       </div>
+      <div class="arc-card" data-id="tcnj">
+        <span class="arc-date">Jun - Oct 2022</span>
+        <span class="arc-title">Pump Cavitation Detection</span>
+        <p class="arc-summary">Early-stage literature review and acoustic-diagnostics scoping for cavitation detection.</p>
+        <div class="arc-tags"><span>ANSYS</span><span>Acoustics</span></div>
+      </div>
       <div class="arc-card" data-id="hal">
         <span class="arc-date">Aug 2022</span>
         <span class="arc-title">HAL ARDC Internship</span>
         <p class="arc-summary">Subsystem-integration exposure during an aircraft-development internship.</p>
         <div class="arc-tags"><span>Systems</span><span>HAL</span></div>
       </div>
+    </div>
+
+    <div class="arc-row">
       <div class="arc-card" data-id="cabs">
         <span class="arc-date">Jun - Jul 2022</span>
         <span class="arc-title">DRDO CABS Nonlinear Dynamics</span>
         <p class="arc-summary">Lotka-Volterra nonlinear dynamics and Jacobian stability analysis; co-authored paper.</p>
         <div class="arc-tags"><span>MATLAB</span><span>Controls</span></div>
-      </div>
-    </div>
-
-    <div class="arc-row">
-      <div class="arc-card" data-id="tcnj">
-        <span class="arc-date">Jun - Oct 2022</span>
-        <span class="arc-title">Pump Cavitation Detection</span>
-        <p class="arc-summary">Early-stage literature review and acoustic-diagnostics scoping for cavitation detection.</p>
-        <div class="arc-tags"><span>ANSYS</span><span>Acoustics</span></div>
       </div>
       <div class="arc-card" data-id="vawt">
         <span class="arc-date">Jul 2021 - Jun 2022</span>
@@ -292,17 +291,17 @@
         <p class="arc-summary">Parametric CFD study of vertical-axis wind-turbine rotor performance.</p>
         <div class="arc-tags"><span>CFD</span><span>VAWT</span></div>
       </div>
-      <div class="arc-card" data-id="ccs">
-        <span class="arc-date">May - Aug 2021</span>
-        <span class="arc-title">CCS Process Optimization</span>
-        <p class="arc-summary">Process-optimization analysis using FlexSim discrete-event simulation and Lean workflow methods.</p>
-        <div class="arc-tags"><span>FlexSim</span><span>Lean</span></div>
-      </div>
       <div class="arc-card" data-id="scramjet">
         <span class="arc-date">Aug - Dec 2021</span>
         <span class="arc-title">Scramjet Inlet Nozzles</span>
         <p class="arc-summary">Ramp-inlet validation study for scramjet inlet/nozzle geometry at high Mach numbers.</p>
         <div class="arc-tags"><span>CFD</span><span>Hypersonics</span></div>
+      </div>
+      <div class="arc-card" data-id="ccs">
+        <span class="arc-date">May - Aug 2021</span>
+        <span class="arc-title">CCS Process Optimization</span>
+        <p class="arc-summary">Process-optimization analysis using FlexSim discrete-event simulation and Lean workflow methods.</p>
+        <div class="arc-tags"><span>FlexSim</span><span>Lean</span></div>
       </div>
     </div>
 
