@@ -189,8 +189,28 @@ body.lock-scroll{ overflow:hidden; }
 .edu-inst-field{ font-size:1rem; font-weight:780; text-transform:uppercase; margin-top:.15rem; }
 .edu-inst-name{ font-size:.9rem; color:var(--ink-dim); margin-top:.15rem; }
 .edu-inst-year{ font-family:var(--mono); font-size:.76rem; color:var(--ink-faint); }
-.edu-runway{ position:relative; flex:1 1 auto; height:2px; background-image:linear-gradient(90deg,var(--line-strong) 50%,transparent 50%); background-size:10px 2px; margin:0 1rem; }
-#eduCat{ position:absolute; top:-16px; width:34px; height:34px; background-size:contain; background-repeat:no-repeat; left:0; }
+.edu-runway{ position:relative; flex:1 1 auto; height:2px; background-image:linear-gradient(90deg,var(--line-strong) 50%,transparent 50%); background-size:10px 2px; margin:0 1rem; overflow:visible; }
+#eduCat{
+  position:absolute; top:50%; left:0; transform:translateY(-50%);
+  transition:left 2.4s cubic-bezier(.4,0,.2,1);
+}
+#eduCat.run{ left:calc(100% - 130px); }
+.cat-sprite{
+  width:306px; height:138px; transform:scale(.42); transform-origin:left center;
+  background-image:url('assets/cat_run.png'); background-repeat:no-repeat; background-size:306px 1656px;
+  filter:contrast(1.1);
+}
+#eduCat.run .cat-sprite{ animation:catrun .6s steps(12) infinite; }
+#eduCat.idle .cat-sprite{
+  animation:none; background-image:url('assets/cat_idle_bits.png'); background-size:contain;
+  width:130px; height:71px; transform:scale(.42) translateY(48px);
+}
+#eduCat.idle-gt .cat-sprite{ background-image:url('assets/cat_idle_gt.png'); }
+@keyframes catrun{ from{ background-position-y:0; } to{ background-position-y:-1656px; } }
+@media (prefers-reduced-motion: reduce){
+  #eduCat{ transition:none; left:calc(100% - 130px); }
+  #eduCat .cat-sprite{ animation:none !important; background-image:url('assets/cat_idle_gt.png'); background-size:contain; width:130px; height:71px; transform:scale(.42) translateY(48px); }
+}
 
 /* ============================================================
    HIGHLIGHTS — deep, always-visible figure plates
@@ -225,7 +245,7 @@ body.lock-scroll{ overflow:hidden; }
 /* ============================================================
    ARCHIVE PREVIEW — twin ring carousels
    ============================================================ */
-.archive-preview{ height:70vh; min-height:460px; overflow:hidden; display:flex; align-items:center; justify-content:space-between; padding:0 3vw; position:relative; }
+.archive-preview{ height:70vh; min-height:460px; overflow:visible; display:flex; align-items:center; justify-content:space-between; padding:0 3vw; position:relative; }
 .archive-preview-heading{ position:absolute; top:2.4rem; left:50%; transform:translateX(-50%); text-align:center; z-index:1; }
 .archive-preview-heading h2{ font-family:var(--sans); font-weight:800; font-size:clamp(1.5rem,3vw,2rem); margin:0 0 .4rem; text-transform:uppercase; letter-spacing:-.01em; }
 .archive-preview-heading p{ font-family:var(--mono); font-size:.85rem; color:var(--ink-dim); margin:0; }
@@ -271,8 +291,12 @@ body.lock-scroll{ overflow:hidden; }
 .skills-groups{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1.4rem; margin-bottom:3rem; }
 .skill-group h3{ font-size:1.05rem; font-weight:780; text-transform:uppercase; letter-spacing:.02em; margin:0 0 1rem; }
 .skill-chips{ display:flex; flex-wrap:wrap; gap:0; border-top:1px solid var(--line-strong); border-left:1px solid var(--line-strong); }
-.skill-chips span{ font-family:var(--mono); font-size:.9rem; padding:.6rem 1rem; border-right:1px solid var(--line-strong); border-bottom:1px solid var(--line-strong); color:var(--ink); }
-.globe-wrap{ position:relative; width:100%; max-width:520px; height:420px; margin:0 auto; }
+.skill-chips span{
+  font-family:var(--mono); font-size:.9rem; padding:.6rem 1rem; border-right:1px solid var(--line-strong);
+  border-bottom:1px solid var(--line-strong); color:var(--ink); display:flex; align-items:center; gap:.5rem;
+}
+.skill-chips span img{ width:18px; height:18px; object-fit:contain; flex:none; }
+.globe-wrap{ position:relative; width:100%; max-width:560px; height:460px; margin:0 auto 1.4rem; }
 #globeCanvas{ width:100%; height:100%; cursor:grab; }
 #globeCanvas:active{ cursor:grabbing; }
 .globe-caption{ text-align:center; font-family:var(--mono); font-size:.85rem; color:var(--ink-dim); margin-top:.9rem; text-transform:uppercase; letter-spacing:.02em; }

@@ -200,7 +200,6 @@ function initEduCat(){
   var cat = document.getElementById('eduCat');
   var runway = document.getElementById('eduRunway');
   if(!cat || !runway) return;
-  cat.style.backgroundImage = "url('assets/cat_idle_bits.png')";
 
   if(reduce) return;
 
@@ -208,14 +207,12 @@ function initEduCat(){
   new IntersectionObserver(function(entries){
     if(entries[0].isIntersecting && !played){
       played = true;
-      cat.style.backgroundImage = "url('assets/cat_run.png')";
-      cat.style.transition = 'left 2.6s cubic-bezier(.4,0,.2,1)';
-      requestAnimationFrame(function(){
-        cat.style.left = 'calc(100% - 34px)';
-      });
+      cat.classList.remove('idle');
+      cat.classList.add('run');
       setTimeout(function(){
-        cat.style.backgroundImage = "url('assets/cat_idle_gt.png')";
-      }, 2700);
+        cat.classList.remove('run');
+        cat.classList.add('idle', 'idle-gt');
+      }, 2500);
     }
   }, { threshold:0.4 }).observe(runway);
 }
@@ -261,7 +258,7 @@ function initArchiveMechanic(){
       stage.style.position='static'; stage.style.display='flex'; stage.style.flexDirection='column';
       return els;
     }
-    var RADIUS = 150, TILT = 22 * Math.PI / 180;
+    var RADIUS = 230, TILT = 22 * Math.PI / 180;
     var theta = spinDir === 'left' ? 0 : Math.PI;
     var alive = true;
     new IntersectionObserver(function(e){ alive = e[0].isIntersecting; }, { threshold:0.02 }).observe(highlights);
@@ -315,6 +312,12 @@ function initArchiveMechanic(){
     if(merged) return;
     merged = true;
     archiveZone.classList.add('open');
+    // CSS can't transition to/from `auto`, so the max-height target has to be
+    // a real pixel value set from JS (the original site's own technique,
+    // openTimeline(): zone.style.maxHeight = zone.scrollHeight + 'px'). The
+    // .archive.open class alone never released the clip -- that was the
+    // actual "doesn't unfurl" bug: the panel stayed at max-height:0 forever.
+    archiveZone.style.maxHeight = archiveZone.scrollHeight + 'px';
     requestAnimationFrame(function(){
       requestAnimationFrame(function(){
         if(reduce){ buildSandSpine(); return; }
@@ -323,6 +326,7 @@ function initArchiveMechanic(){
         setTimeout(buildSandSpine, 500);
       });
     });
+    setTimeout(function(){ archiveZone.style.maxHeight = 'none'; }, 950);
   }
 
   if(reduce){
@@ -332,12 +336,15 @@ function initArchiveMechanic(){
     var ringRightEl = document.getElementById('ringRight');
     if(ringLeftEl) ringLeftEl.addEventListener('click', openArchive);
     if(ringRightEl) ringRightEl.addEventListener('click', openArchive);
-    var wasVisible = false;
-    new IntersectionObserver(function(entries){
-      var isIntersecting = entries[0].isIntersecting;
-      if(isIntersecting) wasVisible = true;
-      if(wasVisible && !isIntersecting && !merged) openArchive();
-    }, { threshold:0, rootMargin:'0px 0px -40% 0px' }).observe(highlights);
+    // Scroll-position trigger, not IntersectionObserver: simpler to reason
+    // about and doesn't depend on rootMargin/threshold edge cases. Fires once
+    // the ring section's bottom edge has scrolled above the vertical middle
+    // of the viewport, i.e. once you've genuinely scrolled past it.
+    window.addEventListener('scroll', function(){
+      if(merged) return;
+      var rect = highlights.getBoundingClientRect();
+      if(rect.bottom < window.innerHeight * 0.5) openArchive();
+    }, { passive:true });
   }
 
   function buildSandSpine(){
@@ -465,22 +472,22 @@ function initGlobe(){
   var ctx = canvas.getContext('2d');
 
   var SKILLS = [
-    { name:'ANSYS Fluent', lat:42, lon:15 },
-    { name:'OpenFOAM', lat:-18, lon:35 },
-    { name:'OpenMDAO', lat:-12, lon:-55 },
-    { name:'MATLAB', lat:30, lon:50 },
-    { name:'Python', lat:8, lon:120 },
-    { name:'PyTorch', lat:-26, lon:-120 },
-    { name:'Systems / MBSE', lat:52, lon:95 },
-    { name:'C++', lat:-45, lon:170 }
+    { name:'ANSYS Fluent', mono:'FL', lat:42, lon:15 },
+    { name:'OpenFOAM', mono:'OF', lat:-18, lon:35 },
+    { name:'OpenMDAO', mono:'MD', lat:-12, lon:-55 },
+    { name:'MATLAB', mono:'ML', lat:30, lon:50 },
+    { name:'Python', mono:'PY', lat:8, lon:120 },
+    { name:'PyTorch', mono:'PT', lat:-26, lon:-120 },
+    { name:'Systems / MBSE', mono:'SY', lat:52, lon:95 },
+    { name:'C++', mono:'C+', lat:-45, lon:170 }
   ];
 
   function toXYZ(lat, lon, r){
     var phi = (90-lat)*Math.PI/180, th = (lon+180)*Math.PI/180;
     return { x:-r*Math.sin(phi)*Math.cos(th), y:r*Math.cos(phi), z:r*Math.sin(phi)*Math.sin(th) };
   }
-  var R = 130;
-  var pts = SKILLS.map(function(s){ var p = toXYZ(s.lat,s.lon,R); p.name = s.name; return p; });
+  var R = 160;
+  var pts = SKILLS.map(function(s){ var p = toXYZ(s.lat,s.lon,R); p.name = s.name; p.mono = s.mono; return p; });
 
   var LAT_STEPS = [-60, -30, 0, 30, 60];
   var LON_STEPS = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
@@ -545,6 +552,8 @@ function initGlobe(){
     return { sx:cx+r.x*scale, sy:cy-r.y*scale, z:r.z, scale:scale };
   }
 
+  var FOCAL = 560;
+
   function drawWireRing(ring, focal, cx, cy){
     var proj = ring.map(function(p){ return project(p, focal, cx, cy); });
     for(var i = 0; i < proj.length - 1; i++){
@@ -553,10 +562,29 @@ function initGlobe(){
       ctx.beginPath();
       ctx.moveTo(a.sx, a.sy);
       ctx.lineTo(b.sx, b.sy);
-      ctx.strokeStyle = 'rgba(75,80,87,' + (depth * 0.5).toFixed(2) + ')';
+      ctx.strokeStyle = 'rgba(75,80,87,' + (0.14 + depth * 0.62).toFixed(2) + ')';
       ctx.lineWidth = dpr;
       ctx.stroke();
     }
+  }
+
+  function drawBadge(pp, isHover){
+    var depth = Math.max(0.2, Math.min(1,(pp.z+R)/(2*R)));
+    var rad = (isHover?16:13)*dpr*pp.scale;
+    if(isHover){
+      ctx.beginPath(); ctx.arc(pp.sx,pp.sy,rad+4*dpr,0,Math.PI*2);
+      ctx.strokeStyle = 'rgba(193,58,29,' + (depth*0.7).toFixed(2) + ')';
+      ctx.lineWidth = 1.5*dpr; ctx.stroke();
+    }
+    var fill = isHover ? 'rgba(193,58,29,' + depth.toFixed(2) + ')' : 'rgba(237,238,233,' + depth.toFixed(2) + ')';
+    var stroke = isHover ? 'rgba(193,58,29,1)' : 'rgba(75,80,87,' + (0.4+depth*0.6).toFixed(2) + ')';
+    ctx.beginPath(); ctx.arc(pp.sx,pp.sy,rad,0,Math.PI*2);
+    ctx.fillStyle = fill; ctx.fill();
+    ctx.strokeStyle = stroke; ctx.lineWidth = 1.4*dpr; ctx.stroke();
+    ctx.font = (isHover ? '700 ' : '600 ') + (10*dpr*pp.scale) + 'px ' + 'ui-monospace,Consolas,monospace';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = isHover ? '#fff' : 'rgba(20,23,26,' + (0.5+depth*0.5).toFixed(2) + ')';
+    ctx.fillText(pp.mono, pp.sx, pp.sy + 0.5*dpr);
   }
 
   function frame(){
@@ -568,50 +596,36 @@ function initGlobe(){
     }
     ctx.clearRect(0,0,W,H);
     var cx = W/2, cy = H/2;
-    var focal = 460*dpr;
+    var focal = FOCAL*dpr;
 
-    var g = ctx.createRadialGradient(cx,cy,0,cx,cy,R*dpr*1.2);
-    g.addColorStop(0,'rgba(20,23,26,0.07)');
+    var g = ctx.createRadialGradient(cx,cy,0,cx,cy,R*dpr*1.25);
+    g.addColorStop(0,'rgba(20,23,26,0.09)');
     g.addColorStop(1,'rgba(20,23,26,0)');
     ctx.fillStyle = g;
-    ctx.beginPath(); ctx.arc(cx,cy,R*dpr*1.2,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx,cy,R*dpr*1.25,0,Math.PI*2); ctx.fill();
 
     latRings.forEach(function(ring){ drawWireRing(ring, focal, cx, cy); });
     lonRings.forEach(function(ring){ drawWireRing(ring, focal, cx, cy); });
 
     lastProjected = pts.map(function(p){
       var pp = project(p, focal, cx, cy);
-      pp.name = p.name;
+      pp.name = p.name; pp.mono = p.mono;
       return pp;
     });
     var order = lastProjected.map(function(_,i){ return i; }).sort(function(a,b){ return lastProjected[a].z-lastProjected[b].z; });
-    order.forEach(function(i){
-      var pp = lastProjected[i];
-      var depth = Math.max(0.15, Math.min(1,(pp.z+R)/(2*R)));
-      var isHover = i===hoverIdx;
-      var rad = (isHover?7:5.5)*dpr*pp.scale;
-      if(isHover){
-        ctx.beginPath(); ctx.arc(pp.sx,pp.sy,rad+3*dpr,0,Math.PI*2);
-        ctx.strokeStyle = 'rgba(193,58,29,' + (depth*0.6).toFixed(2) + ')';
-        ctx.lineWidth = 1.5*dpr; ctx.stroke();
-      }
-      ctx.beginPath(); ctx.arc(pp.sx,pp.sy,rad,0,Math.PI*2);
-      ctx.fillStyle = isHover ? 'rgba(193,58,29,' + depth.toFixed(2) + ')' : 'rgba(75,80,87,' + (depth*0.9).toFixed(2) + ')';
-      ctx.fill();
-    });
+    order.forEach(function(i){ drawBadge(lastProjected[i], i===hoverIdx); });
     requestAnimationFrame(frame);
   }
   if(reduce){
     ctx.clearRect(0,0,W,H);
     var cx0=W/2, cy0=H/2;
-    var focal0 = 460*dpr;
+    var focal0 = FOCAL*dpr;
     latRings.forEach(function(ring){ drawWireRing(ring, focal0, cx0, cy0); });
     lonRings.forEach(function(ring){ drawWireRing(ring, focal0, cx0, cy0); });
     pts.forEach(function(p){
       var r = rotate(p, 0.6, -0.2);
-      var scale = 460*dpr/(460*dpr+r.z);
-      ctx.beginPath(); ctx.arc(cx0+r.x*scale, cy0-r.y*scale, 4*dpr, 0, Math.PI*2);
-      ctx.fillStyle='rgba(75,80,87,0.7)'; ctx.fill();
+      var scale = focal0/(focal0+r.z);
+      drawBadge({ sx:cx0+r.x*scale, sy:cy0-r.y*scale, z:r.z, scale:scale, mono:p.mono }, false);
     });
   } else {
     requestAnimationFrame(frame);

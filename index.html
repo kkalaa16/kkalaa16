@@ -67,7 +67,7 @@
       </div>
     </div>
     <div class="edu-runway" id="eduRunway">
-      <div id="eduCat" aria-hidden="true"></div>
+      <div id="eduCat" class="idle" aria-hidden="true"><div class="cat-sprite" id="catSprite"></div></div>
     </div>
     <div class="edu-inst edu-inst--right">
       <img class="edu-logo" src="assets/logos/georgia_tech.png" alt="Georgia Tech logo"/>
@@ -312,34 +312,64 @@
 <!-- ══ SKILLS ══════════════════════════════════════════════ -->
 <section class="skills-section" id="skills">
   <div class="section-label">SKILLS</div>
-  <div class="skills-groups">
-    <div class="skill-group">
-      <h3>CFD &amp; Simulation</h3>
-      <div class="skill-chips"><span>ANSYS Fluent</span><span>OpenFOAM</span><span>Reacting Flows</span><span>FGM / Flamelet</span><span>LES/RANS</span><span>Post-processing</span></div>
-    </div>
-    <div class="skill-group">
-      <h3>Propulsion &amp; Thermal</h3>
-      <div class="skill-chips"><span>Rotorcraft/eVTOL</span><span>Hybrid-Electric Sizing</span><span>Gas Turbine Cycles</span><span>Mission Energy</span><span>Battery Sizing</span></div>
-    </div>
-    <div class="skill-group">
-      <h3>Systems / MDO</h3>
-      <div class="skill-chips"><span>OpenMDAO</span><span>NPSS Context</span><span>FLOPS Context</span><span>SysML / MBSE</span><span>DoE</span><span>TOPSIS</span></div>
-    </div>
-    <div class="skill-group">
-      <h3>Mechanical Design / Test</h3>
-      <div class="skill-chips"><span>CAD</span><span>GD&amp;T</span><span>DFM/DFA</span><span>Subsystem Integration</span><span>Rotor Test Rig</span><span>Validation</span></div>
-    </div>
-    <div class="skill-group">
-      <h3>Scientific ML / Programming</h3>
-      <div class="skill-chips"><span>Python</span><span>MATLAB</span><span>PyTorch</span><span>scikit-learn</span><span>Pandas</span><span>C++</span><span>Surrogate Modeling</span><span>Neural SDEs</span></div>
-    </div>
-  </div>
+  <p class="globe-caption" style="margin:0 0 1.4rem">Drag the globe to rotate &middot; hover a badge for the tool</p>
 
   <div class="globe-wrap">
     <canvas id="globeCanvas"></canvas>
     <div class="globe-tip" id="globeTip"></div>
   </div>
-  <p class="globe-caption">Drag to rotate &middot; hover a point for the tool</p>
+
+  <div class="skills-groups">
+    <div class="skill-group">
+      <h3>CFD &amp; Simulation</h3>
+      <div class="skill-chips">
+        <span><img src="assets/icons/ansys.png" alt=""/>ANSYS Fluent</span>
+        <span><img src="assets/icons/openfoam.png" alt=""/>OpenFOAM</span>
+        <span><img src="assets/icons/vortex.png" alt=""/>LES/RANS</span>
+        <span><img src="assets/icons/flame.png" alt=""/>FGM / Flamelet</span>
+        <span><img src="assets/icons/flame.png" alt=""/>Reacting Flows</span>
+        <span><img src="assets/icons/chart.png" alt=""/>Post-processing</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <h3>Propulsion &amp; Thermal</h3>
+      <div class="skill-chips">
+        <span><img src="assets/icons/vortex.png" alt=""/>Rotorcraft/eVTOL</span>
+        <span><img src="assets/icons/gear.png" alt=""/>Hybrid-Electric Sizing</span>
+        <span><img src="assets/icons/flame.png" alt=""/>Gas Turbine Cycles</span>
+        <span><img src="assets/icons/chart.png" alt=""/>Mission Energy</span>
+        <span><img src="assets/icons/gear.png" alt=""/>Battery Sizing</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <h3>Systems / MDO</h3>
+      <div class="skill-chips">
+        <span><img src="assets/icons/gear.png" alt=""/>OpenMDAO</span>
+        <span><img src="assets/icons/gear.png" alt=""/>SysML / MBSE</span>
+        <span><img src="assets/icons/chart.png" alt=""/>DoE</span>
+        <span><img src="assets/icons/chart.png" alt=""/>TOPSIS</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <h3>Mechanical Design / Test</h3>
+      <div class="skill-chips">
+        <span><img src="assets/icons/gear.png" alt=""/>CAD / GD&amp;T</span>
+        <span><img src="assets/icons/gear.png" alt=""/>DFM/DFA</span>
+        <span><img src="assets/icons/vortex.png" alt=""/>Rotor Test Rig</span>
+        <span><img src="assets/icons/chart.png" alt=""/>Validation</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <h3>Scientific ML / Programming</h3>
+      <div class="skill-chips">
+        <span><img src="assets/icons/python_snakes.png" alt=""/>Python</span>
+        <span><img src="assets/icons/matlab.png" alt=""/>MATLAB</span>
+        <span><img src="assets/icons/flame.png" alt=""/>PyTorch</span>
+        <span><img src="assets/icons/cpp.png" alt=""/>C++</span>
+        <span><img src="assets/icons/chart.png" alt=""/>Neural SDEs</span>
+      </div>
+    </div>
+  </div>
 </section>
 
 <!-- ══ PATENTS ═════════════════════════════════════════════ -->
