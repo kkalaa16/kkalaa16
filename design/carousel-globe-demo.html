@@ -1,0 +1,478 @@
+<title>Mechanic demo: twin carousels, spine-merge, globe</title>
+<meta name="description" content="Isolated interaction demo: two ring carousels flying down into a sand-grain-connected archive spine, plus a hand-rolled rotating skills globe.">
+
+<style>
+:root{
+  --bg:#EDEEE9;
+  --bg-panel:#F6F6F2;
+  --ink:#14171A;
+  --ink-dim:#4B5057;
+  --ink-faint:#8A8F94;
+  --line:rgba(20,23,26,0.14);
+  --accent:#C13A1D;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#EDEEE9; --bg-panel:#F6F6F2; --ink:#14171A; }
+}
+*{ box-sizing:border-box; }
+html,body{ margin:0; padding:0; background:var(--bg); color:var(--ink); font-family: Georgia, 'Iowan Old Style', serif; }
+.note{
+  max-width:640px; margin:28px auto 0; padding:0 24px; font-family: 'Courier New', monospace;
+  font-size:0.82rem; color:var(--ink-dim); line-height:1.55; text-align:center;
+}
+.note b{ color:var(--ink); }
+section{ position:relative; width:100%; }
+
+/* ---- Highlights: twin ring carousels ---- */
+.highlights{
+  height:78vh; min-height:520px; overflow:hidden;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 4vw;
+}
+.ring-slot{ position:relative; width:38%; height:100%; perspective:1100px; }
+.ring-slot.right{ display:flex; justify-content:flex-end; }
+.ring-stage{
+  position:absolute; top:50%; left:50%; width:1px; height:1px;
+  transform-style:preserve-3d; cursor:pointer;
+}
+.ring-slot.left .ring-stage{ left:30%; }
+.ring-slot.right .ring-stage{ left:70%; }
+.rc{
+  position:absolute; top:0; left:0; width:168px; margin-left:-84px; margin-top:-38px;
+  padding:14px 16px; background:var(--bg-panel); border:1px solid var(--line);
+  font-family:'Courier New', monospace; text-align:left; will-change:transform,opacity;
+}
+.rc-date{ display:block; font-size:0.66rem; letter-spacing:.08em; color:var(--ink-faint); }
+.rc-title{ display:block; margin-top:4px; font-size:0.78rem; color:var(--ink); line-height:1.3; }
+
+.highlights-cue{
+  position:absolute; left:50%; bottom:20px; transform:translateX(-50%);
+  font-family:'Courier New', monospace; font-size:0.7rem; letter-spacing:.1em;
+  color:var(--ink-faint); text-align:center; pointer-events:none;
+}
+
+/* ---- Archive: merge target + spine ---- */
+.archive{
+  max-width:900px; margin:0 auto; padding:0 24px;
+  max-height:0; overflow:hidden; transition:max-height 700ms cubic-bezier(.16,1,.3,1);
+}
+.archive.open{ padding:40px 24px 80px; }
+#spineCanvas{ position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; }
+.arc-row{ display:flex; gap:20px; justify-content:center; margin-bottom:56px; position:relative; z-index:1; }
+.arc-card{
+  width:260px; padding:16px 18px; background:var(--bg-panel); border:1px solid var(--line);
+  font-family:'Courier New', monospace; opacity:0; transform:translateY(10px);
+  transition:opacity 500ms ease, transform 500ms ease;
+}
+.archive.open .arc-card{ opacity:1; transform:translateY(0); }
+.arc-date{ display:block; font-size:0.66rem; letter-spacing:.08em; color:var(--ink-faint); }
+.arc-title{ display:block; margin-top:4px; font-size:0.82rem; color:var(--ink); }
+
+/* ---- Skills globe ---- */
+.skills{ max-width:900px; margin:60px auto 100px; padding:0 24px; text-align:center; }
+.skills h2{ font-family:'Courier New', monospace; font-size:0.78rem; letter-spacing:.12em; color:var(--ink-dim); font-weight:400; margin-bottom:18px; }
+.globe-wrap{ position:relative; width:100%; max-width:520px; height:420px; margin:0 auto; }
+#globeCanvas{ width:100%; height:100%; cursor:grab; }
+#globeCanvas:active{ cursor:grabbing; }
+.globe-tip{
+  position:absolute; padding:5px 10px; background:var(--ink); color:var(--bg-panel);
+  font-family:'Courier New', monospace; font-size:0.72rem; white-space:nowrap;
+  transform:translate(-50%,-130%); pointer-events:none; opacity:0; transition:opacity 120ms ease;
+}
+.globe-tip.show{ opacity:1; }
+</style>
+
+<div class="note"><b>Isolated mechanic demo:</b> fake data, no site chrome. Scroll past the twin carousels (or click either one) to trigger the fly-down merge into the spine-connected archive below. Drag the globe.</div>
+
+<section class="highlights" id="highlights">
+  <div class="ring-slot left"><div class="ring-stage" id="ringLeft"></div></div>
+  <div class="ring-slot right"><div class="ring-stage" id="ringRight"></div></div>
+  <div class="highlights-cue">SCROLL OR CLICK EITHER RING</div>
+</section>
+
+<section>
+  <div class="archive" id="archiveZone">
+    <canvas id="spineCanvas"></canvas>
+    <div class="arc-row"></div>
+    <div class="arc-row"></div>
+    <div class="arc-row"></div>
+    <div class="arc-row"></div>
+  </div>
+</section>
+
+<section class="skills">
+  <h2>SKILLS / DRAG TO ROTATE</h2>
+  <div class="globe-wrap">
+    <canvas id="globeCanvas"></canvas>
+    <div class="globe-tip" id="globeTip"></div>
+  </div>
+</section>
+
+<script>
+var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+var LEFT_ITEMS = [
+  { date:'2026', title:'Ibrido / VFS XV-15 hybrid design' },
+  { date:'2025', title:'TU/e x Baker Hughes FGM combustion' },
+  { date:'2024', title:'Ben T. Zinn reacting-flow micromixer' },
+  { date:'2024', title:'AFRL MDAO trade study, +15.7%' }
+];
+var RIGHT_ITEMS = [
+  { date:'2025', title:'Scientific-ML surrogate, ROM+FNO' },
+  { date:'2023', title:'Drone-rotor CFD thesis, +51.7%' },
+  { date:'2025', title:'Vehicle telemetry ML dashboard' },
+  { date:'2021', title:'Hyperloop India propulsion trade' }
+];
+var ARCHIVE_ORDER = [ LEFT_ITEMS[0], RIGHT_ITEMS[0], LEFT_ITEMS[1], RIGHT_ITEMS[1], LEFT_ITEMS[2], RIGHT_ITEMS[2], LEFT_ITEMS[3], RIGHT_ITEMS[3] ];
+
+/* ══ Twin ring carousels (adapted from the original site's single centered
+   ring: same perspective/tilt math, split into two independent stages
+   anchored left and right instead of one center stage) ══ */
+function buildRing(stageId, items, spinDir){
+  var stage = document.getElementById(stageId);
+  var n = items.length, els = [];
+  items.forEach(function(d){
+    var el = document.createElement('div');
+    el.className = 'rc';
+    el.innerHTML = '<span class="rc-date">' + d.date + '</span><span class="rc-title">' + d.title + '</span>';
+    stage.appendChild(el);
+    els.push(el);
+  });
+  var RADIUS = 150, TILT = 22 * Math.PI / 180;
+  var theta = spinDir === 'left' ? 0 : Math.PI;
+  var alive = true;
+  new IntersectionObserver(function(e){ alive = e[0].isIntersecting; }, { threshold:0.02 }).observe(document.getElementById('highlights'));
+  if(reduce){
+    els.forEach(function(el,i){
+      el.style.position='static'; el.style.margin='0 0 14px 0'; el.style.transform='none'; el.style.opacity='1';
+    });
+    stage.style.position='static'; stage.style.display='flex'; stage.style.flexDirection='column';
+    return els;
+  }
+  (function spin(){
+    if(alive) theta += (spinDir === 'left' ? 0.006 : -0.006);
+    els.forEach(function(el,i){
+      var a = (i/n) * Math.PI*2 + theta;
+      var x3 = Math.sin(a)*RADIUS;
+      var y3 = -Math.cos(a)*RADIUS*Math.sin(TILT);
+      var z3 = Math.cos(a)*RADIUS*Math.cos(TILT);
+      var maxZ = RADIUS*Math.cos(TILT);
+      var depth = (z3+maxZ)/(2*maxZ);
+      var scale = 0.55+0.45*depth;
+      var opac = 0.10+0.85*depth;
+      el.style.transform = 'translate3d(' + x3.toFixed(1) + 'px,' + y3.toFixed(1) + 'px,' + z3.toFixed(1) + 'px) scale(' + scale.toFixed(3) + ')';
+      el.style.opacity = opac.toFixed(3);
+      el.style.zIndex = Math.round(depth*100);
+    });
+    requestAnimationFrame(spin);
+  })();
+  return els;
+}
+
+var leftEls = buildRing('ringLeft', LEFT_ITEMS, 'left');
+var rightEls = buildRing('ringRight', RIGHT_ITEMS, 'right');
+
+/* ══ Archive target cards (built once, positions read at merge time) ══ */
+var archiveZone = document.getElementById('archiveZone');
+var rows = archiveZone.querySelectorAll('.arc-row');
+var archiveCards = [];
+ARCHIVE_ORDER.forEach(function(d, i){
+  var row = rows[Math.floor(i/2)];
+  var card = document.createElement('div');
+  card.className = 'arc-card';
+  card.innerHTML = '<span class="arc-date">' + d.date + '</span><span class="arc-title">' + d.title + '</span>';
+  row.appendChild(card);
+  archiveCards.push(card);
+});
+
+/* ══ Merge: fly every ring card to its matching archive card's position and
+   fade, exactly the original's flyToTimeline mechanic, run once for the
+   left ring's cards and once for the right's against the same target list ══ */
+var merged = false;
+function flyToArchive(sourceEls, targetCards){
+  sourceEls.forEach(function(el, i){
+    var target = targetCards[i];
+    if(!target) return;
+    var tr = target.getBoundingClientRect();
+    var sr = el.getBoundingClientRect();
+    var fromX = sr.left + sr.width/2, fromY = sr.top + sr.height/2;
+    var toX = tr.left + tr.width/2, toY = tr.top + tr.height/2;
+    el.style.position = 'fixed';
+    el.style.left = fromX + 'px';
+    el.style.top = fromY + 'px';
+    el.style.transform = 'translate(-50%,-50%)';
+    el.style.zIndex = '999';
+    el.style.transition = 'none';
+    el.getBoundingClientRect();
+    var delay = i * 40;
+    el.style.transition = 'transform ' + (420+delay) + 'ms cubic-bezier(.16,1,.3,1) ' + delay + 'ms, opacity 280ms ease ' + delay + 'ms';
+    requestAnimationFrame(function(){
+      el.style.transform = 'translate(calc(-50% + ' + (toX-fromX) + 'px), calc(-50% + ' + (toY-fromY) + 'px)) scale(0.86)';
+      el.style.opacity = '0';
+    });
+    setTimeout(function(){ el.style.display = 'none'; }, 420+delay+320);
+  });
+}
+
+function openArchive(){
+  if(merged) return;
+  merged = true;
+  archiveZone.classList.add('open');
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      var leftTargets = [archiveCards[0], archiveCards[2], archiveCards[4], archiveCards[6]];
+      var rightTargets = [archiveCards[1], archiveCards[3], archiveCards[5], archiveCards[7]];
+      if(reduce){
+        buildSandSpine();
+        return;
+      }
+      flyToArchive(leftEls, leftTargets);
+      flyToArchive(rightEls, rightTargets);
+      setTimeout(buildSandSpine, 500);
+    });
+  });
+}
+
+if(reduce){
+  openArchive();
+} else {
+  document.getElementById('ringLeft').addEventListener('click', openArchive);
+  document.getElementById('ringRight').addEventListener('click', openArchive);
+  new IntersectionObserver(function(entries){
+    if(!entries[0].isIntersecting && !merged) openArchive();
+  }, { threshold: 0, rootMargin: '0px 0px -40% 0px' }).observe(document.getElementById('highlights'));
+}
+
+/* ══ Sand-grain spine: particles flowing along a path traced through the
+   archive's actual rendered row/card positions, same technique as the
+   original's buildSandSpine ══ */
+function buildSandSpine(){
+  var zone = archiveZone, canvas = document.getElementById('spineCanvas');
+  function sizeCanvas(){ canvas.width = zone.offsetWidth; canvas.height = zone.scrollHeight; canvas.style.height = zone.scrollHeight + 'px'; }
+  sizeCanvas();
+  var ctx = canvas.getContext('2d');
+  var segs = [];
+
+  function getOffsetInZone(el){
+    var top=0, left=0, node=el;
+    while(node && node!==zone){ top+=node.offsetTop; left+=node.offsetLeft; node=node.offsetParent; }
+    return { top:top, left:left, w:el.offsetWidth, h:el.offsetHeight };
+  }
+  function rebuildSegs(){
+    segs = [];
+    var rowEls = zone.querySelectorAll('.arc-row');
+    var prevMidX=null, prevBotY=null;
+    rowEls.forEach(function(row){
+      var cards = row.querySelectorAll('.arc-card');
+      if(!cards.length) return;
+      var infos = Array.prototype.map.call(cards, function(c){ var o=getOffsetInZone(c); return { cx:o.left+o.w/2, top:o.top, bot:o.top+o.h }; });
+      var midX = infos.reduce(function(s,i){ return s+i.cx; },0)/infos.length;
+      var topY = Math.min.apply(null, infos.map(function(i){ return i.top; })) - 20;
+      var botY = Math.max.apply(null, infos.map(function(i){ return i.bot; })) + 20;
+      if(prevMidX!==null) segs.push({x1:prevMidX,y1:prevBotY,x2:midX,y2:topY});
+      var minX = Math.min.apply(null, infos.map(function(i){ return i.cx; }));
+      var maxX = Math.max.apply(null, infos.map(function(i){ return i.cx; }));
+      var sY = topY+16, gY = botY-16;
+      segs.push({x1:midX,y1:topY,x2:midX,y2:sY},{x1:minX,y1:sY,x2:maxX,y2:sY});
+      infos.forEach(function(info){
+        segs.push({x1:info.cx,y1:sY,x2:info.cx,y2:info.top},{x1:info.cx,y1:info.top,x2:info.cx,y2:info.bot},{x1:info.cx,y1:info.bot,x2:info.cx,y2:gY});
+      });
+      segs.push({x1:minX,y1:gY,x2:maxX,y2:gY},{x1:midX,y1:gY,x2:midX,y2:botY});
+      prevMidX = midX; prevBotY = botY;
+    });
+  }
+  rebuildSegs();
+  window.addEventListener('resize', function(){ sizeCanvas(); rebuildSegs(); }, { passive:true });
+
+  function segLen(s){ return Math.hypot(s.x2-s.x1, s.y2-s.y1); }
+  function totalLen(){ return segs.reduce(function(a,s){ return a+segLen(s); },0); }
+  function posAt(t){
+    if(!segs.length) return { x:canvas.width/2, y:canvas.height/2 };
+    var total = totalLen();
+    var d = ((t%1)+1)%1*total;
+    for(var i=0;i<segs.length;i++){
+      var s = segs[i], l = segLen(s);
+      if(d<=l){ var f=d/l; return { x:s.x1+(s.x2-s.x1)*f, y:s.y1+(s.y2-s.y1)*f }; }
+      d -= l;
+    }
+    var last = segs[segs.length-1];
+    return { x:last.x2, y:last.y2 };
+  }
+
+  if(reduce){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    segs.forEach(function(s){
+      ctx.beginPath(); ctx.moveTo(s.x1,s.y1); ctx.lineTo(s.x2,s.y2);
+      ctx.strokeStyle = 'rgba(75,80,87,0.35)'; ctx.lineWidth = 1; ctx.stroke();
+    });
+    return;
+  }
+
+  var N = 140;
+  var parts = [];
+  for(var i=0;i<N;i++) parts.push({ t:i/N, size:0.6+Math.random()*1.0, alpha:0.22+Math.random()*0.5 });
+  var scrollV = 0, lastSY = window.scrollY, baseT = 0;
+  window.addEventListener('scroll', function(){
+    var dy = window.scrollY - lastSY;
+    scrollV += dy*0.00012;
+    lastSY = window.scrollY;
+  }, { passive:true });
+
+  (function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    scrollV *= 0.85;
+    baseT += scrollV + 0.00016;
+    var zRect = zone.getBoundingClientRect();
+    parts.forEach(function(p){
+      var t = ((p.t+baseT)%1+1)%1;
+      var pos = posAt(t);
+      var screenY = zRect.top + pos.y;
+      var vhFrac = screenY/window.innerHeight;
+      var fade = Math.min(1,Math.max(0,(1-vhFrac)/0.25)) * Math.min(1,Math.max(0,vhFrac/0.25));
+      var a = p.alpha*fade;
+      if(a<0.02) return;
+      ctx.beginPath();
+      ctx.arc(pos.x,pos.y,p.size,0,Math.PI*2);
+      ctx.fillStyle = 'rgba(75,80,87,' + a.toFixed(2) + ')';
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  })();
+}
+
+/* ══ Skills globe: hand-rolled 3D sphere (no Three.js -- Artifact CSP blocks
+   external script CDNs) -- manual rotation matrices + perspective
+   projection, drag-to-rotate with inertia, idle auto-rotate, hover tooltip.
+   Kept single-accent per the locked design rule: dots are ink-dim by
+   default, only the hovered skill lights up in the accent color. ══ */
+function initGlobe(){
+  var canvas = document.getElementById('globeCanvas');
+  var tip = document.getElementById('globeTip');
+  var dpr = window.devicePixelRatio || 1;
+  var W, H;
+  function size(){
+    var r = canvas.getBoundingClientRect();
+    W = canvas.width = r.width*dpr; H = canvas.height = r.height*dpr;
+  }
+  size();
+  window.addEventListener('resize', size);
+  var ctx = canvas.getContext('2d');
+
+  var SKILLS = [
+    { name:'ANSYS Fluent', lat:42, lon:15 },
+    { name:'OpenFOAM', lat:-18, lon:35 },
+    { name:'LES / turbulence', lat:26, lon:-95 },
+    { name:'Combustion', lat:-34, lon:140 },
+    { name:'SysML / MBSE', lat:40, lon:-120 },
+    { name:'OpenMDAO', lat:-12, lon:-55 },
+    { name:'DoE / trade studies', lat:52, lon:95 },
+    { name:'Python', lat:8, lon:120 },
+    { name:'PyTorch', lat:-26, lon:-120 },
+    { name:'MATLAB', lat:30, lon:50 }
+  ];
+
+  function toXYZ(lat, lon, r){
+    var phi = (90-lat)*Math.PI/180, th = (lon+180)*Math.PI/180;
+    return { x:-r*Math.sin(phi)*Math.cos(th), y:r*Math.cos(phi), z:r*Math.sin(phi)*Math.sin(th) };
+  }
+  var R = 130;
+  var pts = SKILLS.map(function(s){ var p = toXYZ(s.lat,s.lon,R); p.name = s.name; return p; });
+
+  var ry = 0.4, rx = -0.15, vy = 0.0009, vx = 0;
+  var dragging = false, lastMX=0, lastMY=0, velY=0, velX=0;
+
+  function rotate(p, ry, rx){
+    var x1 = p.x*Math.cos(ry) + p.z*Math.sin(ry);
+    var z1 = -p.x*Math.sin(ry) + p.z*Math.cos(ry);
+    var y1 = p.y;
+    var y2 = y1*Math.cos(rx) - z1*Math.sin(rx);
+    var z2 = y1*Math.sin(rx) + z1*Math.cos(rx);
+    return { x:x1, y:y2, z:z2, name:p.name };
+  }
+
+  var hoverIdx = -1;
+
+  canvas.addEventListener('mousedown', function(e){ dragging=true; lastMX=e.clientX; lastMY=e.clientY; velX=0; velY=0; });
+  window.addEventListener('mouseup', function(){ dragging=false; });
+  window.addEventListener('mousemove', function(e){
+    if(dragging){
+      var dx=e.clientX-lastMX, dy=e.clientY-lastMY;
+      ry += dx*0.006; rx += dy*0.006;
+      rx = Math.max(-1.1, Math.min(1.1, rx));
+      velY = dx*0.006; velX = dy*0.006;
+      lastMX=e.clientX; lastMY=e.clientY;
+    } else {
+      var rect = canvas.getBoundingClientRect();
+      var mx = (e.clientX-rect.left)*dpr, my = (e.clientY-rect.top)*dpr;
+      var best=-1, bestD=26*dpr;
+      lastProjected.forEach(function(pp,i){
+        var d = Math.hypot(pp.sx-mx, pp.sy-my);
+        if(d<bestD){ bestD=d; best=i; }
+      });
+      hoverIdx = best;
+      if(best>=0){
+        tip.textContent = pts[best].name;
+        tip.style.left = (e.clientX-rect.left) + 'px';
+        tip.style.top = (e.clientY-rect.top) + 'px';
+        tip.classList.add('show');
+      } else {
+        tip.classList.remove('show');
+      }
+    }
+  });
+
+  var lastProjected = [];
+
+  function frame(){
+    if(!dragging){
+      ry += velY*0.9 + 0.0009;
+      rx += velX*0.9;
+      velY *= 0.92; velX *= 0.92;
+      rx = Math.max(-1.1, Math.min(1.1, rx));
+    }
+    ctx.clearRect(0,0,W,H);
+    var cx = W/2, cy = H/2;
+    var focal = 460*dpr;
+
+    var g = ctx.createRadialGradient(cx,cy,0,cx,cy,R*dpr*1.15);
+    g.addColorStop(0,'rgba(20,23,26,0.05)');
+    g.addColorStop(1,'rgba(20,23,26,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(cx,cy,R*dpr*1.15,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle = 'rgba(20,23,26,0.16)'; ctx.lineWidth = 1*dpr;
+    ctx.beginPath(); ctx.arc(cx,cy,R*dpr,0,Math.PI*2); ctx.stroke();
+
+    lastProjected = pts.map(function(p){
+      var r = rotate(p, ry, rx);
+      var scale = focal/(focal+r.z);
+      return { sx:cx+r.x*scale, sy:cy-r.y*scale, z:r.z, name:r.name, scale:scale };
+    });
+    var order = lastProjected.map(function(_,i){ return i; }).sort(function(a,b){ return lastProjected[a].z-lastProjected[b].z; });
+    order.forEach(function(i){
+      var pp = lastProjected[i];
+      var depth = Math.max(0.15, Math.min(1,(pp.z+R)/(2*R)));
+      var isHover = i===hoverIdx;
+      var rad = (isHover?6.5:4.5)*dpr*pp.scale;
+      ctx.beginPath(); ctx.arc(pp.sx,pp.sy,rad,0,Math.PI*2);
+      ctx.fillStyle = isHover ? 'rgba(193,58,29,' + depth.toFixed(2) + ')' : 'rgba(75,80,87,' + (depth*0.85).toFixed(2) + ')';
+      ctx.fill();
+    });
+    requestAnimationFrame(frame);
+  }
+  if(reduce){
+    ctx.clearRect(0,0,W,H);
+    var cx0=W/2, cy0=H/2;
+    ctx.strokeStyle='rgba(20,23,26,0.16)'; ctx.lineWidth=1*dpr;
+    ctx.beginPath(); ctx.arc(cx0,cy0,R*dpr,0,Math.PI*2); ctx.stroke();
+    pts.forEach(function(p){
+      var r = rotate(p, 0.6, -0.2);
+      var scale = 460*dpr/(460*dpr+r.z);
+      ctx.beginPath(); ctx.arc(cx0+r.x*scale, cy0-r.y*scale, 4*dpr, 0, Math.PI*2);
+      ctx.fillStyle='rgba(75,80,87,0.7)'; ctx.fill();
+    });
+  } else {
+    requestAnimationFrame(frame);
+  }
+}
+initGlobe();
+</script>
