@@ -376,7 +376,10 @@ body.lock-scroll{ overflow:hidden; }
   max-width:680px; margin:0 auto 1.2rem; font-family:var(--mono);
   font-size:.85rem; color:var(--ink-dim); line-height:1.6; text-align:center;
 }
-.pillars-web .pillars-stage{ position:relative; width:min(92vw,900px); height:min(92vw,760px); max-height:700px; margin:0 auto; }
+.pillars-web .pillars-stage{
+  position:relative; margin:0 auto;
+  width:min(94vw,1160px); aspect-ratio:1/1; max-height:86vh;
+}
 .pillars-web .pillars-stage svg{ width:100%; height:100%; display:block; }
 
 .pillars-web .edge{ stroke:var(--ink-dim); fill:none; transition:opacity 220ms ease, stroke 260ms ease; }

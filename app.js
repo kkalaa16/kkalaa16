@@ -715,7 +715,7 @@ function initPillarsWeb(){
   ];
 
   function deg2rad(d){ return d * Math.PI / 180; }
-  var R_PILLAR = 190, R_LEAF = 400;
+  var R_PILLAR = 190, R_LEAF = 460;
 
   var pillarHome = {};
   PILLARS.forEach(function(p){
@@ -740,7 +740,11 @@ function initPillarsWeb(){
   Object.keys(buckets).forEach(function(key){
     var ids = buckets[key];
     if(ids.length < 2) return;
-    var spread = deg2rad(9);
+    // Fixed 9deg was fine for a 2-way collision but left 4 leaves (all of
+    // Aerospace Systems Architecture's projects) cramped into a 27deg arc,
+    // with long labels overlapping badly. Scale spread with bucket size so
+    // bigger collisions get real room instead of a constant.
+    var spread = deg2rad(8 + ids.length * 3);
     ids.forEach(function(id, i){ leafAngle[id] += (i - (ids.length - 1) / 2) * spread; });
   });
   var leafHome = {};
