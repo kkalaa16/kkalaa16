@@ -1,0 +1,246 @@
+<title>Pillars web v3: rotating carousel demo</title>
+<meta name="description" content="Isolated demo: pillars orbit continuously until hovered, freezing to reveal connected projects; clicking a project expands into a full detail view.">
+
+<style>
+:root{
+  --bg:#EDEEE9;
+  --bg-panel:#F6F6F2;
+  --bg-panel-2:#E4E5DE;
+  --ink:#14171A;
+  --ink-dim:#4B5057;
+  --ink-faint:#8A8F94;
+  --line:rgba(20,23,26,.16);
+  --line-strong:rgba(20,23,26,.32);
+  --accent:#C13A1D;
+  --mono: ui-monospace,"Cascadia Code","SFMono-Regular",Consolas,"Liberation Mono",monospace;
+  --sans: -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*,*::before,*::after{ box-sizing:border-box; }
+html,body{ margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); overflow-x:hidden; }
+
+.note{
+  max-width:680px; margin:28px auto 0; padding:0 24px; font-family:var(--mono);
+  font-size:.82rem; color:var(--ink-dim); line-height:1.6; text-align:center;
+}
+.note b{ color:var(--ink); }
+
+.ring-wrap{ position:relative; height:56vh; min-height:400px; perspective:1300px; margin-top:10px; }
+.ring-stage{ position:absolute; top:50%; left:50%; width:1px; height:1px; transform-style:preserve-3d; }
+
+.pillar-card{
+  position:absolute; top:0; left:0; width:230px; margin-left:-115px; margin-top:-70px;
+  padding:16px 18px; background:var(--bg-panel); border:1.5px solid var(--ink); cursor:pointer;
+  will-change:transform,opacity;
+}
+.pillar-card.frozen{ border-color:var(--accent); background:#fff; }
+.pillar-fig{ font-family:var(--mono); font-size:.68rem; letter-spacing:.08em; color:var(--accent); display:block; margin-bottom:.4rem; }
+.pillar-title{ font-family:var(--sans); font-weight:800; font-size:.95rem; text-transform:uppercase; line-height:1.25; margin:0 0 .4rem; }
+.pillar-desc{ font-size:.8rem; color:var(--ink-dim); line-height:1.45; }
+
+.ring-cue{
+  text-align:center; font-family:var(--mono); font-size:.78rem; letter-spacing:.08em; color:var(--ink-faint);
+  margin-top:.6rem;
+}
+
+.reveal-panel{
+  max-width:1040px; margin:0 auto; padding:0 24px; overflow:hidden;
+  max-height:0; opacity:0; transition:max-height 420ms cubic-bezier(.16,1,.3,1), opacity 300ms ease;
+}
+.reveal-panel.open{ max-height:400px; opacity:1; padding:20px 24px 40px; }
+.reveal-heading{ font-family:var(--mono); font-size:.76rem; letter-spacing:.1em; color:var(--ink-faint); text-transform:uppercase; margin-bottom:.9rem; text-align:center; }
+.reveal-row{ display:flex; gap:16px; justify-content:center; flex-wrap:wrap; }
+.project-card{
+  width:230px; padding:14px 16px; background:var(--bg-panel); border:1.5px solid var(--line-strong); cursor:pointer;
+  opacity:0; transform:translateY(10px) scale(.97); transition:opacity 320ms ease, transform 320ms cubic-bezier(.34,1.4,.4,1), border-color 160ms ease;
+}
+.project-card.show{ opacity:1; transform:translateY(0) scale(1); }
+.project-card:hover{ border-color:var(--accent); }
+.project-title{ font-weight:700; font-size:.86rem; margin:0 0 .35rem; }
+.project-desc{ font-size:.76rem; color:var(--ink-dim); line-height:1.45; }
+.project-open{ font-family:var(--mono); font-size:.68rem; letter-spacing:.06em; color:var(--accent); text-transform:uppercase; margin-top:.6rem; display:block; }
+
+.modal-backdrop{
+  position:fixed; inset:0; background:rgba(20,23,26,.5); z-index:50; opacity:0; pointer-events:none;
+  transition:opacity 220ms ease; display:flex; align-items:center; justify-content:center; padding:24px;
+}
+.modal-backdrop.show{ opacity:1; pointer-events:auto; }
+.modal{
+  max-width:560px; width:100%; background:var(--bg-panel); border:1.5px solid var(--ink); padding:28px 30px;
+  transform:translateY(14px) scale(.98); transition:transform 260ms cubic-bezier(.16,1,.3,1);
+}
+.modal-backdrop.show .modal{ transform:translateY(0) scale(1); }
+.modal-fig{ font-family:var(--mono); font-size:.72rem; letter-spacing:.08em; color:var(--accent); display:block; margin-bottom:.6rem; }
+.modal h2{ font-family:var(--sans); font-weight:800; font-size:1.3rem; text-transform:uppercase; margin:0 0 .8rem; }
+.modal p{ font-size:.92rem; color:var(--ink-dim); line-height:1.6; margin:0 0 1rem; }
+.modal-pillars{ display:flex; flex-wrap:wrap; gap:.4rem; margin-bottom:1.2rem; }
+.modal-pillars span{ font-family:var(--mono); font-size:.7rem; border:1px solid var(--line-strong); padding:.25rem .55rem; color:var(--ink-dim); text-transform:uppercase; }
+.modal-close{
+  font-family:var(--mono); font-size:.78rem; letter-spacing:.06em; text-transform:uppercase; color:var(--ink);
+  border:1.5px solid var(--ink); background:var(--bg-panel); padding:.5rem 1rem; cursor:pointer;
+}
+.modal-close:hover{ background:var(--accent); border-color:var(--accent); color:#fff; }
+
+@media (prefers-reduced-motion: reduce){
+  .pillar-card, .project-card, .modal, .modal-backdrop, .reveal-panel{ transition:none; }
+}
+</style>
+
+<div class="note"><b>Isolated mechanic demo, v3</b>: the pillars orbit continuously (chaos, as a literal visual state) until you hover one -- rotation freezes and its connected projects appear (order found on demand). Click a project to expand its full card.</div>
+
+<div class="pillars-mechanic" id="pillarsMechanic">
+  <div class="ring-wrap">
+    <div class="ring-stage" id="ring"></div>
+  </div>
+  <p class="ring-cue">HOVER OR TAP A PILLAR TO STOP THE ORBIT</p>
+
+  <div class="reveal-panel" id="revealPanel">
+    <div class="reveal-heading" id="revealHeading"></div>
+    <div class="reveal-row" id="revealRow"></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal" id="modal">
+    <span class="modal-fig" id="modalFig"></span>
+    <h2 id="modalTitle"></h2>
+    <p id="modalDesc"></p>
+    <div class="modal-pillars" id="modalPillars"></div>
+    <button class="modal-close" id="modalClose">Close</button>
+  </div>
+</div>
+
+<script>
+var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+var PILLARS = [
+  { id:'trade-study', fig:'01', title:'Trade-Study Decisions', desc:'Compare real alternatives, decide with a number.' },
+  { id:'physics-correction', fig:'02', title:'Physics + Learned Correction', desc:'A known baseline model, plus a data-driven layer that corrects it.' },
+  { id:'equilibrium', fig:'03', title:'Equilibrium & Convergence', desc:'Where a system settles, and how fast.' },
+  { id:'systems-integration', fig:'04', title:'Systems Integration', desc:'Connect disciplines into one coherent decision.' },
+  { id:'validate', fig:'05', title:'Validate Against Reality', desc:'Check the model against experiment or ground truth, always.' }
+];
+
+var LEAVES = [
+  { id:'ibrido', title:'Ibrido: XV-15 Architecture Trade Study', desc:'Down-selected a distributed parallel hybrid-electric architecture across a 3-engineer, 4-topology trade study, projecting +53% payload and +28.5% range.', pillars:['trade-study'] },
+  { id:'sovern', title:'Ti-6Al-4V Supply Chain Risk', desc:'Graph-based supplier concentration metrics and TOPSIS-ranked mitigations for aerospace titanium dependencies.', pillars:['trade-study','systems-integration'] },
+  { id:'bwb', title:'Hydrogen Blended-Wing-Body Concept', desc:'QFD and a morphological matrix feeding a TOPSIS concept downselection, inside a full SysML/MBSE model.', pillars:['trade-study','systems-integration'] },
+  { id:'mfg', title:'Neural Mean-Field Game Simulator', desc:'A Neural SDE (learned drift/diffusion) layered on a known base drift, trained to match an analytic Nash equilibrium, validated by an 84-test suite.', pillars:['physics-correction','equilibrium','validate'] },
+  { id:'option-pricing', title:'Scientific ML Surrogate Modeling', desc:'A physics-informed reduced-order model plus a Fourier Neural Operator residual correction for option-pricing surfaces.', pillars:['physics-correction'] },
+  { id:'drdo', title:'DRDO Lotka-Volterra Dynamics', desc:'Nonlinear predator-prey dynamics and Jacobian stability analysis around equilibrium points, co-authored into a paper.', pillars:['equilibrium'] },
+  { id:'cavitation', title:'Pump Cavitation Detection', desc:'Early-stage acoustic diagnostics scoping for a system stability/onset problem.', pillars:['equilibrium'] },
+  { id:'afrl', title:'AFRL Tactical Mobility MDAO', desc:'OpenMDAO workflow tying propulsion, structures, and mission sizing into one coherent trade, projecting +15.7% range.', pillars:['systems-integration'] },
+  { id:'tue', title:'TU/e NH3/H2 Combustion (FGM)', desc:'Reduced-chemistry workflow validated against a higher-cost detailed-chemistry baseline: 86.7% runtime reduction, physically consistent fields.', pillars:['validate'] },
+  { id:'thesis', title:'Drone Rotor Test & Validation', desc:'OpenFOAM CFD checked directly against a physical test rig\'s measured wake data.', pillars:['validate'] }
+];
+
+var pillarById = {};
+PILLARS.forEach(function(p){ pillarById[p.id] = p; });
+
+var stage = document.getElementById('ring');
+var els = [];
+PILLARS.forEach(function(p){
+  var card = document.createElement('div');
+  card.className = 'pillar-card';
+  card.dataset.id = p.id;
+  card.innerHTML = '<span class="pillar-fig">FIG. ' + p.fig + '</span>' +
+    '<h3 class="pillar-title">' + p.title + '</h3>' +
+    '<p class="pillar-desc">' + p.desc + '</p>';
+  stage.appendChild(card);
+  els.push(card);
+});
+
+var RADIUS = 320, TILT = 18 * Math.PI / 180;
+var n = els.length, theta = 0;
+var frozenId = null;
+
+function layout(){
+  els.forEach(function(el, i){
+    var a = (i / n) * Math.PI * 2 + theta;
+    var x3 = Math.sin(a) * RADIUS;
+    var y3 = -Math.cos(a) * RADIUS * Math.sin(TILT);
+    var z3 = Math.cos(a) * RADIUS * Math.cos(TILT);
+    var maxZ = RADIUS * Math.cos(TILT);
+    var depth = (z3 + maxZ) / (2 * maxZ);
+    var scale = 0.62 + 0.38 * depth;
+    var opac = 0.18 + 0.82 * depth;
+    el.style.transform = 'translate3d(' + x3.toFixed(1) + 'px,' + y3.toFixed(1) + 'px,' + z3.toFixed(1) + 'px) scale(' + scale.toFixed(3) + ')';
+    el.style.opacity = opac.toFixed(3);
+    el.style.zIndex = Math.round(depth * 100);
+  });
+}
+
+if(reduce){
+  layout();
+} else {
+  (function spin(){
+    if(!frozenId) theta += 0.0035;
+    layout();
+    requestAnimationFrame(spin);
+  })();
+}
+
+var revealPanel = document.getElementById('revealPanel');
+var revealHeading = document.getElementById('revealHeading');
+var revealRow = document.getElementById('revealRow');
+
+function openReveal(pillarId){
+  frozenId = pillarId;
+  els.forEach(function(el){ el.classList.toggle('frozen', el.dataset.id === pillarId); });
+  var pillar = pillarById[pillarId];
+  var matches = LEAVES.filter(function(l){ return l.pillars.indexOf(pillarId) !== -1; });
+  revealHeading.textContent = 'FIG. ' + pillar.fig + ': CONNECTED PROJECTS';
+  revealRow.innerHTML = '';
+  matches.forEach(function(l, i){
+    var card = document.createElement('div');
+    card.className = 'project-card';
+    card.innerHTML = '<h4 class="project-title">' + l.title + '</h4>' +
+      '<p class="project-desc">' + l.desc + '</p>' +
+      '<span class="project-open">Open &rarr;</span>';
+    card.addEventListener('click', function(){ openModal(l, pillar); });
+    revealRow.appendChild(card);
+    setTimeout(function(){ card.classList.add('show'); }, reduce ? 0 : i * 70);
+  });
+  revealPanel.classList.add('open');
+}
+
+function closeReveal(){
+  frozenId = null;
+  els.forEach(function(el){ el.classList.remove('frozen'); });
+  revealPanel.classList.remove('open');
+}
+
+els.forEach(function(card){
+  var id = card.dataset.id;
+  card.addEventListener('mouseenter', function(){ openReveal(id); });
+  card.addEventListener('click', function(){ openReveal(id); });
+});
+
+var pillarsMechanic = document.getElementById('pillarsMechanic');
+pillarsMechanic.addEventListener('mouseleave', function(){
+  if(frozenId) closeReveal();
+});
+
+var modalBackdrop = document.getElementById('modalBackdrop');
+var modalFig = document.getElementById('modalFig');
+var modalTitle = document.getElementById('modalTitle');
+var modalDesc = document.getElementById('modalDesc');
+var modalPillars = document.getElementById('modalPillars');
+var modalClose = document.getElementById('modalClose');
+
+function openModal(leaf, fromPillar){
+  modalFig.textContent = 'FIG. ' + fromPillar.fig + ' → PROJECT DETAIL';
+  modalTitle.textContent = leaf.title;
+  modalDesc.textContent = leaf.desc;
+  modalPillars.innerHTML = '';
+  leaf.pillars.forEach(function(pid){
+    var span = document.createElement('span');
+    span.textContent = pillarById[pid].title;
+    modalPillars.appendChild(span);
+  });
+  modalBackdrop.classList.add('show');
+}
+function closeModal(){ modalBackdrop.classList.remove('show'); }
+modalClose.addEventListener('click', closeModal);
+modalBackdrop.addEventListener('click', function(e){ if(e.target === modalBackdrop) closeModal(); });
+window.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeModal(); });
+</script>

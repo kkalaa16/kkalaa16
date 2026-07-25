@@ -364,3 +364,66 @@ body.lock-scroll{ overflow:hidden; }
   .edu-inst--right{ flex-direction:row; text-align:left; }
   .edu-runway{ width:2px; height:60px; margin:0; }
 }
+
+/* ============================================================
+   PILLARS WEB — recurring patterns across the work, drawn from
+   the graphify knowledge graph. Scoped under .pillars-web so
+   these fairly generic inner class names (.body, .key, .stage)
+   can never bleed into or collide with unrelated page elements.
+   ============================================================ */
+.pillars-web{ max-width:var(--maxw); margin:0 auto; padding:2rem 1.6rem 3rem; }
+.pillars-web .pillars-note{
+  max-width:680px; margin:0 auto 1.2rem; font-family:var(--mono);
+  font-size:.85rem; color:var(--ink-dim); line-height:1.6; text-align:center;
+}
+.pillars-web .pillars-stage{ position:relative; width:min(92vw,900px); height:min(92vw,760px); max-height:700px; margin:0 auto; }
+.pillars-web .pillars-stage svg{ width:100%; height:100%; display:block; }
+
+.pillars-web .edge{ stroke:var(--ink-dim); fill:none; transition:opacity 220ms ease, stroke 260ms ease; }
+.pillars-web .edge.weak{ stroke-dasharray:2 4; }
+.pillars-web .edge.lit{ stroke:var(--accent); opacity:.95; }
+.pillars-web .edge.dim{ opacity:.05; }
+
+.pillars-web .pillar-node{ opacity:1; transition:opacity 320ms ease; }
+.pillars-web .pillar-node.pre-reveal{ opacity:0; }
+.pillars-web .pillar-node circle.body{ fill:var(--bg-panel); stroke:var(--ink); stroke-width:1.5; transition:stroke 220ms ease, fill 220ms ease; }
+.pillars-web .pillar-node.lit circle.body{ stroke:var(--accent); fill:#fff; }
+.pillars-web .pillar-node.dim{ opacity:.32; }
+.pillars-web .pillar-fig{ font-family:var(--mono); font-size:9px; letter-spacing:.08em; fill:var(--accent); text-anchor:middle; pointer-events:none; }
+.pillars-web .pillar-label{ font-family:var(--sans); font-weight:800; font-size:11.5px; text-transform:uppercase; letter-spacing:.02em; fill:var(--ink); pointer-events:none; }
+.pillars-web .pillar-node.lit .pillar-label{ fill:var(--accent); }
+
+.pillars-web .leaf-node{ opacity:1; transition:opacity 320ms ease; }
+.pillars-web .leaf-node.pre-reveal{ opacity:0; }
+.pillars-web .leaf-node circle.body{ fill:var(--bg-panel); stroke:var(--line-strong); stroke-width:1; transition:stroke 220ms ease, fill 220ms ease; }
+.pillars-web .leaf-node.lit circle.body{ stroke:var(--accent); fill:#FBEFEA; }
+.pillars-web .leaf-node.dim{ opacity:.28; }
+.pillars-web .leaf-label{ font-family:var(--mono); font-size:9.5px; fill:var(--ink-dim); pointer-events:none; }
+.pillars-web .leaf-node.lit .leaf-label{ fill:var(--ink); }
+
+.pillars-web .node-hit{ fill:transparent; cursor:grab; touch-action:none; }
+.pillars-web .node-hit.dragging{ cursor:grabbing; }
+.pillars-web .bloom{ pointer-events:none; opacity:0; transition:opacity 320ms ease; }
+.pillars-web .bloom.show{ opacity:1; }
+
+.pillars-web .center-label{ font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; fill:var(--ink-faint); text-transform:uppercase; text-anchor:middle; }
+
+.pillars-web .pillars-tip{
+  position:absolute; max-width:280px; padding:10px 12px; background:var(--ink); color:var(--bg-panel);
+  font-family:var(--mono); font-size:.76rem; line-height:1.5; pointer-events:none; opacity:0;
+  transition:opacity 120ms ease; transform:translate(-50%,-115%); z-index:5;
+}
+.pillars-web .pillars-tip.show{ opacity:1; }
+.pillars-web .pillars-tip b{ display:block; margin-bottom:.3rem; font-size:.8rem; }
+
+.pillars-web .pillars-legend{ max-width:680px; margin:1rem auto .5rem; text-align:center; font-family:var(--mono); font-size:.76rem; color:var(--ink-faint); }
+.pillars-web .pillars-key{
+  max-width:520px; margin:0 auto; padding:.9rem 1.1rem; border-left:2px solid var(--accent);
+  background:var(--bg-panel-2); font-family:var(--mono); font-size:.74rem; color:var(--ink-dim); line-height:1.7;
+}
+.pillars-web .pillars-key b{ color:var(--ink); text-transform:uppercase; letter-spacing:.04em; font-size:.7rem; display:block; margin-bottom:.4rem; }
+
+@media (prefers-reduced-motion: reduce){
+  .pillars-web .edge, .pillars-web .pillar-node circle, .pillars-web .leaf-node circle,
+  .pillars-web .pillar-label, .pillars-web .leaf-label, .pillars-web .bloom{ transition:none; }
+}
