@@ -282,6 +282,8 @@ body.lock-scroll{ overflow:hidden; }
   opacity:0; transform:translateY(10px); transition:opacity 500ms ease, transform 500ms ease;
 }
 .archive.open .arc-card{ opacity:1; transform:translateY(0); }
+.arc-media{ aspect-ratio:16/10; overflow:hidden; margin:-1.2rem -1.3rem .8rem; border-bottom:1.5px solid var(--ink); background:var(--bg-panel-2); }
+.arc-media img{ width:100%; height:100%; object-fit:cover; display:block; }
 .arc-date{ display:block; font-family:var(--mono); font-size:.74rem; letter-spacing:.04em; color:var(--ink-dim); text-transform:uppercase; }
 .arc-title{ display:block; margin-top:.35rem; font-size:1.05rem; font-weight:780; text-transform:uppercase; letter-spacing:-.005em; }
 .arc-summary{ font-size:.88rem; color:var(--ink-dim); margin-top:.4rem; line-height:1.5; }
@@ -379,37 +381,11 @@ body.lock-scroll{ overflow:hidden; }
 .pillars-web .pillars-stage{
   position:relative; margin:0 auto;
   width:min(94vw,1160px); aspect-ratio:1/1; max-height:86vh;
+  opacity:0; transition:opacity 500ms ease;
 }
-.pillars-web .pillars-stage svg{ width:100%; height:100%; display:block; }
-
-.pillars-web .edge{ stroke:var(--ink-dim); fill:none; transition:opacity 220ms ease, stroke 260ms ease; }
-.pillars-web .edge.weak{ stroke-dasharray:2 4; }
-.pillars-web .edge.lit{ stroke:var(--accent); opacity:.95; }
-.pillars-web .edge.dim{ opacity:.05; }
-
-.pillars-web .pillar-node{ opacity:1; transition:opacity 320ms ease; }
-.pillars-web .pillar-node.pre-reveal{ opacity:0; }
-.pillars-web .pillar-node circle.body{ fill:var(--bg-panel); stroke:var(--ink); stroke-width:1.5; transition:stroke 220ms ease, fill 220ms ease; }
-.pillars-web .pillar-node.lit circle.body{ stroke:var(--accent); fill:#fff; }
-.pillars-web .pillar-node.dim{ opacity:.32; }
-.pillars-web .pillar-fig{ font-family:var(--mono); font-size:9px; letter-spacing:.08em; fill:var(--accent); text-anchor:middle; pointer-events:none; }
-.pillars-web .pillar-label{ font-family:var(--sans); font-weight:800; font-size:11.5px; text-transform:uppercase; letter-spacing:.02em; fill:var(--ink); pointer-events:none; }
-.pillars-web .pillar-node.lit .pillar-label{ fill:var(--accent); }
-
-.pillars-web .leaf-node{ opacity:1; transition:opacity 320ms ease; }
-.pillars-web .leaf-node.pre-reveal{ opacity:0; }
-.pillars-web .leaf-node circle.body{ fill:var(--bg-panel); stroke:var(--line-strong); stroke-width:1; transition:stroke 220ms ease, fill 220ms ease; }
-.pillars-web .leaf-node.lit circle.body{ stroke:var(--accent); fill:#FBEFEA; }
-.pillars-web .leaf-node.dim{ opacity:.28; }
-.pillars-web .leaf-label{ font-family:var(--mono); font-size:9.5px; fill:var(--ink-dim); pointer-events:none; }
-.pillars-web .leaf-node.lit .leaf-label{ fill:var(--ink); }
-
-.pillars-web .node-hit{ fill:transparent; cursor:grab; touch-action:none; }
-.pillars-web .node-hit.dragging{ cursor:grabbing; }
-.pillars-web .bloom{ pointer-events:none; opacity:0; transition:opacity 320ms ease; }
-.pillars-web .bloom.show{ opacity:1; }
-
-.pillars-web .center-label{ font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; fill:var(--ink-faint); text-transform:uppercase; text-anchor:middle; }
+.pillars-web .pillars-stage.revealed{ opacity:1; }
+.pillars-web .pillars-stage canvas{ width:100%; height:100%; display:block; cursor:grab; touch-action:none; }
+.pillars-web .pillars-stage canvas.dragging{ cursor:grabbing; }
 
 .pillars-web .pillars-tip{
   position:absolute; max-width:280px; padding:10px 12px; background:var(--ink); color:var(--bg-panel);
@@ -417,6 +393,8 @@ body.lock-scroll{ overflow:hidden; }
   transition:opacity 120ms ease; transform:translate(-50%,-115%); z-index:5;
 }
 .pillars-web .pillars-tip.show{ opacity:1; }
+.pillars-web .pillars-tip img{ display:none; width:100%; aspect-ratio:16/9; object-fit:cover; margin:0 0 .5rem; }
+.pillars-web .pillars-tip img[src]:not([src=""]){ display:block; }
 .pillars-web .pillars-tip b{ display:block; margin-bottom:.3rem; font-size:.8rem; }
 
 .pillars-web .pillars-legend{ max-width:680px; margin:1rem auto .5rem; text-align:center; font-family:var(--mono); font-size:.76rem; color:var(--ink-faint); }
@@ -427,6 +405,5 @@ body.lock-scroll{ overflow:hidden; }
 .pillars-web .pillars-key b{ color:var(--ink); text-transform:uppercase; letter-spacing:.04em; font-size:.7rem; display:block; margin-bottom:.4rem; }
 
 @media (prefers-reduced-motion: reduce){
-  .pillars-web .edge, .pillars-web .pillar-node circle, .pillars-web .leaf-node circle,
-  .pillars-web .pillar-label, .pillars-web .leaf-label, .pillars-web .bloom{ transition:none; }
+  .pillars-web .pillars-stage{ transition:none; }
 }

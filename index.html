@@ -106,16 +106,16 @@
 
     <article class="plate">
       <div class="plate-fig">FIG. 02</div>
-      <div class="plate-media none"><span>Self-generated diagrams only: no sponsor RFP material shown</span></div>
+      <div class="plate-media"><img src="img/ibrido_flight_envelope.png" alt="XV-15 hybrid flight envelope vs. NASA flight-test data and conventional baseline"/></div>
       <div class="plate-body">
         <h3 class="plate-title">Hybridized XV-15 Tiltrotor Propulsion Sizing</h3>
         <span class="plate-period">Aug 2025 - Present &middot; Propulsion Architecture &amp; Sizing Lead</span>
-        <p class="plate-oneliner">Hybrid-electric XV-15 sizing study linking rotor performance, gearbox circulating power, battery sizing, and mission energy allocation, the team's VFS Student Design Competition entry, "Ibrido."</p>
-        <div class="plate-row"><b>Compared</b>Four candidate hybrid-electric architecture topologies, evaluated across a three-engineer trade study.</div>
-        <div class="plate-row"><b>Method</b>MATLAB mission-analysis framework: rotor performance, gearbox circulating power, battery sizing, per-segment RPM optimization, TEEM motor logic for nacelle-conversion transients.</div>
-        <div class="plate-row"><b>Result</b>Down-selected a distributed parallel architecture: +53% payload, +28.5% range, -21% fuel burn, -16.8% engine size, 10.2% electric energy fraction.</div>
+        <p class="plate-oneliner">Hybrid-electric XV-15 sizing framework, validated against real NASA flight-test data, that finds the narrow design window where hybridization actually closes the mission -- the team's VFS Student Design Competition entry, "Ibrido."</p>
+        <div class="plate-row"><b>Compared</b>Four candidate hybrid-electric architecture topologies across a three-engineer trade study; parallel won on efficiency (1.3% conversion loss vs. 13% for series).</div>
+        <div class="plate-row"><b>Method</b>MATLAB mission-analysis framework: rotor performance, gearbox circulating power, battery sizing, fuel-optimal per-segment RPM search, TEEM motor logic for nacelle-conversion transients. Validated the sizing code against real NASA XV-15 flight-test data before trusting the hybrid result.</div>
+        <div class="plate-row"><b>Result</b>Converges to a narrow feasible window (engine downsizing alpha=0.83-0.84, 306 nmi, 1,203 kg payload) bounded by two different failure modes. The payoff: the hybrid clears a cruise speed (348 KTAS at 10k ft) the conventional baseline can't reach at all (278 KTAS) -- hybridization is what makes the RFP's cruise requirement achievable, not just an incremental gain.</div>
         <div class="plate-tags"><span>Rotorcraft</span><span>eVTOL</span><span>Hybrid-Electric</span><span>MATLAB</span></div>
-        <div class="plate-scope">Propulsion sub-team of three; scope here is my own sizing framework and architecture-trade contribution, not the full team's design.</div>
+        <div class="plate-scope">Propulsion sub-team of three; scope here is my own sizing framework, architecture-trade contribution, and the flight-envelope/feasibility analysis, not the full team's design.</div>
       </div>
     </article>
 
@@ -182,28 +182,20 @@
   </div>
 </section>
 
-<!-- ══ PILLARS WEB — recurring patterns across the work ═══ -->
+<!-- ══ PILLARS WEB — recurring patterns across the work, in 3D ═══ -->
 <section class="pillars-web" id="pillars">
   <div class="section-label">HOW IT CONNECTS</div>
-  <p class="pillars-note">Four recurring patterns underneath the work above, pulled directly from a 719-node knowledge graph built on the full body of work, not just the highlights. Hover or drag a ball to see its real connections.</p>
+  <p class="pillars-note">19 projects on 4 domain planes through a shared origin, plus 2 bridge planes for the projects that genuinely span two domains -- pulled directly from a 719-node knowledge graph built on the full body of work, not just the highlights. Drag to rotate, hover a ball for its real connection.</p>
 
   <div class="pillars-stage">
-    <svg id="pillarsSvg" viewBox="-500 -500 1000 1000">
-      <defs>
-        <radialGradient id="bloomGrad">
-          <stop offset="0%" stop-color="#C13A1D" stop-opacity="0.30"/>
-          <stop offset="60%" stop-color="#C13A1D" stop-opacity="0.10"/>
-          <stop offset="100%" stop-color="#C13A1D" stop-opacity="0"/>
-        </radialGradient>
-      </defs>
-    </svg>
-    <div class="pillars-tip" id="pillarsTip"><b id="pillarsTipTitle"></b><span id="pillarsTipBody"></span></div>
+    <canvas id="pillarsCanvas"></canvas>
+    <div class="pillars-tip" id="pillarsTip"><img id="pillarsTipImg" alt=""/><b id="pillarsTipTitle"></b><span id="pillarsTipBody"></span></div>
   </div>
 
-  <p class="pillars-legend">4 pillars &middot; 11 projects &middot; drawn from a 719-node graph</p>
+  <p class="pillars-legend">4 domain planes + 2 bridges (Ibrido, MFG) &middot; 19 projects &middot; drawn from a 719-node graph</p>
   <div class="pillars-key">
     <b>How to read this</b>
-    Solid line: direct, central fit. Dashed line: looser, secondary fit. Bigger ball: more connected projects.
+    Each plane is one recurring pattern in the work: Aerospace Systems Architecture, Applied Machine Learning, Nonlinear Dynamics &amp; Stability, Computational Validation. A ball sitting between two planes belongs to both. Bigger ball: more connected project.
   </div>
 </section>
 
@@ -224,15 +216,17 @@
 
     <div class="arc-row">
       <div class="arc-card" data-id="mfg">
+        <div class="arc-media"><img src="img/mfg_w2_vs_N.png" alt="Wasserstein-2 distance to equilibrium vs. population size"/></div>
         <span class="arc-date">Jan - May 2026</span>
         <span class="arc-title">Neural Mean-Field Game Simulator</span>
-        <p class="arc-summary">El Farol Bar problem as a Mean Field Game, 5-person team (CSE 6730). My scope: the Neural SDE implementation (adjoint-trained drift/diffusion networks), the 84-test suite, and the Phase 3 solver-comparison benchmark.</p>
+        <p class="arc-summary">El Farol Bar problem as a Mean Field Game, 5-person team (CSE 6730). My scope: the Neural SDE implementation (adjoint-trained drift/diffusion networks), the 84-test suite, and the Phase 3 solver-comparison benchmark -- the trained network tracked the analytic Nash equilibrium closer than the Monte Carlo baseline as population size grew.</p>
         <div class="arc-tags"><span>Neural SDEs</span><span>Mean Field Games</span><span>PyTorch</span></div>
       </div>
       <div class="arc-card" data-id="gas-turbine">
+        <div class="arc-media"><img src="img/gasturbine_comparison2D.jpg" alt="TSFC vs specific thrust design-grid sweep, constant vs variable gamma"/></div>
         <span class="arc-date">Aug - Dec 2025</span>
         <span class="arc-title">Gas Turbine Cycle Design Tool</span>
-        <p class="arc-summary">1D variable-heat-capacity turbojet/turbofan cycle tool; swept 3,800+ design combinations, corrected a 46% TSFC underestimate from constant-property assumptions.</p>
+        <p class="arc-summary">1D variable-heat-capacity turbojet/turbofan cycle tool; swept 3,800+ design combinations, corrected a 46% TSFC underestimate from constant-property assumptions and surfaced a 69% higher specific-thrust option the constant-property sweep missed.</p>
         <div class="arc-tags"><span>MATLAB</span><span>Thermodynamics</span><span>Cycle Analysis</span></div>
       </div>
       <div class="arc-card" data-id="gta">
@@ -244,43 +238,48 @@
       <div class="arc-card" data-id="telemetry-ml">
         <span class="arc-date">May - Aug 2025</span>
         <span class="arc-title">Vehicle Telemetry ML Dashboard</span>
-        <p class="arc-summary">Unsupervised ML pipeline (PCA, clustering, isolation forest) converting raw vehicle telemetry into braking-signature and track-archetype diagnostics.</p>
+        <p class="arc-summary">Unsupervised ML pipeline (PCA, clustering, isolation forest) converting raw vehicle telemetry into braking-signature and track-archetype diagnostics, integrated into a multi-page dashboard for engineering review without hand-labeled events.</p>
         <div class="arc-tags"><span>PCA</span><span>Clustering</span><span>Isolation Forest</span></div>
       </div>
     </div>
 
     <div class="arc-row">
       <div class="arc-card" data-id="option-pricing">
+        <div class="arc-media"><img src="img/output2.png" alt="Reconstructed PDE surface comparison, hybrid ROM plus FNO residual"/></div>
         <span class="arc-date">May - Aug 2025</span>
         <span class="arc-title">Scientific ML Surrogate Modeling</span>
-        <p class="arc-summary">Physics-informed reduced-order model plus a Fourier Neural Operator residual, hybridized for PDE-governed option-pricing surfaces.</p>
+        <p class="arc-summary">Physics-informed reduced-order model plus a Fourier Neural Operator residual, hybridized for PDE-governed option-pricing surfaces -- the residual network corrected exactly where the physics-informed baseline structurally couldn't.</p>
         <div class="arc-tags"><span>FNO</span><span>PyTorch</span><span>Reduced-Order Modeling</span></div>
       </div>
       <div class="arc-card" data-id="trajectory">
+        <div class="arc-media"><img src="img/trajectory_fullspace.png" alt="Converged minimum time-to-climb trajectory: altitude, velocity, flight-path angle, mass, angle of attack, range"/></div>
         <span class="arc-date">Jan - May 2025</span>
         <span class="arc-title">Minimum Time-to-Climb Trajectory Optimization</span>
-        <p class="arc-summary">Compared direct transcription against SLSQP single shooting; analytical block-banded Jacobian cut per-iteration cost by 60%.</p>
+        <p class="arc-summary">Compared direct transcription against SLSQP single shooting; analytical block-banded Jacobian cut per-iteration cost by 60% and improved total climb time by 13% over the project's baseline solution.</p>
         <div class="arc-tags"><span>NLP</span><span>SLSQP</span><span>Trajectory Optimization</span></div>
       </div>
       <div class="arc-card" data-id="boeing">
+        <div class="arc-media"><img src="img/s15_mitigation_layers.png" alt="Supply-chain risk mitigation layers by stakeholder scope"/></div>
         <span class="arc-date">Aug 2024 - May 2025</span>
         <span class="arc-title">Ti-6Al-4V Aerospace Supply Chain Risk</span>
-        <p class="arc-summary">Graph-based mapping of titanium/aluminum/vanadium supplier dependencies, HHI-style concentration metrics, TOPSIS-ranked mitigations.</p>
+        <p class="arc-summary">Graph-based mapping of titanium/aluminum/vanadium supplier dependencies, HHI-style concentration metrics, TOPSIS-ranked mitigations matched to who actually has the authority to act on each one.</p>
         <div class="arc-tags"><span>Graph Modeling</span><span>TOPSIS</span><span>Systems Risk</span></div>
       </div>
       <div class="arc-card" data-id="bwb">
+        <div class="arc-media"><img src="img/MBSE1.png" alt="MBSE workflow diagram for the hydrogen BWB concept"/></div>
         <span class="arc-date">Aug - Dec 2024</span>
         <span class="arc-title">Hydrogen Blended-Wing-Body MBSE Concept</span>
-        <p class="arc-summary">MBSE/SysML conceptual design study for a hydrogen-powered blended-wing-body transport aircraft; QFD and TOPSIS-driven concept downselection.</p>
+        <p class="arc-summary">MBSE/SysML conceptual design study for a hydrogen-powered blended-wing-body transport aircraft; a morphological matrix across fuel type, propulsion architecture, material, and geometry, downselected with QFD and TOPSIS.</p>
         <div class="arc-tags"><span>SysML</span><span>QFD</span><span>TOPSIS</span></div>
       </div>
     </div>
 
     <div class="arc-row">
       <div class="arc-card" data-id="iit">
+        <div class="arc-media"><img src="img/iit_room_top_view.png" alt="Ceiling-fan and exhaust-fan placement schematic for the ventilation study"/></div>
         <span class="arc-date">Jul 2023 - Jan 2024</span>
         <span class="arc-title">IIT Bombay Ventilation CFD</span>
-        <p class="arc-summary">Ceiling-fan indoor-ventilation CFD: thermal stratification and air-change-rate analysis.</p>
+        <p class="arc-summary">Ceiling-fan indoor-ventilation CFD: thermal stratification and air-change-rate analysis, validated against measured velocity-distribution data across the room.</p>
         <div class="arc-tags"><span>CFD</span><span>Indoor Airflow</span></div>
       </div>
       <div class="arc-card" data-id="fsi">
@@ -305,15 +304,17 @@
 
     <div class="arc-row">
       <div class="arc-card" data-id="cabs">
+        <div class="arc-media"><img src="img/drdo_phase_plane.jpg" alt="Predator-prey phase-plane trajectory converging to equilibrium"/></div>
         <span class="arc-date">Jun - Jul 2022</span>
         <span class="arc-title">DRDO CABS Nonlinear Dynamics</span>
-        <p class="arc-summary">Lotka-Volterra nonlinear dynamics and Jacobian stability analysis; co-authored paper.</p>
+        <p class="arc-summary">Lotka-Volterra nonlinear predator-prey dynamics and Jacobian stability analysis around equilibrium points; co-authored into a published paper.</p>
         <div class="arc-tags"><span>MATLAB</span><span>Controls</span></div>
       </div>
       <div class="arc-card" data-id="vawt">
+        <div class="arc-media"><img src="img/1.JPG" alt="CAD render of a multi-blade vertical axis wind turbine rotor"/></div>
         <span class="arc-date">Jul 2021 - Jun 2022</span>
         <span class="arc-title">Vertical Axis Wind Turbine</span>
-        <p class="arc-summary">Parametric CFD study of vertical-axis wind-turbine rotor performance.</p>
+        <p class="arc-summary">Designed and parametrically compared multiple VAWT rotor configurations against each other for aerodynamic performance -- a real trade study, not a single-design build.</p>
         <div class="arc-tags"><span>CFD</span><span>VAWT</span></div>
       </div>
       <div class="arc-card" data-id="scramjet">
