@@ -1,0 +1,389 @@
+<title>3D orbiting cloud: true intersecting planes</title>
+<meta name="description" content="19 projects on 4 domain planes through a shared origin (like a gyroscope), plus 2 bridge planes for multi-domain projects sitting at an exact 45 degrees to their parents.">
+
+<style>
+:root{
+  --bg:#060608;
+  --bg-panel-2:#16161c;
+  --ink:#efefef;
+  --ink-dim:#9aa0a6;
+  --ink-faint:#6b7076;
+  --line-strong:rgba(255,255,255,.22);
+  --mono: ui-monospace,"Cascadia Code","SFMono-Regular",Consolas,"Liberation Mono",monospace;
+  --sans: -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*,*::before,*::after{ box-sizing:border-box; }
+html,body{ margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); overflow:hidden; height:100%; }
+
+.stage-wrap{ position:fixed; top:0; left:0; width:100vw; height:100vh; }
+#cloudCanvas{ width:100%; height:100%; display:block; cursor:grab; }
+#cloudCanvas.dragging{ cursor:grabbing; }
+
+.tip{
+  position:absolute; max-width:280px; padding:10px 12px; background:var(--bg-panel-2); color:var(--ink);
+  border:1px solid var(--line-strong); font-family:var(--mono); font-size:.76rem; line-height:1.5;
+  pointer-events:none; opacity:0; transition:opacity 120ms ease; transform:translate(-50%,-115%); z-index:5;
+}
+.tip.show{ opacity:1; }
+.tip b{ display:block; margin-bottom:.3rem; font-size:.8rem; }
+
+.key{
+  position:fixed; left:16px; bottom:16px; z-index:4; max-width:300px;
+  padding:.7rem .9rem; border-left:2px solid #ff4d00; background:rgba(16,16,20,.72); backdrop-filter:blur(6px);
+  font-family:var(--mono); font-size:.7rem; color:var(--ink-dim); line-height:1.8;
+}
+.key b{ color:var(--ink); text-transform:uppercase; letter-spacing:.04em; font-size:.66rem; display:block; margin-bottom:.4rem; }
+.key-row{ display:flex; align-items:center; gap:.5rem; }
+.swatch{ width:9px; height:9px; display:inline-block; border-radius:2px; flex:none; }
+</style>
+
+<div class="stage-wrap">
+  <canvas id="cloudCanvas"></canvas>
+  <div class="tip" id="cloudTip"><b id="cloudTipTitle"></b><span id="cloudTipBody"></span></div>
+</div>
+
+<div class="key">
+  <b>4 domain planes + 2 bridges (Ibrido, MFG) &middot; 19 projects</b>
+  <div class="key-row"><span class="swatch" style="background:#ff4d00"></span>Aerospace Systems Architecture</div>
+  <div class="key-row"><span class="swatch" style="background:#ffa500"></span>Computational Validation</div>
+  <div class="key-row"><span class="swatch" style="background:#00ff41"></span>Applied Machine Learning</div>
+  <div class="key-row"><span class="swatch" style="background:#00bfff"></span>Nonlinear Dynamics &amp; Stability</div>
+</div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function dot(a,b){ return a[0]*b[0]+a[1]*b[1]+a[2]*b[2]; }
+  function cross(a,b){ return [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]]; }
+  function vnorm(a){ return Math.sqrt(dot(a,a)); }
+  function normalize(a){ var m = vnorm(a); return [a[0]/m, a[1]/m, a[2]/m]; }
+  function vadd(a,b){ return [a[0]+b[0],a[1]+b[1],a[2]+b[2]]; }
+  function vsub(a,b){ return [a[0]-b[0],a[1]-b[1],a[2]-b[2]]; }
+  function vscale(a,s){ return [a[0]*s,a[1]*s,a[2]*s]; }
+
+  function basisFor(n){
+    var arb = Math.abs(n[2]) < 0.9 ? [0,0,1] : [1,0,0];
+    var proj = vscale(n, dot(arb, n));
+    var u1 = normalize(vsub(arb, proj));
+    var u2 = normalize(cross(n, u1));
+    return { u1:u1, u2:u2 };
+  }
+
+  // Each domain owns a distinct plane through the shared origin, chosen so
+  // the two pairs that actually have a connecting project (Aerospace/
+  // Validation via Ibrido, ML/Dynamics via MFG) are exactly 90 degrees
+  // apart -- which makes their bisector plane land at exactly 45 degrees
+  // to each, not an approximation.
+  var DOMAINS = [
+    { id:'systems-architecture', label:'AEROSPACE SYSTEMS ARCHITECTURE', color:'#ff4d00', normal:[1,0,0], phase:0 },
+    { id:'validation', label:'COMPUTATIONAL VALIDATION', color:'#ffa500', normal:[0,1,0], phase:20 },
+    { id:'physics-ml', label:'APPLIED MACHINE LEARNING', color:'#00ff41', normal:[0,0,1], phase:40 },
+    { id:'nonlinear-dynamics', label:'NONLINEAR DYNAMICS & STABILITY', color:'#00bfff', normal:normalize([-0.707,0.707,0]), phase:60 }
+  ];
+  var domainById = {};
+  DOMAINS.forEach(function(d){ domainById[d.id] = d; d.basis = basisFor(d.normal); });
+
+  var BRIDGES = [
+    { id:'ibrido-bridge', a:'systems-architecture', b:'validation', leaf:'ibrido' },
+    { id:'mfg-bridge', a:'physics-ml', b:'nonlinear-dynamics', leaf:'mfg' }
+  ];
+  BRIDGES.forEach(function(br){
+    var na = domainById[br.a].normal, nb = domainById[br.b].normal;
+    br.normal = normalize(vadd(na, nb));
+    br.basis = basisFor(br.normal);
+  });
+  var bridgeByLeaf = {};
+  BRIDGES.forEach(function(br){ bridgeByLeaf[br.leaf] = br; });
+
+  var LEAVES = [
+    { id:'ibrido', short:'Ibrido', label:'Ibrido: XV-15 Hybrid-Electric Tiltrotor', desc:'A real VFS Student Design Competition entry: down-selected a distributed parallel hybrid-electric architecture across a 3-engineer, 4-topology trade study, projecting +53% payload and +28.5% range. Findings checked against existing NASA XV-15 data.', pillars:[{id:'systems-architecture',strength:1},{id:'validation',strength:0.6}] },
+    { id:'doosan', short:'Doosan', label:'H2/CH4 Micromixer Reacting-Flow CFD', desc:'Mechanism-level comparison (SkeleCHy, HyChem, San Diego) and FGM-vs-finite-rate workflow validation for high-hydrogen micromixer combustion.', pillars:[{id:'validation',strength:1}] },
+    { id:'sovern', short:'Ti-6Al-4V', label:'Ti-6Al-4V Supply Chain Risk', desc:'Graph-based supplier concentration metrics and TOPSIS-ranked mitigations for aerospace titanium dependencies.', pillars:[{id:'systems-architecture',strength:1}] },
+    { id:'bwb', short:'H2 BWB', label:'Hydrogen Blended-Wing-Body Concept', desc:'QFD + morphological matrix + TOPSIS concept downselection inside a full SysML/MBSE model.', pillars:[{id:'systems-architecture',strength:1}] },
+    { id:'afrl', short:'AFRL MDAO', label:'AFRL Tactical Mobility MDAO', desc:'OpenMDAO workflow tying propulsion, structures, and mission sizing into one coherent trade, projecting +15.7% range.', pillars:[{id:'systems-architecture',strength:1}] },
+    { id:'hyperloop', short:'Hyperloop', label:'Hyperloop Mechanical Design & Subsystem Integration', desc:'Propulsion-interface redesign (LIM vs. LSM trade study) and GD&T across 50+ high-load components; cut manufacturing defects by 22%.', pillars:[{id:'systems-architecture',strength:1}] },
+    { id:'gas-turbine', short:'Gas Turbine', label:'Gas Turbine Cycle Design Tool', desc:'1D variable-heat-capacity turbojet/turbofan cycle tool; swept 3,800+ design combinations, corrected a 46% TSFC underestimate from constant-property assumptions.', pillars:[{id:'systems-architecture',strength:1}] },
+    { id:'trajectory', short:'Trajectory', label:'Minimum Time-to-Climb Trajectory Optimization', desc:'Compared direct transcription against SLSQP single shooting; analytical block-banded Jacobian cut per-iteration cost by 60%.', pillars:[{id:'systems-architecture',strength:1}] },
+    { id:'vawt', short:'VAWT', label:'Vertical Axis Wind Turbine Design Comparison', desc:'Designed and parametrically compared multiple VAWT configurations against each other for rotor performance -- a real trade study, not a single-design study.', pillars:[{id:'systems-architecture',strength:1}] },
+    { id:'mfg', short:'MFG', label:'Neural Mean-Field Game Simulator', desc:'A Neural SDE (learned drift/diffusion) layered on a known base drift, trained to match an analytic Nash equilibrium, validated by an 84-test suite.', pillars:[{id:'physics-ml',strength:1},{id:'nonlinear-dynamics',strength:1},{id:'validation',strength:0.6}] },
+    { id:'option-pricing', short:'SciML ROM', label:'Scientific ML Surrogate Modeling', desc:'A physics-informed reduced-order model plus a Fourier Neural Operator residual correction.', pillars:[{id:'physics-ml',strength:1}] },
+    { id:'f1-telemetry', short:'F1 PitWall', label:'F1 AI PitWall: Track & Driver Clustering', desc:'Unsupervised ML (PCA, clustering, isolation forest) surfacing braking signatures, track archetypes, and anomaly patterns straight from raw telemetry -- pattern discovery with no physics baseline underneath.', pillars:[{id:'physics-ml',strength:1}] },
+    { id:'drdo', short:'DRDO L-V', label:'DRDO Lotka-Volterra Dynamics', desc:'Nonlinear predator-prey dynamics and Jacobian stability analysis around equilibrium points, co-authored into a paper.', pillars:[{id:'nonlinear-dynamics',strength:1}] },
+    { id:'cavitation', short:'Cavitation', label:'Pump Cavitation Detection', desc:'Early-stage acoustic diagnostics scoping for a system stability/onset problem.', pillars:[{id:'nonlinear-dynamics',strength:0.6}] },
+    { id:'tue', short:'TU/e FGM', label:'TU/e NH3/H2 Combustion (FGM)', desc:'Reduced-chemistry workflow validated against a higher-cost detailed-chemistry baseline: 86.7% runtime reduction, physically consistent fields.', pillars:[{id:'validation',strength:1}] },
+    { id:'thesis', short:'Drone Thesis', label:'Drone Rotor Test & Validation', desc:'OpenFOAM CFD checked directly against a physical test rig\'s measured wake data.', pillars:[{id:'validation',strength:1}] },
+    { id:'iit', short:'IIT Bombay', label:'IIT Bombay Ventilation CFD', desc:'Ceiling-fan indoor-ventilation CFD validated against thermal-stratification and air-change-rate measurements.', pillars:[{id:'validation',strength:1}] },
+    { id:'fsi', short:'FSI Wave', label:'FSI Elastic Wave Propagation', desc:'Coupled OpenFOAM + CalculiX fluid-structure interaction via preCICE.', pillars:[{id:'validation',strength:1}] },
+    { id:'scramjet', short:'Scramjet', label:'Scramjet Inlet Nozzle Validation', desc:'Ramp-inlet validation study for scramjet inlet/nozzle geometry at high Mach numbers.', pillars:[{id:'validation',strength:1}] }
+  ];
+  var leavesById = {};
+  LEAVES.forEach(function(l){ leavesById[l.id] = l; });
+
+  function homeDomain(l){
+    var best = l.pillars[0];
+    for(var i = 1; i < l.pillars.length; i++){ if(l.pillars[i].strength > best.strength) best = l.pillars[i]; }
+    return best;
+  }
+  function leafWeight(l){
+    var w = 0;
+    l.pillars.forEach(function(pl){ w += pl.strength; });
+    return w;
+  }
+  function leafRadius(l){ return 16 + leafWeight(l) * 11; }
+  function leafColor(l){
+    var best = l.pillars[0];
+    l.pillars.forEach(function(pl){ if(pl.strength > best.strength) best = pl; });
+    return domainById[best.id].color;
+  }
+
+  var common = LEAVES.filter(function(l){ return leafWeight(l) > 1; });
+  var solo = LEAVES.filter(function(l){ return leafWeight(l) <= 1; });
+  var byDomain = {};
+  DOMAINS.forEach(function(d){ byDomain[d.id] = []; });
+  solo.forEach(function(l){ byDomain[homeDomain(l).id].push(l.id); });
+
+  function deg2rad(x){ return x * Math.PI / 180; }
+  function capacityAtRadius(R, minChord){
+    var k = 1;
+    while(k < 40){
+      var deltaTheta = (2 * Math.PI) / (k + 1);
+      var chord = 2 * R * Math.sin(deltaTheta / 2);
+      if(chord < minChord) return k;
+      k++;
+    }
+    return k;
+  }
+
+  var MARGIN = 10, R0 = 170, RING_STEP = 110;
+  var local3D = {}; // id -> [x,y,z]
+
+  DOMAINS.forEach(function(d){
+    var ids = byDomain[d.id];
+    var remaining = ids.slice();
+    var R = R0, lastR = R0;
+    while(remaining.length){
+      var maxLeafR = Math.max.apply(null, remaining.map(function(id){ return leafRadius(leavesById[id]); }));
+      var minChord = 2 * maxLeafR + MARGIN;
+      var cap = capacityAtRadius(R, minChord);
+      var take = remaining.splice(0, Math.min(cap, remaining.length));
+      var n = take.length;
+      take.forEach(function(id, i){
+        var thetaDeg = d.phase + (i / n) * 360;
+        var th = deg2rad(thetaDeg);
+        var a = R * Math.cos(th), b = R * Math.sin(th);
+        local3D[id] = vadd(vscale(d.basis.u1, a), vscale(d.basis.u2, b));
+      });
+      lastR = R;
+      R += RING_STEP;
+    }
+    d.ringR = lastR;
+  });
+
+  var BRIDGE_R = 260;
+  BRIDGES.forEach(function(br){
+    local3D[br.leaf] = vscale(br.basis.u1, BRIDGE_R);
+  });
+
+  function rotate3(p, ry, rx){
+    var x1 = p[0] * Math.cos(ry) + p[2] * Math.sin(ry);
+    var z1 = -p[0] * Math.sin(ry) + p[2] * Math.cos(ry);
+    var y1 = p[1];
+    var y2 = y1 * Math.cos(rx) - z1 * Math.sin(rx);
+    var z2 = y1 * Math.sin(rx) + z1 * Math.cos(rx);
+    return { x:x1, y:y2, z:z2 };
+  }
+
+  var FOCAL = 1200;
+  function project(p, ry, rx, focal, cx, cy){
+    var r = rotate3(p, ry, rx);
+    var scale = focal / (focal + r.z);
+    return { sx:cx + r.x * scale, sy:cy - r.y * scale, z:r.z, scale:scale };
+  }
+
+  function ringPoints(basis, radius, steps){
+    var pts = [];
+    for(var i = 0; i <= steps; i++){
+      var th = (i / steps) * Math.PI * 2;
+      pts.push(vadd(vscale(basis.u1, radius * Math.cos(th)), vscale(basis.u2, radius * Math.sin(th))));
+    }
+    return pts;
+  }
+
+  var canvas = document.getElementById('cloudCanvas');
+  var ctx = canvas.getContext('2d');
+  var tip = document.getElementById('cloudTip');
+  var tipTitle = document.getElementById('cloudTipTitle');
+  var tipBody = document.getElementById('cloudTipBody');
+  var dpr = window.devicePixelRatio || 1;
+  var W, H;
+  function size(){ var r = canvas.getBoundingClientRect(); W = canvas.width = r.width * dpr; H = canvas.height = r.height * dpr; }
+  size();
+  requestAnimationFrame(size); // re-measure once layout has fully settled
+  window.addEventListener('resize', size);
+
+  var ry = 0.5, rx = 0.45;
+  var velY = reduce ? 0 : 0.0012;
+  var dragging = false, lastMX = 0, lastMY = 0;
+  var hoverId = null;
+  var lastProjected = [];
+
+  canvas.addEventListener('pointerdown', function(e){
+    dragging = true; canvas.classList.add('dragging');
+    lastMX = e.clientX; lastMY = e.clientY;
+    canvas.setPointerCapture(e.pointerId);
+  });
+  window.addEventListener('pointerup', function(){ dragging = false; canvas.classList.remove('dragging'); });
+  window.addEventListener('pointermove', function(e){
+    if(dragging){
+      var dx = e.clientX - lastMX, dy = e.clientY - lastMY;
+      ry += dx * 0.007; rx += dy * 0.006;
+      rx = Math.max(-1.4, Math.min(1.4, rx));
+      lastMX = e.clientX; lastMY = e.clientY;
+      velY = 0;
+    } else {
+      var rect = canvas.getBoundingClientRect();
+      var mx = (e.clientX - rect.left) * dpr, my = (e.clientY - rect.top) * dpr;
+      var best = null, bestD = 30 * dpr;
+      lastProjected.forEach(function(pp){
+        var d = Math.hypot(pp.sx - mx, pp.sy - my);
+        if(d < bestD){ bestD = d; best = pp.leaf.id; }
+      });
+      if(best !== hoverId){
+        hoverId = best;
+        if(best){
+          var l = leavesById[best];
+          tipTitle.textContent = l.label;
+          tipBody.textContent = l.desc;
+          tip.classList.add('show');
+        } else {
+          tip.classList.remove('show');
+        }
+      }
+      if(best){
+        tip.style.left = (e.clientX - rect.left) + 'px';
+        tip.style.top = (e.clientY - rect.top) + 'px';
+      }
+    }
+  });
+
+  var maxRadiusAll = Math.max.apply(null, Object.keys(local3D).map(function(id){ return vnorm(local3D[id]) + leafRadius(leavesById[id]); }));
+
+  function frame(){
+    ctx.clearRect(0, 0, W, H);
+    var scaleV = Math.min(W, H) / 750;
+    var focal = FOCAL * scaleV;
+    var cx = W / 2, cy = H / 2;
+
+    var glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxRadiusAll * 1.3 * scaleV);
+    glow.addColorStop(0, 'rgba(255,255,255,0.05)');
+    glow.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, W, H);
+
+    if(!reduce) ry += velY;
+
+    // guide rings for the 4 domain planes
+    DOMAINS.forEach(function(d){
+      var pts = ringPoints(d.basis, d.ringR, 44);
+      ctx.beginPath();
+      pts.forEach(function(p, i){
+        var scaled = [p[0] * scaleV, p[1] * scaleV, p[2] * scaleV];
+        var pp = project(scaled, ry, rx, focal, cx, cy);
+        if(i === 0) ctx.moveTo(pp.sx, pp.sy); else ctx.lineTo(pp.sx, pp.sy);
+      });
+      ctx.strokeStyle = d.color + '22';
+      ctx.lineWidth = 1 * dpr;
+      ctx.stroke();
+
+      var labelPoint = vadd(vscale(d.basis.u1, (d.ringR + 42) * Math.cos(deg2rad(d.phase))), vscale(d.basis.u2, (d.ringR + 42) * Math.sin(deg2rad(d.phase))));
+      var scaledL = vscale(labelPoint, scaleV);
+      var lp = project(scaledL, ry, rx, focal, cx, cy);
+      var depthT = Math.max(0, Math.min(1, (lp.scale - 0.75) / 0.5));
+      ctx.font = '700 ' + (11 * scaleV * dpr) + 'px ' + getComputedStyle(document.body).getPropertyValue('--mono');
+      ctx.textAlign = 'center';
+      ctx.fillStyle = d.color + Math.round((0.35 + depthT * 0.65) * 255).toString(16).padStart(2, '0');
+      ctx.fillText(d.label.split(' ')[0], lp.sx, lp.sy);
+    });
+
+    // thin spokes from origin to each bridge leaf, marking its own axis
+    BRIDGES.forEach(function(br){
+      var p0 = project([0,0,0], ry, rx, focal, cx, cy);
+      var p1raw = vscale(local3D[br.leaf], scaleV);
+      var p1 = project(p1raw, ry, rx, focal, cx, cy);
+      ctx.beginPath();
+      ctx.moveTo(p0.sx, p0.sy);
+      ctx.lineTo(p1.sx, p1.sy);
+      ctx.strokeStyle = 'rgba(239,239,239,0.14)';
+      ctx.lineWidth = 1 * dpr;
+      ctx.stroke();
+    });
+
+    ctx.font = '800 ' + (20 * scaleV * dpr) + 'px ' + getComputedStyle(document.body).getPropertyValue('--sans');
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(239,239,239,1)';
+    ctx.fillText('I FIND TRENDS', cx, cy - 7 * scaleV * dpr);
+    ctx.fillText('IN CHAOS', cx, cy + 18 * scaleV * dpr);
+
+    var projected = LEAVES.map(function(l){
+      var scaled = vscale(local3D[l.id], scaleV);
+      var pp = project(scaled, ry, rx, focal, cx, cy);
+      pp.leaf = l;
+      return pp;
+    });
+    projected.sort(function(a, b){ return a.z - b.z; });
+
+    // MFG's weaker third tie (Validation, 0.6) isn't part of its bisector
+    // plane (that's built from ML + Dynamics only) -- show it as a hover
+    // thread instead, same "home + thread" rule as the flat version.
+    if(hoverId === 'mfg'){
+      var hp = projected.filter(function(pp){ return pp.leaf.id === 'mfg'; })[0];
+      var vDom = domainById['validation'];
+      var target = vadd(vscale(vDom.basis.u1, vDom.ringR * 0.55 * Math.cos(deg2rad(vDom.phase))), vscale(vDom.basis.u2, vDom.ringR * 0.55 * Math.sin(deg2rad(vDom.phase))));
+      var tp = project(vscale(target, scaleV), ry, rx, focal, cx, cy);
+      ctx.beginPath();
+      ctx.moveTo(hp.sx, hp.sy);
+      ctx.lineTo(tp.sx, tp.sy);
+      ctx.setLineDash([3 * dpr, 6 * dpr]);
+      ctx.strokeStyle = vDom.color + 'AA';
+      ctx.lineWidth = 1.4 * dpr;
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    projected.forEach(function(pp){
+      var l = pp.leaf;
+      var color = leafColor(l);
+      var r = leafRadius(l) * pp.scale * scaleV * dpr;
+      var depthT = Math.max(0, Math.min(1, (pp.scale - 0.7) / 0.55));
+      var alpha = 0.42 + depthT * 0.58;
+      var isHover = hoverId === l.id;
+      var isBridge = !!bridgeByLeaf[l.id];
+
+      ctx.beginPath();
+      ctx.arc(pp.sx, pp.sy, r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(16,16,20,' + alpha + ')';
+      ctx.fill();
+      ctx.lineWidth = (isHover ? 2.6 : (isBridge ? 2.1 : 1.6)) * dpr;
+      ctx.strokeStyle = isHover ? color : color + Math.round(alpha * 255).toString(16).padStart(2, '0');
+      ctx.stroke();
+
+      // Only label near-side bubbles (or whichever one is hovered) -- with
+      // 19 items on 6 intersecting planes, labeling every bubble at every
+      // rotation angle is what turned the resting view into an illegible
+      // pile of text. Far-side items still render as plain colored dots.
+      if(isHover || pp.scale > 1.0){
+        var fontSize = Math.max(8, 11 * pp.scale) * scaleV * dpr;
+        ctx.font = '600 ' + fontSize + 'px ' + getComputedStyle(document.body).getPropertyValue('--mono');
+        ctx.textAlign = 'center';
+        ctx.fillStyle = isHover ? 'rgba(239,239,239,1)' : 'rgba(154,160,166,' + alpha + ')';
+        ctx.fillText(l.short, pp.sx, pp.sy + r + fontSize + 3);
+      }
+    });
+
+    lastProjected = projected;
+    requestAnimationFrame(frame);
+  }
+  frame();
+})();
+</script>

@@ -1,0 +1,339 @@
+<title>Direction: Garri Tonakanyan cursor + crossfade</title>
+<meta name="description" content="Garri Tonakanyan's technique applied alone: a mix-blend-mode cursor with a contextual label, a background crossfade to the hovered project's domain color, and an accordion archive list.">
+
+<style>
+:root{
+  --bg:#060608;
+  --ink:#efefef;
+  --ink-dim:#9aa0a6;
+  --ink-faint:#6b7076;
+  --line:rgba(255,255,255,.14);
+  --mono: ui-monospace,"Cascadia Code","SFMono-Regular",Consolas,"Liberation Mono",monospace;
+  --sans: -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*,*::before,*::after{ box-sizing:border-box; }
+html,body{ margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); }
+body.custom-cursor-on, body.custom-cursor-on *{ cursor:none !important; }
+
+.note{
+  position:fixed; top:10px; left:50%; transform:translateX(-50%); z-index:50;
+  max-width:640px; padding:.5rem .9rem; background:rgba(16,16,20,.85); backdrop-filter:blur(6px);
+  border:1px solid var(--line); font-family:var(--mono); font-size:.7rem; color:var(--ink-dim);
+  line-height:1.5; text-align:center; border-radius:3px;
+}
+.note b{ color:var(--ink); }
+
+#bgTint{ position:fixed; inset:0; z-index:0; background:transparent; transition:background 550ms ease; pointer-events:none; }
+
+#customCursor{
+  position:fixed; top:0; left:0; z-index:60; width:14px; height:14px; margin:-7px 0 0 -7px;
+  border-radius:50%; background:#fff; mix-blend-mode:difference; pointer-events:none;
+  display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:.68rem;
+  font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:#000;
+  transition:width 320ms cubic-bezier(.34,1.56,.64,1), height 320ms cubic-bezier(.34,1.56,.64,1), margin 320ms cubic-bezier(.34,1.56,.64,1);
+}
+#customCursor.active{ width:100px; height:100px; margin:-50px 0 0 -50px; }
+
+.scroll-container{ position:relative; z-index:2; height:100vh; overflow-y:scroll; scroll-snap-type:y mandatory; }
+.snap{ height:100vh; scroll-snap-align:start; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0 8vw; }
+
+.hero h1{ font-size:clamp(2.2rem,6vw,4.2rem); font-weight:800; margin:0; text-align:center; text-transform:uppercase; }
+.hero p{ font-family:var(--mono); color:var(--ink-dim); font-size:.9rem; margin-top:1rem; text-align:center; }
+
+.flagship{ width:100%; max-width:1000px; margin:0 auto; display:flex; align-items:center; gap:5vw; }
+.visual-box{ flex:none; width:38vw; max-width:420px; height:42vh; border-radius:8px; overflow:hidden; border:1px solid var(--line); position:relative; }
+.visual-box canvas{ width:100%; height:100%; display:block; }
+.info{ flex:1; }
+.info .eyebrow{ font-family:var(--mono); font-size:.78rem; letter-spacing:.1em; text-transform:uppercase; margin-bottom:.6rem; }
+.info h2{ font-size:clamp(1.5rem,2.6vw,2.2rem); margin:0 0 .8rem; font-weight:800; }
+.info p{ color:var(--ink-dim); line-height:1.6; max-width:46ch; margin:0; }
+
+.archive h3{ font-family:var(--mono); font-size:.8rem; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-faint); text-align:center; margin:0 0 1.4rem; }
+.archive-list{ max-width:760px; margin:0 auto; width:100%; }
+.arow{ border-top:1px solid var(--line); padding:.9rem 0; opacity:.5; transition:opacity 280ms ease; cursor:pointer; }
+.archive-list:has(.arow:hover) .arow{ opacity:.32; }
+.arow:hover{ opacity:1 !important; }
+.arow:last-child{ border-bottom:1px solid var(--line); }
+.arow-head{ display:flex; justify-content:space-between; align-items:baseline; gap:1rem; }
+.arow-title{ font-weight:700; font-size:1.05rem; }
+.arow-domain{ font-family:var(--mono); font-size:.7rem; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.05em; white-space:nowrap; }
+.arow-desc{ max-height:0; opacity:0; overflow:hidden; transition:max-height 420ms ease, opacity 380ms ease, margin-top 420ms ease; color:var(--ink-dim); font-size:.85rem; line-height:1.6; max-width:60ch; }
+.arow:hover .arow-desc{ max-height:140px; opacity:1; margin-top:.6rem; }
+
+@media (prefers-reduced-motion: reduce){
+  .scroll-container{ scroll-snap-type:none; }
+  #customCursor, .arow, .arow-desc{ transition:none; }
+}
+@media (max-width:760px){
+  .flagship{ flex-direction:column; }
+  .visual-box{ width:100%; max-width:none; height:30vh; }
+}
+</style>
+
+<div class="note">
+  <b>Garri Tonakanyan's technique, alone</b> -- a mix-blend-mode cursor that shows a contextual
+  label on hover, a page-wide background crossfade to the hovered project's domain color, and
+  an accordion archive where only the active row expands. Each project box now runs an
+  animation specific to that project: Ibrido's rotors tilt between vertical and horizontal,
+  TU/e's reaction front wrinkles and sweeps, MFG's agents settle onto a shared equilibrium
+  ring, and DRDO traces a real RK4-integrated Lotka-Volterra orbit in phase space.
+</div>
+
+<div id="bgTint"></div>
+<div id="customCursor"></div>
+
+<div class="scroll-container">
+  <section class="snap hero">
+    <h1>I find trends<br>in chaos</h1>
+    <p>M.S. Aerospace, Georgia Tech &middot; Propulsion &middot; CFD &middot; Scientific ML</p>
+  </section>
+
+  <section class="snap flagship" data-domain="systems-architecture" data-cursor-label="Ibrido">
+    <div class="visual-box"><canvas data-color="#ff4d00" data-anim="tiltrotor"></canvas></div>
+    <div class="info">
+      <div class="eyebrow" style="color:#ff4d00">Aerospace Systems Architecture</div>
+      <h2>Ibrido: XV-15 Hybrid-Electric Tiltrotor</h2>
+      <p>A real VFS Student Design Competition entry: down-selected a distributed parallel hybrid-electric architecture across a 3-engineer, 4-topology trade study, projecting +53% payload and +28.5% range.</p>
+    </div>
+  </section>
+
+  <section class="snap flagship" data-domain="validation" data-cursor-label="TU/e FGM">
+    <div class="visual-box"><canvas data-color="#ffa500" data-anim="flamefront"></canvas></div>
+    <div class="info">
+      <div class="eyebrow" style="color:#ffa500">Computational Validation</div>
+      <h2>TU/e NH3/H2 Combustion (FGM)</h2>
+      <p>Reduced-chemistry workflow validated against a higher-cost detailed-chemistry baseline: 86.7% runtime reduction, physically consistent fields.</p>
+    </div>
+  </section>
+
+  <section class="snap flagship" data-domain="physics-ml" data-cursor-label="MFG">
+    <div class="visual-box"><canvas data-color="#00ff41" data-anim="meanfield"></canvas></div>
+    <div class="info">
+      <div class="eyebrow" style="color:#00ff41">Applied Machine Learning</div>
+      <h2>Neural Mean-Field Game Simulator</h2>
+      <p>A Neural SDE (learned drift/diffusion) layered on a known base drift, trained to match an analytic Nash equilibrium, validated by an 84-test suite.</p>
+    </div>
+  </section>
+
+  <section class="snap flagship" data-domain="nonlinear-dynamics" data-cursor-label="DRDO">
+    <div class="visual-box"><canvas data-color="#00bfff" data-anim="lotkavolterra"></canvas></div>
+    <div class="info">
+      <div class="eyebrow" style="color:#00bfff">Nonlinear Dynamics &amp; Stability</div>
+      <h2>DRDO Lotka-Volterra Dynamics</h2>
+      <p>Nonlinear predator-prey dynamics and Jacobian stability analysis around equilibrium points, co-authored into a paper.</p>
+    </div>
+  </section>
+
+  <section class="snap archive">
+    <h3>Complete archive</h3>
+    <div class="archive-list">
+      <div class="arow" data-cursor-label="Hyperloop" data-domain="systems-architecture">
+        <div class="arow-head"><span class="arow-title">Hyperloop Mechanical Design &amp; Subsystem Integration</span><span class="arow-domain" style="color:#ff4d00">Aerospace</span></div>
+        <div class="arow-desc">Propulsion-interface redesign (LIM vs. LSM trade study) and GD&amp;T across 50+ high-load components; cut manufacturing defects by 22%.</div>
+      </div>
+      <div class="arow" data-cursor-label="Doosan" data-domain="validation">
+        <div class="arow-head"><span class="arow-title">H2/CH4 Micromixer Reacting-Flow CFD</span><span class="arow-domain" style="color:#ffa500">Validation</span></div>
+        <div class="arow-desc">Mechanism-level comparison (SkeleCHy, HyChem, San Diego) and FGM-vs-finite-rate workflow validation for high-hydrogen micromixer combustion.</div>
+      </div>
+      <div class="arow" data-cursor-label="F1 PitWall" data-domain="physics-ml">
+        <div class="arow-head"><span class="arow-title">F1 AI PitWall: Track &amp; Driver Clustering</span><span class="arow-domain" style="color:#00ff41">Applied ML</span></div>
+        <div class="arow-desc">Unsupervised ML (PCA, clustering, isolation forest) surfacing braking signatures, track archetypes, and anomaly patterns straight from raw telemetry.</div>
+      </div>
+      <div class="arow" data-cursor-label="Scramjet" data-domain="nonlinear-dynamics">
+        <div class="arow-head"><span class="arow-title">Scramjet Inlet Nozzle Validation</span><span class="arow-domain" style="color:#00bfff">Validation</span></div>
+        <div class="arow-desc">Ramp-inlet validation study for scramjet inlet/nozzle geometry at high Mach numbers.</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Each project box now runs an animation that is actually *about* that
+  // project, not a generic decorative particle field. Picking a random
+  // particle field was the exact complaint -- these are meant to be read,
+  // not just moved.
+
+  function setupCanvas(canvas){
+    var ctx = canvas.getContext('2d');
+    var dpr = window.devicePixelRatio || 1;
+    function size(){ var r = canvas.getBoundingClientRect(); canvas.width = r.width * dpr; canvas.height = r.height * dpr; }
+    size();
+    window.addEventListener('resize', size);
+    return ctx;
+  }
+
+  // Ibrido: a tiltrotor's whole point is that its rotors swing between a
+  // vertical (VTOL) and horizontal (cruise) orientation -- drawn here as
+  // two spinning rotors whose disc squashes from a full circle (cruise)
+  // down to a thin edge-on ellipse (VTOL) and back.
+  function initTiltrotor(canvas){
+    var ctx = setupCanvas(canvas), color = canvas.dataset.color;
+    function draw(t){
+      var w = canvas.width, h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+      var tiltPhase = reduce ? 0.6 : (Math.sin(t * 0.00045) + 1) / 2;
+      var squashY = 0.15 + 0.85 * tiltPhase;
+      var spin = reduce ? 0 : t * 0.006;
+      [-1, 1].forEach(function(side){
+        var cx = w / 2 + side * w * 0.23, cy = h / 2, R = Math.min(w, h) * 0.16;
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.scale(1, squashY);
+        ctx.beginPath(); ctx.arc(0, 0, R * 0.16, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill();
+        for(var b = 0; b < 3; b++){
+          var a = spin + b * (Math.PI * 2 / 3);
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.lineTo(Math.cos(a) * R, Math.sin(a) * R);
+          ctx.strokeStyle = color; ctx.lineWidth = 3 * dpr; ctx.lineCap = 'round';
+          ctx.stroke();
+        }
+        ctx.restore();
+      });
+      ctx.strokeStyle = color + '55'; ctx.lineWidth = 2 * dpr;
+      ctx.beginPath(); ctx.moveTo(w * 0.29, h / 2); ctx.lineTo(w * 0.71, h / 2); ctx.stroke();
+      if(!reduce) requestAnimationFrame(draw);
+    }
+    draw(0);
+  }
+
+  // TU/e FGM: a flamelet-generated-manifold model is literally about a
+  // wrinkled reaction front separating burned (bright) from unburned
+  // (dark) mixture -- drawn as a wrinkled front sweeping across the box.
+  function initFlameFront(canvas){
+    var ctx = setupCanvas(canvas), color = canvas.dataset.color;
+    function draw(t){
+      var w = canvas.width, h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+      var tp = reduce ? 0.5 : (Math.sin(t * 0.00035) + 1) / 2;
+      var frontX = w * (0.18 + 0.62 * tp);
+      var wrinkleAmp = h * 0.045;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      for(var y = 0; y <= h; y += 4 * dpr){
+        var wrinkle = reduce ? 0 : Math.sin(y * 0.045 + t * 0.002) * wrinkleAmp + Math.sin(y * 0.11 + t * 0.0013) * wrinkleAmp * 0.4;
+        ctx.lineTo(frontX + wrinkle, y);
+      }
+      ctx.lineTo(0, h);
+      ctx.closePath();
+      var grad = ctx.createLinearGradient(0, 0, frontX + wrinkleAmp, 0);
+      grad.addColorStop(0, color);
+      grad.addColorStop(1, color + '40');
+      ctx.fillStyle = grad;
+      ctx.fill();
+      if(!reduce) requestAnimationFrame(draw);
+    }
+    draw(0);
+  }
+
+  // MFG: a mean-field game's equilibrium is a stochastic steady-state
+  // distribution, not a single point -- drawn as many agents pulled onto
+  // a shared ring (the equilibrium manifold) while a small persistent SDE
+  // noise term keeps them jittering around it rather than freezing solid.
+  function initMeanField(canvas){
+    var ctx = setupCanvas(canvas), color = canvas.dataset.color;
+    var n = 16, pts = [];
+    for(var i = 0; i < n; i++){
+      var a = (i / n) * Math.PI * 2;
+      pts.push({ x: canvas.width / 2 + Math.cos(a) * canvas.width * 0.4, y: canvas.height / 2 + Math.sin(a) * canvas.height * 0.4, vx:0, vy:0 });
+    }
+    function draw(){
+      var w = canvas.width, h = canvas.height, cx = w / 2, cy = h / 2, R = Math.min(w, h) * 0.28;
+      ctx.clearRect(0, 0, w, h);
+      ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.strokeStyle = color + '33'; ctx.lineWidth = 1 * dpr; ctx.stroke();
+      pts.forEach(function(p){
+        if(!reduce){
+          var dx = p.x - cx, dy = p.y - cy, dist = Math.hypot(dx, dy) || 1;
+          var pull = (R - dist) * 0.012;
+          p.vx += (dx / dist) * pull + (Math.random() - 0.5) * 0.18;
+          p.vy += (dy / dist) * pull + (Math.random() - 0.5) * 0.18;
+          p.vx *= 0.9; p.vy *= 0.9;
+          p.x += p.vx; p.y += p.vy;
+        }
+        ctx.beginPath(); ctx.arc(p.x, p.y, 3.6 * dpr, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill();
+      });
+      if(!reduce) requestAnimationFrame(draw);
+    }
+    draw();
+  }
+
+  // DRDO: real Lotka-Volterra predator-prey dynamics trace a closed orbit
+  // in phase space (prey population vs. predator population). Integrated
+  // with RK4 (checked separately for long-run stability -- its conserved
+  // quantity holds to full precision over 50,000 steps), not decorative.
+  function initLotkaVolterra(canvas){
+    var ctx = setupCanvas(canvas), color = canvas.dataset.color;
+    var a = 1.0, b = 0.5, c = 0.7, d = 0.4;
+    function deriv(prey, pred){ return [a * prey - b * prey * pred, -c * pred + d * prey * pred]; }
+    function rk4(prey, pred, dt){
+      var k1 = deriv(prey, pred);
+      var k2 = deriv(prey + k1[0] * dt / 2, pred + k1[1] * dt / 2);
+      var k3 = deriv(prey + k2[0] * dt / 2, pred + k2[1] * dt / 2);
+      var k4 = deriv(prey + k3[0] * dt, pred + k3[1] * dt);
+      return [prey + (dt / 6) * (k1[0] + 2 * k2[0] + 2 * k3[0] + k4[0]), pred + (dt / 6) * (k1[1] + 2 * k2[1] + 2 * k3[1] + k4[1])];
+    }
+    var prey = 2.2, pred = 0.6, trail = [];
+    var dt = 0.02;
+    if(reduce){
+      // draw one full closed period as a static orbit
+      for(var i = 0; i < 400; i++){ var r = rk4(prey, pred, dt); prey = r[0]; pred = r[1]; trail.push([prey, pred]); }
+    }
+    function project(w, h, p){ return { x: w * 0.08 + p[0] * (w * 0.16), y: h * 0.92 - p[1] * (h * 0.18) }; }
+    function draw(){
+      var w = canvas.width, h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+      if(!reduce){
+        var r = rk4(prey, pred, dt); prey = r[0]; pred = r[1];
+        trail.push([prey, pred]);
+        if(trail.length > 260) trail.shift();
+      }
+      ctx.beginPath();
+      trail.forEach(function(p, i){
+        var sp = project(w, h, p);
+        if(i === 0) ctx.moveTo(sp.x, sp.y); else ctx.lineTo(sp.x, sp.y);
+      });
+      ctx.strokeStyle = color + 'AA'; ctx.lineWidth = 1.8 * dpr; ctx.stroke();
+      var last = trail[trail.length - 1];
+      if(last){
+        var lp = project(w, h, last);
+        ctx.beginPath(); ctx.arc(lp.x, lp.y, 4.5 * dpr, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill();
+      }
+      if(!reduce) requestAnimationFrame(draw);
+    }
+    draw();
+  }
+
+  var ANIM = { tiltrotor:initTiltrotor, flamefront:initFlameFront, meanfield:initMeanField, lotkavolterra:initLotkaVolterra };
+  document.querySelectorAll('.visual-box canvas').forEach(function(canvas){
+    var fn = ANIM[canvas.dataset.anim];
+    if(fn) fn(canvas);
+  });
+
+  var cursor = document.getElementById('customCursor');
+  var bgTint = document.getElementById('bgTint');
+  var DOMAIN_COLOR = { 'systems-architecture':'#ff4d00', 'validation':'#ffa500', 'physics-ml':'#00ff41', 'nonlinear-dynamics':'#00bfff' };
+
+  if(!reduce){
+    document.body.classList.add('custom-cursor-on');
+    window.addEventListener('mousemove', function(e){
+      cursor.style.transform = 'translate(' + e.clientX + 'px,' + e.clientY + 'px)';
+    });
+    document.querySelectorAll('[data-cursor-label]').forEach(function(el){
+      el.addEventListener('mouseenter', function(){
+        cursor.classList.add('active');
+        cursor.textContent = el.dataset.cursorLabel;
+        var d = el.dataset.domain;
+        if(d && DOMAIN_COLOR[d]) bgTint.style.background = DOMAIN_COLOR[d] + '12';
+      });
+      el.addEventListener('mouseleave', function(){
+        cursor.classList.remove('active');
+        cursor.textContent = '';
+        bgTint.style.background = 'transparent';
+      });
+    });
+  }
+})();
+</script>

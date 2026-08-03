@@ -1,0 +1,280 @@
+<title>Synthesis: Robin Noguier + Garri Tonakanyan + James Finch</title>
+<meta name="description" content="Three borrowed techniques applied to the real portfolio: a cursor-bound spotlight and label (Robin/Garri), grayscale-to-color reveals with a spine label (James), and a background crossfade + accordion archive (Garri).">
+
+<style>
+:root{
+  --bg:#060608;
+  --bg-panel:#101014;
+  --ink:#efefef;
+  --ink-dim:#9aa0a6;
+  --ink-faint:#6b7076;
+  --line:rgba(255,255,255,.14);
+  --mono: ui-monospace,"Cascadia Code","SFMono-Regular",Consolas,"Liberation Mono",monospace;
+  --sans: -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*,*::before,*::after{ box-sizing:border-box; }
+html,body{ margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); }
+body.custom-cursor-on, body.custom-cursor-on *{ cursor:none !important; }
+
+.note{
+  position:fixed; top:10px; left:50%; transform:translateX(-50%); z-index:50;
+  max-width:640px; padding:.5rem .9rem; background:rgba(16,16,20,.85); backdrop-filter:blur(6px);
+  border:1px solid var(--line); font-family:var(--mono); font-size:.7rem; color:var(--ink-dim);
+  line-height:1.5; text-align:center; border-radius:3px;
+}
+.note b{ color:var(--ink); }
+
+/* ---- background tint layer (Garri: crossfades to the hovered project's domain color) ---- */
+#bgTint{ position:fixed; inset:0; z-index:0; background:transparent; transition:background 550ms ease; pointer-events:none; }
+
+/* ---- cursor-bound spotlight (Robin, faked with CSS instead of a WebGL shader) ---- */
+#spotlight{
+  position:fixed; inset:0; z-index:1; pointer-events:none; opacity:0; transition:opacity 300ms ease;
+  background:radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,.07), transparent 38%);
+}
+#spotlight.show{ opacity:1; }
+
+/* ---- custom cursor (Garri): mix-blend-mode circle, shows a label on hover targets ---- */
+#customCursor{
+  position:fixed; top:0; left:0; z-index:60; width:14px; height:14px; margin:-7px 0 0 -7px;
+  border-radius:50%; background:#fff; mix-blend-mode:difference; pointer-events:none;
+  display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:.68rem;
+  font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:#000;
+  transition:width 320ms cubic-bezier(.34,1.56,.64,1), height 320ms cubic-bezier(.34,1.56,.64,1), margin 320ms cubic-bezier(.34,1.56,.64,1);
+}
+#customCursor.active{ width:96px; height:96px; margin:-48px 0 0 -48px; }
+
+/* ---- nav toggle + full-screen overlay (James: blurred grayscale scrim, giant link text) ---- */
+.nav-toggle{
+  position:fixed; top:20px; right:24px; z-index:55; display:flex; align-items:center; gap:.5rem;
+  background:var(--bg-panel); border:1px solid var(--line); color:var(--ink); font-family:var(--mono);
+  font-size:.75rem; letter-spacing:.06em; text-transform:uppercase; padding:.5rem .7rem .5rem .55rem;
+  border-radius:100px; cursor:pointer; overflow:hidden; position:relative;
+}
+.nav-toggle .dot{ width:8px; height:8px; border-radius:50%; background:#ff4d00; transition:width 260ms ease; flex:none; }
+.nav-toggle:hover .dot{ width:22px; }
+
+.nav-overlay{
+  position:fixed; inset:0; z-index:70; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1.2rem;
+  background:rgba(0,0,0,.82); backdrop-filter:blur(10px) grayscale(1); -webkit-backdrop-filter:blur(10px) grayscale(1);
+  opacity:0; pointer-events:none; transition:opacity 380ms ease;
+}
+.nav-overlay.open{ opacity:1; pointer-events:auto; }
+.nav-overlay a{ color:var(--ink); text-decoration:none; font-weight:800; font-size:6vw; line-height:1; font-family:var(--sans); }
+.nav-overlay a:hover{ color:#ff4d00; }
+.nav-overlay .close{ position:absolute; top:22px; right:28px; font-family:var(--mono); font-size:.8rem; color:var(--ink-dim); cursor:pointer; }
+
+/* ---- scroll-snap flagship sections ---- */
+.scroll-container{ position:relative; z-index:2; height:100vh; overflow-y:scroll; scroll-snap-type:y mandatory; }
+.snap{ height:100vh; scroll-snap-align:start; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; padding:0 8vw; }
+
+.hero h1{ font-size:clamp(2.2rem,6vw,4.2rem); font-weight:800; margin:0; text-align:center; text-transform:uppercase; letter-spacing:.01em; }
+.hero p{ font-family:var(--mono); color:var(--ink-dim); font-size:.9rem; margin-top:1rem; text-align:center; }
+.hero .hint{ position:absolute; bottom:34px; font-family:var(--mono); font-size:.7rem; color:var(--ink-faint); letter-spacing:.08em; text-transform:uppercase; }
+
+.flagship{ width:100%; max-width:1100px; margin:0 auto; }
+.flagship-inner{ display:flex; align-items:center; gap:4vw; width:100%; }
+.spine{
+  writing-mode:vertical-lr; transform:rotate(180deg); font-family:var(--mono); font-weight:700;
+  font-size:1.6vw; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint); flex:none;
+  border-right:1px solid var(--line); padding-right:1.2vw; height:38vh; display:flex; align-items:center;
+}
+.visual{
+  flex:1; height:46vh; border-radius:6px; position:relative; overflow:hidden;
+  filter:grayscale(1) brightness(.75); transition:filter 620ms ease;
+  background:
+    repeating-linear-gradient(115deg, rgba(255,255,255,.05) 0 1px, transparent 1px 26px),
+    radial-gradient(circle at 30% 30%, var(--dc,#888) 0%, transparent 60%),
+    radial-gradient(circle at 75% 70%, var(--dc,#888) 0%, transparent 55%);
+  border:1px solid var(--line);
+}
+.flagship:hover .visual, .flagship.in-view .visual{ filter:grayscale(0) brightness(1); }
+.info{ flex:1; }
+.info .eyebrow{ font-family:var(--mono); font-size:.78rem; letter-spacing:.1em; text-transform:uppercase; margin-bottom:.6rem; }
+.info h2{ font-size:clamp(1.5rem,2.6vw,2.2rem); margin:0 0 .8rem; font-weight:800; }
+.info p{ color:var(--ink-dim); line-height:1.6; max-width:46ch; margin:0; }
+
+/* ---- archive accordion (Garri: only the hovered/active row expands) ---- */
+.archive{ align-items:stretch; }
+.archive h3{ font-family:var(--mono); font-size:.8rem; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-faint); text-align:center; margin:0 0 1.4rem; }
+.archive-list{ max-width:760px; margin:0 auto; width:100%; }
+.arow{ border-top:1px solid var(--line); padding:.9rem 0; opacity:.5; transition:opacity 280ms ease; cursor:pointer; }
+.archive-list:has(.arow:hover) .arow{ opacity:.32; }
+.arow:hover{ opacity:1 !important; }
+.arow:last-child{ border-bottom:1px solid var(--line); }
+.arow-head{ display:flex; justify-content:space-between; align-items:baseline; gap:1rem; }
+.arow-title{ font-weight:700; font-size:1.05rem; }
+.arow-domain{ font-family:var(--mono); font-size:.7rem; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.05em; white-space:nowrap; }
+.arow-desc{ max-height:0; opacity:0; overflow:hidden; transition:max-height 420ms ease, opacity 380ms ease, margin-top 420ms ease; color:var(--ink-dim); font-size:.85rem; line-height:1.6; max-width:60ch; }
+.arow:hover .arow-desc{ max-height:140px; opacity:1; margin-top:.6rem; }
+
+@media (prefers-reduced-motion: reduce){
+  .scroll-container{ scroll-snap-type:none; }
+  #customCursor, .visual, .arow, .arow-desc, .nav-overlay, .nav-toggle .dot{ transition:none; }
+}
+@media (max-width:760px){
+  .flagship-inner{ flex-direction:column; }
+  .spine{ writing-mode:horizontal-tb; transform:none; height:auto; border-right:none; border-bottom:1px solid var(--line); padding:0 0 .6rem; width:100%; font-size:1rem; }
+  .visual{ width:100%; height:32vh; }
+}
+</style>
+
+<div class="note">
+  <b>Synthesis prototype, not a decision</b> -- three techniques borrowed from the design-gallery
+  research, applied to real project content: a cursor-bound spotlight and contextual label
+  (Robin Noguier, Garri Tonakanyan), grayscale-to-color reveals with a book-spine label
+  (James Finch), and a background crossfade + accordion archive list (Garri Tonakanyan).
+  Scroll to see each flagship project as its own full-screen section.
+</div>
+
+<div id="bgTint"></div>
+<div id="spotlight"></div>
+<div id="customCursor"></div>
+
+<button class="nav-toggle" id="navToggle"><span class="dot"></span>Menu</button>
+<div class="nav-overlay" id="navOverlay">
+  <span class="close" id="navClose">CLOSE</span>
+  <a href="#work">Work</a>
+  <a href="#archive">Archive</a>
+  <a href="#about">About</a>
+  <a href="#contact">Contact</a>
+</div>
+
+<div class="scroll-container" id="scrollContainer">
+  <section class="snap hero">
+    <h1>I find trends<br>in chaos</h1>
+    <p>M.S. Aerospace, Georgia Tech &middot; Propulsion &middot; CFD &middot; Scientific ML</p>
+    <span class="hint">Scroll &darr;</span>
+  </section>
+
+  <section class="snap flagship" data-domain="systems-architecture" data-cursor-label="Ibrido">
+    <div class="flagship-inner">
+      <div class="spine">Aerospace &middot; 01</div>
+      <div class="visual" style="--dc:#ff4d00"></div>
+      <div class="info">
+        <div class="eyebrow" style="color:#ff4d00">Aerospace Systems Architecture</div>
+        <h2>Ibrido: XV-15 Hybrid-Electric Tiltrotor</h2>
+        <p>A real VFS Student Design Competition entry: down-selected a distributed parallel hybrid-electric architecture across a 3-engineer, 4-topology trade study, projecting +53% payload and +28.5% range.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="snap flagship" data-domain="validation" data-cursor-label="TU/e FGM">
+    <div class="flagship-inner">
+      <div class="spine">Validation &middot; 02</div>
+      <div class="visual" style="--dc:#ffa500"></div>
+      <div class="info">
+        <div class="eyebrow" style="color:#ffa500">Computational Validation</div>
+        <h2>TU/e NH3/H2 Combustion (FGM)</h2>
+        <p>Reduced-chemistry workflow validated against a higher-cost detailed-chemistry baseline: 86.7% runtime reduction, physically consistent fields.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="snap flagship" data-domain="physics-ml" data-cursor-label="MFG">
+    <div class="flagship-inner">
+      <div class="spine">Applied ML &middot; 03</div>
+      <div class="visual" style="--dc:#00ff41"></div>
+      <div class="info">
+        <div class="eyebrow" style="color:#00ff41">Applied Machine Learning</div>
+        <h2>Neural Mean-Field Game Simulator</h2>
+        <p>A Neural SDE (learned drift/diffusion) layered on a known base drift, trained to match an analytic Nash equilibrium, validated by an 84-test suite.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="snap flagship" data-domain="nonlinear-dynamics" data-cursor-label="DRDO">
+    <div class="flagship-inner">
+      <div class="spine">Dynamics &middot; 04</div>
+      <div class="visual" style="--dc:#00bfff"></div>
+      <div class="info">
+        <div class="eyebrow" style="color:#00bfff">Nonlinear Dynamics &amp; Stability</div>
+        <h2>DRDO Lotka-Volterra Dynamics</h2>
+        <p>Nonlinear predator-prey dynamics and Jacobian stability analysis around equilibrium points, co-authored into a paper.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="snap archive" id="archive">
+    <h3>Complete archive</h3>
+    <div class="archive-list">
+      <div class="arow" data-cursor-label="Hyperloop" data-domain="systems-architecture">
+        <div class="arow-head"><span class="arow-title">Hyperloop Mechanical Design &amp; Subsystem Integration</span><span class="arow-domain" style="color:#ff4d00">Aerospace</span></div>
+        <div class="arow-desc">Propulsion-interface redesign (LIM vs. LSM trade study) and GD&amp;T across 50+ high-load components; cut manufacturing defects by 22%.</div>
+      </div>
+      <div class="arow" data-cursor-label="Doosan" data-domain="validation">
+        <div class="arow-head"><span class="arow-title">H2/CH4 Micromixer Reacting-Flow CFD</span><span class="arow-domain" style="color:#ffa500">Validation</span></div>
+        <div class="arow-desc">Mechanism-level comparison (SkeleCHy, HyChem, San Diego) and FGM-vs-finite-rate workflow validation for high-hydrogen micromixer combustion.</div>
+      </div>
+      <div class="arow" data-cursor-label="F1 PitWall" data-domain="physics-ml">
+        <div class="arow-head"><span class="arow-title">F1 AI PitWall: Track &amp; Driver Clustering</span><span class="arow-domain" style="color:#00ff41">Applied ML</span></div>
+        <div class="arow-desc">Unsupervised ML (PCA, clustering, isolation forest) surfacing braking signatures, track archetypes, and anomaly patterns straight from raw telemetry.</div>
+      </div>
+      <div class="arow" data-cursor-label="Scramjet" data-domain="nonlinear-dynamics">
+        <div class="arow-head"><span class="arow-title">Scramjet Inlet Nozzle Validation</span><span class="arow-domain" style="color:#00bfff">Validation</span></div>
+        <div class="arow-desc">Ramp-inlet validation study for scramjet inlet/nozzle geometry at high Mach numbers.</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var cursor = document.getElementById('customCursor');
+  var spotlight = document.getElementById('spotlight');
+  var bgTint = document.getElementById('bgTint');
+
+  var DOMAIN_COLOR = {
+    'systems-architecture':'#ff4d00',
+    'validation':'#ffa500',
+    'physics-ml':'#00ff41',
+    'nonlinear-dynamics':'#00bfff'
+  };
+
+  if(!reduce){
+    document.body.classList.add('custom-cursor-on');
+    spotlight.classList.add('show');
+
+    window.addEventListener('mousemove', function(e){
+      cursor.style.transform = 'translate(' + e.clientX + 'px,' + e.clientY + 'px)';
+      spotlight.style.setProperty('--mx', e.clientX + 'px');
+      spotlight.style.setProperty('--my', e.clientY + 'px');
+    });
+
+    document.querySelectorAll('[data-cursor-label]').forEach(function(el){
+      el.addEventListener('mouseenter', function(){
+        cursor.classList.add('active');
+        cursor.textContent = el.dataset.cursorLabel;
+        var domain = el.dataset.domain;
+        if(domain && DOMAIN_COLOR[domain]) bgTint.style.background = DOMAIN_COLOR[domain] + '12';
+      });
+      el.addEventListener('mouseleave', function(){
+        cursor.classList.remove('active');
+        cursor.textContent = '';
+        bgTint.style.background = 'transparent';
+      });
+    });
+  }
+
+  var navToggle = document.getElementById('navToggle');
+  var navOverlay = document.getElementById('navOverlay');
+  var navClose = document.getElementById('navClose');
+  navToggle.addEventListener('click', function(){ navOverlay.classList.add('open'); });
+  navClose.addEventListener('click', function(){ navOverlay.classList.remove('open'); });
+  navOverlay.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){ navOverlay.classList.remove('open'); });
+  });
+
+  // in-view fallback for touch devices (no hover) -- IntersectionObserver
+  // reveals color the same way hover does on desktop
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        entry.target.classList.toggle('in-view', entry.isIntersecting);
+      });
+    }, { threshold:0.6 });
+    document.querySelectorAll('.flagship').forEach(function(s){ io.observe(s); });
+  }
+})();
+</script>

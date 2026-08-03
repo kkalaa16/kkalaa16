@@ -1,0 +1,154 @@
+<title>Direction: Robin Noguier persistent canvas</title>
+<meta name="description" content="Robin Noguier's technique applied alone: one persistent full-viewport particle field shared across every section, with a cursor-bound brightening highlight instead of separate static project boxes.">
+
+<style>
+:root{
+  --bg:#050506;
+  --ink:#efefef;
+  --ink-dim:#8f959b;
+  --ink-faint:#5c6167;
+  --line:rgba(255,255,255,.12);
+  --mono: ui-monospace,"Cascadia Code","SFMono-Regular",Consolas,"Liberation Mono",monospace;
+  --sans: -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*,*::before,*::after{ box-sizing:border-box; }
+html,body{ margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); }
+
+.note{
+  position:fixed; top:10px; left:50%; transform:translateX(-50%); z-index:50;
+  max-width:640px; padding:.5rem .9rem; background:rgba(10,10,12,.85); backdrop-filter:blur(6px);
+  border:1px solid var(--line); font-family:var(--mono); font-size:.7rem; color:var(--ink-dim);
+  line-height:1.5; text-align:center; border-radius:3px;
+}
+.note b{ color:var(--ink); }
+
+/* one shared canvas behind everything, never resets between sections */
+#fieldCanvas{ position:fixed; inset:0; z-index:0; width:100vw; height:100vh; display:block; }
+
+.scroll-container{ position:relative; z-index:2; height:100vh; overflow-y:scroll; scroll-snap-type:y mandatory; }
+.snap{ height:100vh; scroll-snap-align:start; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0 8vw; }
+
+.hero h1{ font-size:clamp(2.2rem,6vw,4.2rem); font-weight:800; margin:0; text-align:center; text-transform:uppercase; }
+.hero p{ font-family:var(--mono); color:var(--ink-dim); font-size:.9rem; margin-top:1rem; text-align:center; }
+
+.flagship{ text-align:center; max-width:640px; }
+.flagship .eyebrow{ font-family:var(--mono); font-size:.78rem; letter-spacing:.12em; text-transform:uppercase; margin-bottom:.9rem; }
+.flagship h2{ font-size:clamp(1.6rem,3vw,2.4rem); margin:0 0 1rem; font-weight:800; }
+.flagship p{ color:var(--ink-dim); line-height:1.7; margin:0 auto; max-width:52ch; }
+.flagship .hover-zone{ position:fixed; inset:0; z-index:1; }
+
+@media (prefers-reduced-motion: reduce){
+  .scroll-container{ scroll-snap-type:none; }
+}
+</style>
+
+<div class="note">
+  <b>Robin Noguier's technique, alone</b> -- everything lives inside one shared, persistent
+  particle field (standing in for his WebGL canvas) that never resets as you move between
+  sections, with a cursor-bound highlight that brightens nearby particles instead of a
+  separate static box per project. The currently-active project's color dominates the field.
+</div>
+
+<canvas id="fieldCanvas"></canvas>
+
+<div class="scroll-container">
+  <section class="snap hero">
+    <h1>I find trends<br>in chaos</h1>
+    <p>M.S. Aerospace, Georgia Tech &middot; Propulsion &middot; CFD &middot; Scientific ML</p>
+  </section>
+
+  <section class="snap flagship" data-domain="systems-architecture">
+    <div class="eyebrow" style="color:#ff4d00">Aerospace Systems Architecture</div>
+    <h2>Ibrido: XV-15 Hybrid-Electric Tiltrotor</h2>
+    <p>A real VFS Student Design Competition entry: down-selected a distributed parallel hybrid-electric architecture across a 3-engineer, 4-topology trade study, projecting +53% payload and +28.5% range.</p>
+  </section>
+
+  <section class="snap flagship" data-domain="validation">
+    <div class="eyebrow" style="color:#ffa500">Computational Validation</div>
+    <h2>TU/e NH3/H2 Combustion (FGM)</h2>
+    <p>Reduced-chemistry workflow validated against a higher-cost detailed-chemistry baseline: 86.7% runtime reduction, physically consistent fields.</p>
+  </section>
+
+  <section class="snap flagship" data-domain="physics-ml">
+    <div class="eyebrow" style="color:#00ff41">Applied Machine Learning</div>
+    <h2>Neural Mean-Field Game Simulator</h2>
+    <p>A Neural SDE (learned drift/diffusion) layered on a known base drift, trained to match an analytic Nash equilibrium, validated by an 84-test suite.</p>
+  </section>
+
+  <section class="snap flagship" data-domain="nonlinear-dynamics">
+    <div class="eyebrow" style="color:#00bfff">Nonlinear Dynamics &amp; Stability</div>
+    <h2>DRDO Lotka-Volterra Dynamics</h2>
+    <p>Nonlinear predator-prey dynamics and Jacobian stability analysis around equilibrium points, co-authored into a paper.</p>
+  </section>
+</div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var DOMAIN_COLOR = { 'systems-architecture':'#ff4d00', 'validation':'#ffa500', 'physics-ml':'#00ff41', 'nonlinear-dynamics':'#00bfff' };
+
+  var canvas = document.getElementById('fieldCanvas');
+  var ctx = canvas.getContext('2d');
+  var dpr = window.devicePixelRatio || 1;
+  var W, H;
+  function size(){ var r = canvas.getBoundingClientRect(); W = canvas.width = r.width * dpr; H = canvas.height = r.height * dpr; }
+  size();
+  window.addEventListener('resize', size);
+
+  var activeDomain = 'systems-architecture';
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting && entry.target.dataset.domain) activeDomain = entry.target.dataset.domain;
+      });
+    }, { threshold:0.6 });
+    document.querySelectorAll('.flagship').forEach(function(s){ io.observe(s); });
+  }
+
+  var mx = -9999, my = -9999;
+  window.addEventListener('mousemove', function(e){ mx = e.clientX * dpr; my = e.clientY * dpr; });
+
+  var N = 140;
+  var pts = [];
+  var colorKeys = Object.keys(DOMAIN_COLOR);
+  for(var i = 0; i < N; i++){
+    pts.push({
+      x: Math.random() * 2000, y: Math.random() * 2000,
+      vx:(Math.random() - 0.5) * 0.3, vy:(Math.random() - 0.5) * 0.3,
+      domain: colorKeys[i % colorKeys.length]
+    });
+  }
+  // scatter into actual canvas bounds once sized
+  requestAnimationFrame(function(){ pts.forEach(function(p){ p.x = Math.random() * W; p.y = Math.random() * H; }); });
+
+  var HIGHLIGHT_R = 160 * dpr;
+
+  function frame(){
+    ctx.clearRect(0, 0, W, H);
+    pts.forEach(function(p){
+      if(!reduce){
+        p.vx += (Math.random() - 0.5) * 0.05; p.vy += (Math.random() - 0.5) * 0.05;
+        p.vx *= 0.985; p.vy *= 0.985;
+        p.x += p.vx; p.y += p.vy;
+        if(p.x < 0) p.x += W; if(p.x > W) p.x -= W;
+        if(p.y < 0) p.y += H; if(p.y > H) p.y -= H;
+      }
+      var isActive = p.domain === activeDomain;
+      var d = Math.hypot(p.x - mx, p.y - my);
+      var nearCursor = Math.max(0, 1 - d / HIGHLIGHT_R);
+      var baseAlpha = isActive ? 0.55 : 0.14;
+      var alpha = Math.min(1, baseAlpha + nearCursor * 0.6);
+      var radius = (isActive ? 5.5 : 3.5) * dpr * (1 + nearCursor * 1.6);
+      var color = DOMAIN_COLOR[p.domain];
+      var g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius);
+      var hex = Math.round(alpha * 255).toString(16).padStart(2, '0');
+      g.addColorStop(0, color + hex);
+      g.addColorStop(1, color + '00');
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(p.x, p.y, radius, 0, Math.PI * 2); ctx.fill();
+    });
+    requestAnimationFrame(frame);
+  }
+  frame();
+})();
+</script>

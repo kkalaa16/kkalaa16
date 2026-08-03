@@ -1,0 +1,190 @@
+<title>Direction: James Finch grayscale reveal</title>
+<meta name="description" content="James Finch's technique applied alone: project visuals sit grayscale by default and bloom to color on hover, a book-spine label per section, and a full-screen blurred nav overlay.">
+
+<style>
+:root{
+  --bg:#060608;
+  --ink:#efefef;
+  --ink-dim:#9aa0a6;
+  --ink-faint:#6b7076;
+  --line:rgba(255,255,255,.14);
+  --mono: ui-monospace,"Cascadia Code","SFMono-Regular",Consolas,"Liberation Mono",monospace;
+  --sans: -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*,*::before,*::after{ box-sizing:border-box; }
+html,body{ margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); }
+
+.note{
+  position:fixed; top:10px; left:50%; transform:translateX(-50%); z-index:50;
+  max-width:640px; padding:.5rem .9rem; background:rgba(16,16,20,.85); backdrop-filter:blur(6px);
+  border:1px solid var(--line); font-family:var(--mono); font-size:.7rem; color:var(--ink-dim);
+  line-height:1.5; text-align:center; border-radius:3px;
+}
+.note b{ color:var(--ink); }
+
+.nav-toggle{
+  position:fixed; top:20px; right:24px; z-index:55; display:flex; align-items:center; gap:.5rem;
+  background:#101014; border:1px solid var(--line); color:var(--ink); font-family:var(--mono);
+  font-size:.75rem; letter-spacing:.06em; text-transform:uppercase; padding:.5rem .7rem .5rem .55rem;
+  border-radius:100px; cursor:pointer;
+}
+.nav-toggle .dot{ width:8px; height:8px; border-radius:50%; background:#ff4d00; transition:width 260ms ease; flex:none; display:inline-block; }
+.nav-toggle:hover .dot{ width:22px; }
+
+.nav-overlay{
+  position:fixed; inset:0; z-index:70; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1.2rem;
+  background:rgba(0,0,0,.82); backdrop-filter:blur(10px) grayscale(1); -webkit-backdrop-filter:blur(10px) grayscale(1);
+  opacity:0; pointer-events:none; transition:opacity 380ms ease;
+}
+.nav-overlay.open{ opacity:1; pointer-events:auto; }
+.nav-overlay a{ color:var(--ink); text-decoration:none; font-weight:800; font-size:6vw; line-height:1; font-family:var(--sans); }
+.nav-overlay a:hover{ color:#ff4d00; }
+.nav-overlay .close{ position:absolute; top:22px; right:28px; font-family:var(--mono); font-size:.8rem; color:var(--ink-dim); cursor:pointer; }
+
+.scroll-container{ height:100vh; overflow-y:scroll; scroll-snap-type:y mandatory; }
+.snap{ height:100vh; scroll-snap-align:start; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0 8vw; }
+
+.hero h1{ font-size:clamp(2.2rem,6vw,4.2rem); font-weight:800; margin:0; text-align:center; text-transform:uppercase; }
+.hero p{ font-family:var(--mono); color:var(--ink-dim); font-size:.9rem; margin-top:1rem; text-align:center; }
+
+.flagship{ width:100%; max-width:1100px; margin:0 auto; display:flex; align-items:center; gap:4vw; }
+.spine{
+  writing-mode:vertical-lr; transform:rotate(180deg); font-family:var(--mono); font-weight:700;
+  font-size:1.6vw; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint); flex:none;
+  border-right:1px solid var(--line); padding-right:1.2vw; height:38vh; display:flex; align-items:center;
+}
+.visual-box{ flex:1; height:46vh; border-radius:6px; overflow:hidden; border:1px solid var(--line); position:relative; }
+.visual-box canvas{ width:100%; height:100%; display:block; filter:grayscale(1) brightness(.7); transition:filter 720ms ease; }
+.flagship:hover .visual-box canvas, .flagship.in-view .visual-box canvas{ filter:grayscale(0) brightness(1); }
+.info{ flex:1; }
+.info .eyebrow{ font-family:var(--mono); font-size:.78rem; letter-spacing:.1em; text-transform:uppercase; margin-bottom:.6rem; }
+.info h2{ font-size:clamp(1.5rem,2.6vw,2.2rem); margin:0 0 .8rem; font-weight:800; }
+.info p{ color:var(--ink-dim); line-height:1.6; max-width:46ch; margin:0; }
+
+@media (prefers-reduced-motion: reduce){
+  .scroll-container{ scroll-snap-type:none; }
+  .visual-box canvas, .nav-overlay, .nav-toggle .dot{ transition:none; }
+}
+@media (max-width:760px){
+  .flagship{ flex-direction:column; }
+  .spine{ writing-mode:horizontal-tb; transform:none; height:auto; border-right:none; border-bottom:1px solid var(--line); padding:0 0 .6rem; width:100%; font-size:1rem; }
+  .visual-box{ width:100%; height:30vh; }
+}
+</style>
+
+<div class="note">
+  <b>James Finch's technique, alone</b> -- each project visual sits grayscale by default and
+  blooms to full color on hover (or scroll-into-view on touch), a book-spine label runs down
+  the section edge, and the nav is a full-screen blurred grayscale overlay. Boxes now run a
+  live particle field instead of a static image, since there is no real photography to reveal.
+</div>
+
+<button class="nav-toggle" id="navToggle"><span class="dot"></span>Menu</button>
+<div class="nav-overlay" id="navOverlay">
+  <span class="close" id="navClose">CLOSE</span>
+  <a href="#work">Work</a>
+  <a href="#archive">Archive</a>
+  <a href="#about">About</a>
+  <a href="#contact">Contact</a>
+</div>
+
+<div class="scroll-container">
+  <section class="snap hero">
+    <h1>I find trends<br>in chaos</h1>
+    <p>M.S. Aerospace, Georgia Tech &middot; Propulsion &middot; CFD &middot; Scientific ML</p>
+  </section>
+
+  <section class="snap flagship">
+    <div class="spine">Aerospace &middot; 01</div>
+    <div class="visual-box"><canvas data-color="#ff4d00" data-count="26"></canvas></div>
+    <div class="info">
+      <div class="eyebrow" style="color:#ff4d00">Aerospace Systems Architecture</div>
+      <h2>Ibrido: XV-15 Hybrid-Electric Tiltrotor</h2>
+      <p>A real VFS Student Design Competition entry: down-selected a distributed parallel hybrid-electric architecture across a 3-engineer, 4-topology trade study, projecting +53% payload and +28.5% range.</p>
+    </div>
+  </section>
+
+  <section class="snap flagship">
+    <div class="spine">Validation &middot; 02</div>
+    <div class="visual-box"><canvas data-color="#ffa500" data-count="26"></canvas></div>
+    <div class="info">
+      <div class="eyebrow" style="color:#ffa500">Computational Validation</div>
+      <h2>TU/e NH3/H2 Combustion (FGM)</h2>
+      <p>Reduced-chemistry workflow validated against a higher-cost detailed-chemistry baseline: 86.7% runtime reduction, physically consistent fields.</p>
+    </div>
+  </section>
+
+  <section class="snap flagship">
+    <div class="spine">Applied ML &middot; 03</div>
+    <div class="visual-box"><canvas data-color="#00ff41" data-count="26"></canvas></div>
+    <div class="info">
+      <div class="eyebrow" style="color:#00ff41">Applied Machine Learning</div>
+      <h2>Neural Mean-Field Game Simulator</h2>
+      <p>A Neural SDE (learned drift/diffusion) layered on a known base drift, trained to match an analytic Nash equilibrium, validated by an 84-test suite.</p>
+    </div>
+  </section>
+
+  <section class="snap flagship">
+    <div class="spine">Dynamics &middot; 04</div>
+    <div class="visual-box"><canvas data-color="#00bfff" data-count="26"></canvas></div>
+    <div class="info">
+      <div class="eyebrow" style="color:#00bfff">Nonlinear Dynamics &amp; Stability</div>
+      <h2>DRDO Lotka-Volterra Dynamics</h2>
+      <p>Nonlinear predator-prey dynamics and Jacobian stability analysis around equilibrium points, co-authored into a paper.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function initLiveCanvas(canvas){
+    var color = canvas.dataset.color, count = parseInt(canvas.dataset.count, 10) || 24;
+    var ctx = canvas.getContext('2d');
+    var dpr = window.devicePixelRatio || 1;
+    function size(){ var r = canvas.getBoundingClientRect(); canvas.width = r.width * dpr; canvas.height = r.height * dpr; }
+    size();
+    window.addEventListener('resize', size);
+    var pts = [];
+    for(var i = 0; i < count; i++){
+      pts.push({ x:Math.random() * canvas.width, y:Math.random() * canvas.height, vx:(Math.random() - 0.5) * 0.5, vy:(Math.random() - 0.5) * 0.5 });
+    }
+    function frame(){
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      pts.forEach(function(p){
+        if(!reduce){
+          p.vx += (Math.random() - 0.5) * 0.06; p.vy += (Math.random() - 0.5) * 0.06;
+          p.vx *= 0.98; p.vy *= 0.98;
+          p.x += p.vx; p.y += p.vy;
+          if(p.x < 0) p.x += canvas.width; if(p.x > canvas.width) p.x -= canvas.width;
+          if(p.y < 0) p.y += canvas.height; if(p.y > canvas.height) p.y -= canvas.height;
+        }
+        var g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 9 * dpr);
+        g.addColorStop(0, color + 'BB'); g.addColorStop(1, color + '00');
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(p.x, p.y, 9 * dpr, 0, Math.PI * 2); ctx.fill();
+      });
+      if(!reduce) requestAnimationFrame(frame);
+    }
+    frame();
+  }
+  document.querySelectorAll('.visual-box canvas').forEach(initLiveCanvas);
+
+  var navToggle = document.getElementById('navToggle');
+  var navOverlay = document.getElementById('navOverlay');
+  var navClose = document.getElementById('navClose');
+  navToggle.addEventListener('click', function(){ navOverlay.classList.add('open'); });
+  navClose.addEventListener('click', function(){ navOverlay.classList.remove('open'); });
+  navOverlay.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){ navOverlay.classList.remove('open'); });
+  });
+
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){ entry.target.classList.toggle('in-view', entry.isIntersecting); });
+    }, { threshold:0.6 });
+    document.querySelectorAll('.flagship').forEach(function(s){ io.observe(s); });
+  }
+})();
+</script>
