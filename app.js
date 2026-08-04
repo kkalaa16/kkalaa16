@@ -211,10 +211,16 @@ function initEduCat(){
       played = true;
       cat.classList.remove('idle');
       cat.classList.add('run');
-      setTimeout(function(){
+      // Land exactly when the real left-position transition finishes,
+      // instead of guessing a timeout close to the CSS duration -- a
+      // mismatch there is what could leave the run-cycle sprite and the
+      // actual stopping point out of sync.
+      cat.addEventListener('transitionend', function onArrive(e){
+        if(e.propertyName !== 'left') return;
+        cat.removeEventListener('transitionend', onArrive);
         cat.classList.remove('run');
         cat.classList.add('idle', 'idle-gt');
-      }, 2500);
+      });
     }
   }, { threshold:0.4 }).observe(runway);
 }
@@ -1218,13 +1224,42 @@ function initProjectModal(){
     elScope.textContent = scopeEl ? scopeEl.textContent : '';
     elScope.style.display = scopeEl ? '' : 'none';
 
+    gallery.innerHTML = '';
+
+    // A project with a real live site embeds it directly, browser-chrome
+    // framed, instead of just linking out -- swaps in for the image
+    // gallery entirely for that project.
+    var embedUrl = card.dataset.embed;
+    if(embedUrl){
+      var frame = document.createElement('div');
+      frame.className = 'browser-frame';
+      var bar = document.createElement('div');
+      bar.className = 'browser-frame-bar';
+      bar.innerHTML = '<span class="browser-dot"></span><span class="browser-dot"></span><span class="browser-dot"></span>';
+      var urlSpan = document.createElement('span');
+      urlSpan.className = 'browser-url';
+      urlSpan.textContent = embedUrl.replace(/^https?:\/\//, '');
+      var openLink = document.createElement('a');
+      openLink.className = 'browser-open';
+      openLink.href = embedUrl; openLink.target = '_blank'; openLink.rel = 'noopener';
+      openLink.title = 'Open in new tab';
+      openLink.textContent = '↗';
+      bar.appendChild(urlSpan); bar.appendChild(openLink);
+      var iframe = document.createElement('iframe');
+      iframe.src = embedUrl; iframe.loading = 'lazy'; iframe.title = textOf(titleEl) + ' (live site)';
+      frame.appendChild(bar); frame.appendChild(iframe);
+      gallery.appendChild(frame);
+      gallery.style.display = '';
+      open();
+      return;
+    }
+
     var images = [];
     var mainImg = card.querySelector('.plate-media img, .arc-media img');
     if(mainImg) images.push({ src:mainImg.getAttribute('src'), alt:mainImg.alt, caption:mainImg.alt });
     var extra = EXTRA_IMAGES[card.dataset.id] || [];
     images = images.concat(extra);
 
-    gallery.innerHTML = '';
     if(images.length){
       images.forEach(function(im){
         var fig = document.createElement('figure');

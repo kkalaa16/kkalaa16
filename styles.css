@@ -242,11 +242,6 @@ body.lock-scroll{ overflow:hidden; }
 .plate-row b{ font-family:var(--mono); font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-faint); display:block; margin-bottom:.2rem; }
 .plate-tags{ display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.3rem; }
 .plate-tags span{ font-family:var(--mono); font-size:.78rem; text-transform:uppercase; border:1px solid var(--line-strong); padding:.3rem .6rem; color:var(--ink-dim); }
-.plate-link{
-  align-self:flex-start; margin-top:.2rem; font-family:var(--mono); font-size:.85rem; font-weight:700;
-  color:var(--accent); text-decoration:none; border-bottom:1.5px solid var(--accent); padding-bottom:1px;
-}
-.plate-link:hover{ color:var(--ink); border-color:var(--ink); }
 .plate-scope{
   margin-top:.4rem; padding:.7rem .9rem; background:var(--bg-panel-2);
   font-family:var(--mono); font-size:.84rem; color:var(--ink-dim); line-height:1.55;
@@ -303,11 +298,15 @@ body.lock-scroll{ overflow:hidden; }
 @media (max-width:1100px){ .skills-groups{ grid-template-columns:repeat(3,1fr); } }
 @media (max-width:700px){ .skills-groups{ grid-template-columns:repeat(2,1fr); } }
 @media (max-width:460px){ .skills-groups{ grid-template-columns:1fr; } }
-.skill-group h3{ font-size:1.05rem; font-weight:780; text-transform:uppercase; letter-spacing:.02em; margin:0 0 1rem; }
-.skill-chips{ display:flex; flex-wrap:wrap; gap:0; border-top:1px solid var(--line-strong); border-left:1px solid var(--line-strong); }
+.skill-group{ display:flex; flex-direction:column; align-items:center; text-align:center; }
+.skill-group h3{
+  font-size:1.05rem; font-weight:780; text-transform:uppercase; letter-spacing:.02em; margin:0 0 1rem;
+  min-height:2.7em; display:flex; align-items:flex-end; justify-content:center;
+}
+.skill-chips{ display:flex; flex-wrap:wrap; gap:.5rem; justify-content:center; }
 .skill-chips span{
-  font-family:var(--mono); font-size:.9rem; padding:.6rem 1rem; border-right:1px solid var(--line-strong);
-  border-bottom:1px solid var(--line-strong); color:var(--ink); display:flex; align-items:center; gap:.5rem;
+  font-family:var(--mono); font-size:.9rem; padding:.55rem .95rem; border:1px solid var(--line-strong);
+  background:var(--bg-panel); color:var(--ink); display:flex; align-items:center; gap:.5rem;
 }
 .skill-chips span img{ width:18px; height:18px; object-fit:contain; flex:none; }
 .globe-wrap{ position:relative; width:100%; max-width:740px; height:600px; margin:0 auto 1.4rem; }
@@ -477,6 +476,17 @@ body.modal-open{ overflow:hidden; }
   font-family:var(--mono); font-size:.74rem; color:var(--ink-dim); line-height:1.5;
   padding:.55rem .7rem; border-top:1.5px solid var(--ink);
 }
+
+/* A live project site embedded directly in the card, browser-chrome
+   framed, instead of a small easy-to-miss text link. */
+.browser-frame{ margin:1rem 1rem 0; border:1.5px solid var(--ink); background:var(--bg-panel-2); }
+.browser-frame-bar{ display:flex; align-items:center; gap:.5rem; padding:.55rem .7rem; border-bottom:1.5px solid var(--ink); background:var(--bg-panel-b); }
+.browser-dot{ width:9px; height:9px; border-radius:50%; background:var(--ink-faint); display:inline-block; }
+.browser-url{ font-family:var(--mono); font-size:.76rem; color:var(--ink-dim); margin-left:.4rem; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.browser-open{ font-family:var(--mono); font-size:.95rem; color:var(--accent); text-decoration:none; flex:none; }
+.browser-open:hover{ color:var(--ink); }
+.browser-frame iframe{ width:100%; height:60vh; min-height:420px; display:block; border:none; background:var(--bg-panel); }
+
 .modal-body{ padding:1.6rem 1.7rem 1.9rem; display:flex; flex-direction:column; gap:.8rem; }
 .modal-period{ font-family:var(--mono); font-size:.8rem; color:var(--accent); text-transform:uppercase; letter-spacing:.03em; font-weight:700; }
 .modal-title{ font-size:1.65rem; font-weight:800; text-transform:uppercase; letter-spacing:-.005em; margin:0; line-height:1.15; color:var(--ink); }
