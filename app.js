@@ -11,6 +11,7 @@ window.addEventListener('load', function(){
   initArchiveMechanic();
   initGlobe();
   initPillarsWeb();
+  initProjectModal();
 });
 
 /* ============================================================
@@ -508,15 +509,19 @@ function initGlobe(){
   window.addEventListener('resize', size);
   var ctx = canvas.getContext('2d');
 
+  // Real software gets its actual logo; SysML/MBSE has no single product
+  // logo (it's a modeling notation, not a tool), so it keeps the
+  // short-form text badge -- same tools-get-icons/processes-get-text
+  // split the original site used.
   var SKILLS = [
-    { name:'ANSYS Fluent', mono:'FL', lat:42, lon:15 },
-    { name:'OpenFOAM', mono:'OF', lat:-18, lon:35 },
-    { name:'OpenMDAO', mono:'MD', lat:-12, lon:-55 },
-    { name:'MATLAB', mono:'ML', lat:30, lon:50 },
-    { name:'Python', mono:'PY', lat:8, lon:120 },
-    { name:'PyTorch', mono:'PT', lat:-26, lon:-120 },
+    { name:'ANSYS Fluent', mono:'FL', icon:'assets/icons/ansys.png', lat:42, lon:15 },
+    { name:'OpenFOAM', mono:'OF', icon:'assets/icons/openfoam.png', lat:-18, lon:35 },
+    { name:'OpenMDAO', mono:'MD', icon:'assets/icons/gear.png', lat:-12, lon:-55 },
+    { name:'MATLAB', mono:'ML', icon:'assets/icons/matlab.png', lat:30, lon:50 },
+    { name:'Python', mono:'PY', icon:'assets/icons/python_snakes.png', lat:8, lon:120 },
+    { name:'PyTorch', mono:'PT', icon:'assets/icons/flame.png', lat:-26, lon:-120 },
     { name:'Systems / MBSE', mono:'SY', lat:52, lon:95 },
-    { name:'C++', mono:'C+', lat:-45, lon:170 }
+    { name:'C++', mono:'C+', icon:'assets/icons/cpp.png', lat:-45, lon:170 }
   ];
 
   function toXYZ(lat, lon, r){
@@ -524,7 +529,12 @@ function initGlobe(){
     return { x:-r*Math.sin(phi)*Math.cos(th), y:r*Math.cos(phi), z:r*Math.sin(phi)*Math.sin(th) };
   }
   var R = 160;
-  var pts = SKILLS.map(function(s){ var p = toXYZ(s.lat,s.lon,R); p.name = s.name; p.mono = s.mono; return p; });
+  var pts = SKILLS.map(function(s){
+    var p = toXYZ(s.lat,s.lon,R);
+    p.name = s.name; p.mono = s.mono;
+    if(s.icon){ p.img = new Image(); p.img.src = s.icon; }
+    return p;
+  });
 
   var LAT_STEPS = [-60, -30, 0, 30, 60];
   var LON_STEPS = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
@@ -607,7 +617,7 @@ function initGlobe(){
 
   function drawBadge(pp, isHover){
     var depth = Math.max(0.2, Math.min(1,(pp.z+R)/(2*R)));
-    var rad = (isHover?16:13)*dpr*pp.scale;
+    var rad = (isHover?18:15)*dpr*pp.scale;
     if(isHover){
       ctx.beginPath(); ctx.arc(pp.sx,pp.sy,rad+4*dpr,0,Math.PI*2);
       ctx.strokeStyle = 'rgba(193,58,29,' + (depth*0.7).toFixed(2) + ')';
@@ -618,10 +628,20 @@ function initGlobe(){
     ctx.beginPath(); ctx.arc(pp.sx,pp.sy,rad,0,Math.PI*2);
     ctx.fillStyle = fill; ctx.fill();
     ctx.strokeStyle = stroke; ctx.lineWidth = 1.4*dpr; ctx.stroke();
-    ctx.font = (isHover ? '700 ' : '600 ') + (10*dpr*pp.scale) + 'px ' + 'ui-monospace,Consolas,monospace';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillStyle = isHover ? '#fff' : 'rgba(20,23,26,' + (0.5+depth*0.5).toFixed(2) + ')';
-    ctx.fillText(pp.mono, pp.sx, pp.sy + 0.5*dpr);
+
+    if(pp.img && pp.img.complete && pp.img.naturalWidth > 0){
+      ctx.save();
+      ctx.beginPath(); ctx.arc(pp.sx, pp.sy, rad*0.78, 0, Math.PI*2); ctx.clip();
+      ctx.globalAlpha = 0.55 + depth*0.45;
+      ctx.drawImage(pp.img, pp.sx-rad*0.78, pp.sy-rad*0.78, rad*1.56, rad*1.56);
+      ctx.globalAlpha = 1;
+      ctx.restore();
+    } else {
+      ctx.font = (isHover ? '700 ' : '600 ') + (10*dpr*pp.scale) + 'px ' + 'ui-monospace,Consolas,monospace';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = isHover ? '#fff' : 'rgba(20,23,26,' + (0.5+depth*0.5).toFixed(2) + ')';
+      ctx.fillText(pp.mono, pp.sx, pp.sy + 0.5*dpr);
+    }
   }
 
   function frame(){
@@ -646,7 +666,7 @@ function initGlobe(){
 
     lastProjected = pts.map(function(p){
       var pp = project(p, focal, cx, cy);
-      pp.name = p.name; pp.mono = p.mono;
+      pp.name = p.name; pp.mono = p.mono; pp.img = p.img;
       return pp;
     });
     var order = lastProjected.map(function(_,i){ return i; }).sort(function(a,b){ return lastProjected[a].z-lastProjected[b].z; });
@@ -654,85 +674,59 @@ function initGlobe(){
     requestAnimationFrame(frame);
   }
   if(reduce){
-    ctx.clearRect(0,0,W,H);
-    var cx0=W/2, cy0=H/2;
-    var focal0 = FOCAL*dpr;
-    latRings.forEach(function(ring){ drawWireRing(ring, focal0, cx0, cy0); });
-    lonRings.forEach(function(ring){ drawWireRing(ring, focal0, cx0, cy0); });
-    pts.forEach(function(p){
-      var r = rotate(p, 0.6, -0.2);
-      var scale = focal0/(focal0+r.z);
-      drawBadge({ sx:cx0+r.x*scale, sy:cy0-r.y*scale, z:r.z, scale:scale, mono:p.mono }, false);
-    });
+    function drawStatic(){
+      ctx.clearRect(0,0,W,H);
+      var cx0=W/2, cy0=H/2;
+      var focal0 = FOCAL*dpr;
+      latRings.forEach(function(ring){ drawWireRing(ring, focal0, cx0, cy0); });
+      lonRings.forEach(function(ring){ drawWireRing(ring, focal0, cx0, cy0); });
+      pts.forEach(function(p){
+        var r = rotate(p, 0.6, -0.2);
+        var scale = focal0/(focal0+r.z);
+        drawBadge({ sx:cx0+r.x*scale, sy:cy0-r.y*scale, z:r.z, scale:scale, mono:p.mono, img:p.img }, false);
+      });
+    }
+    drawStatic();
+    pts.forEach(function(p){ if(p.img) p.img.addEventListener('load', drawStatic); });
   } else {
     requestAnimationFrame(frame);
   }
 }
 
 /* ============================================================
-   PILLARS WEB — 19 projects on 4 domain planes through a shared
-   origin (like a gyroscope), plus 2 bridge planes for the two
-   projects that genuinely span two domains, sitting at an exact
-   angle-bisector between their parents. Ported from
-   design/cluster-3d-planes-prototype.html and recolored to this
-   site's single-accent light theme (no per-domain neon -- color
-   here still only marks the hovered ball, same rule as every
-   other interactive element on this page). Pillars/projects and
-   their connections are drawn from the graphify knowledge graph,
-   not invented for this page. All DOM lookups are scoped to
-   #pillars so the fairly generic inner IDs can't collide with
-   anything else on the page.
+   PROJECT CLUSTERS — 19 projects grouped into 4 domain "territories"
+   (soft glow regions), sized by real connection weight, with the 2
+   genuinely cross-domain projects (Ibrido, MFG) pulled to the border
+   of their home territory and a hover-only dashed thread to their
+   secondary tie. Ported from design/dark-colorful-revamp.html's
+   bubble-field engine (the direction actually approved after the
+   radial web's arms collided into unreadable labels at 19 projects).
+   Domain color is the one deliberate exception to this site's
+   single-accent rule: with 4 real categories, color is carrying
+   real information (which cluster a project belongs to), not
+   decorating -- same 4 hex values already used on the skills globe.
+   Bubbles are real SVG elements (not canvas), so native hover/click/
+   keyboard events work without hand-rolled hit-testing. Clicking a
+   bubble opens the same project-detail modal as the highlight
+   plates and archive cards, when that project has a matching card.
+   All DOM lookups are scoped to #pillars so the generic inner
+   class names (.body, .key, .stage) can't collide elsewhere.
    ============================================================ */
 function initPillarsWeb(){
   var root = document.getElementById('pillars');
   if(!root) return;
 
-  function dot(a,b){ return a[0]*b[0]+a[1]*b[1]+a[2]*b[2]; }
-  function cross(a,b){ return [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]]; }
-  function vnorm(a){ return Math.sqrt(dot(a,a)); }
-  function normalize(a){ var m = vnorm(a); return [a[0]/m, a[1]/m, a[2]/m]; }
-  function vadd(a,b){ return [a[0]+b[0],a[1]+b[1],a[2]+b[2]]; }
-  function vsub(a,b){ return [a[0]-b[0],a[1]-b[1],a[2]-b[2]]; }
-  function vscale(a,s){ return [a[0]*s,a[1]*s,a[2]*s]; }
-
-  function basisFor(n){
-    var arb = Math.abs(n[2]) < 0.9 ? [0,0,1] : [1,0,0];
-    var proj = vscale(n, dot(arb, n));
-    var u1 = normalize(vsub(arb, proj));
-    var u2 = normalize(cross(n, u1));
-    return { u1:u1, u2:u2 };
-  }
-
-  // Each domain owns a distinct plane through the shared origin, chosen so
-  // the two pairs that actually have a connecting project (Aerospace/
-  // Validation via Ibrido, ML/Dynamics via MFG) are exactly 90 degrees
-  // apart -- which makes their bisector plane land at exactly 45 degrees
-  // to each, not an approximation.
-  var DOMAINS = [
-    { id:'systems-architecture', label:'AEROSPACE SYSTEMS ARCHITECTURE', normal:[1,0,0], phase:0 },
-    { id:'validation', label:'COMPUTATIONAL VALIDATION', normal:[0,1,0], phase:20 },
-    { id:'physics-ml', label:'APPLIED MACHINE LEARNING', normal:[0,0,1], phase:40 },
-    { id:'nonlinear-dynamics', label:'NONLINEAR DYNAMICS & STABILITY', normal:normalize([-0.707,0.707,0]), phase:60 }
+  var TERRITORIES = [
+    { id:'systems-architecture', label:'AEROSPACE SYSTEMS ARCHITECTURE', color:'#ff4d00', anchor:{x:-260,y:-210}, headingY:-440 },
+    { id:'physics-ml', label:'APPLIED MACHINE LEARNING', color:'#00ff41', anchor:{x:270,y:-180}, headingY:-440 },
+    { id:'validation', label:'COMPUTATIONAL VALIDATION', color:'#ffa500', anchor:{x:-260,y:275}, headingY:50 },
+    { id:'nonlinear-dynamics', label:'NONLINEAR DYNAMICS & STABILITY', color:'#00bfff', anchor:{x:270,y:330}, headingY:50 }
   ];
-  var domainById = {};
-  DOMAINS.forEach(function(d){ domainById[d.id] = d; d.basis = basisFor(d.normal); });
-
-  var BRIDGES = [
-    { id:'ibrido-bridge', a:'systems-architecture', b:'validation', leaf:'ibrido' },
-    { id:'mfg-bridge', a:'physics-ml', b:'nonlinear-dynamics', leaf:'mfg' }
-  ];
-  BRIDGES.forEach(function(br){
-    var na = domainById[br.a].normal, nb = domainById[br.b].normal;
-    br.normal = normalize(vadd(na, nb));
-    br.basis = basisFor(br.normal);
-  });
-  var bridgeByLeaf = {};
-  BRIDGES.forEach(function(br){ bridgeByLeaf[br.leaf] = br; });
 
   var LEAVES = [
     { id:'ibrido', short:'Ibrido', label:'Ibrido: XV-15 Hybrid-Electric Tiltrotor', desc:'Down-selected a parallel hybrid-electric architecture across a 3-engineer, 4-topology trade study. Validated against real NASA flight-test data -- the hybrid clears a cruise speed (348 KTAS) the conventional baseline can\'t reach at all (278 KTAS).', img:'img/ibrido_flight_envelope.png', pillars:[{id:'systems-architecture',strength:1},{id:'validation',strength:0.6}] },
     { id:'doosan', short:'Doosan', label:'H2/CH4 Micromixer Reacting-Flow CFD', desc:'Mechanism-level comparison (SkeleCHy, HyChem, San Diego) and FGM-vs-finite-rate workflow validation for high-hydrogen micromixer combustion.', pillars:[{id:'validation',strength:1}] },
-    { id:'sovern', short:'Ti-6Al-4V', label:'Ti-6Al-4V Supply Chain Risk', desc:'Graph-based supplier concentration metrics and TOPSIS-ranked mitigations for aerospace titanium dependencies.', img:'img/s15_mitigation_layers.png', pillars:[{id:'systems-architecture',strength:1}] },
+    { id:'boeing', short:'Ti-6Al-4V', label:'Ti-6Al-4V Supply Chain Risk', desc:'Graph-based supplier concentration metrics and TOPSIS-ranked mitigations for aerospace titanium dependencies.', img:'img/s15_mitigation_layers.png', pillars:[{id:'systems-architecture',strength:1}] },
     { id:'bwb', short:'H2 BWB', label:'Hydrogen Blended-Wing-Body Concept', desc:'QFD + morphological matrix + TOPSIS concept downselection inside a full SysML/MBSE model.', img:'img/MBSE1.png', pillars:[{id:'systems-architecture',strength:1}] },
     { id:'afrl', short:'AFRL MDAO', label:'AFRL Tactical Mobility MDAO', desc:'OpenMDAO workflow tying propulsion, structures, and mission sizing into one coherent trade, projecting +15.7% range.', img:'img/MDAO2.png', pillars:[{id:'systems-architecture',strength:1}] },
     { id:'hyperloop', short:'Hyperloop', label:'Hyperloop Mechanical Design & Subsystem Integration', desc:'Propulsion-interface redesign (LIM vs. LSM trade study) and GD&T across 50+ high-load components; cut manufacturing defects by 22%.', img:'img/cold gas thruster.PNG', pillars:[{id:'systems-architecture',strength:1}] },
@@ -741,287 +735,529 @@ function initPillarsWeb(){
     { id:'vawt', short:'VAWT', label:'Vertical Axis Wind Turbine Design Comparison', desc:'Designed and parametrically compared multiple VAWT configurations against each other for rotor performance -- a real trade study, not a single-design study.', img:'img/1.JPG', pillars:[{id:'systems-architecture',strength:1}] },
     { id:'mfg', short:'MFG', label:'Neural Mean-Field Game Simulator', desc:'A Neural SDE (learned drift/diffusion) layered on a known base drift, trained to match an analytic Nash equilibrium, validated by an 84-test suite.', img:'img/mfg_w2_vs_N.png', pillars:[{id:'physics-ml',strength:1},{id:'nonlinear-dynamics',strength:1},{id:'validation',strength:0.6}] },
     { id:'option-pricing', short:'SciML ROM', label:'Scientific ML Surrogate Modeling', desc:'A physics-informed reduced-order model plus a Fourier Neural Operator residual correction.', img:'img/output2.png', pillars:[{id:'physics-ml',strength:1}] },
-    { id:'f1-telemetry', short:'Telemetry ML', label:'Vehicle Telemetry ML Dashboard', desc:'Unsupervised ML (PCA, clustering, isolation forest) surfacing braking signatures, track archetypes, and anomaly patterns straight from raw telemetry -- pattern discovery with no physics baseline underneath.', pillars:[{id:'physics-ml',strength:1}] },
-    { id:'drdo', short:'DRDO L-V', label:'DRDO Lotka-Volterra Dynamics', desc:'Nonlinear predator-prey dynamics and Jacobian stability analysis around equilibrium points, co-authored into a paper.', img:'img/drdo_phase_plane.jpg', pillars:[{id:'nonlinear-dynamics',strength:1}] },
-    { id:'cavitation', short:'Cavitation', label:'Pump Cavitation Detection', desc:'Early-stage acoustic diagnostics scoping for a system stability/onset problem.', pillars:[{id:'nonlinear-dynamics',strength:0.6}] },
+    { id:'telemetry-ml', short:'Telemetry ML', label:'Vehicle Telemetry ML Dashboard', desc:'Unsupervised ML (PCA, clustering, isolation forest) surfacing braking signatures, track archetypes, and anomaly patterns straight from raw telemetry -- pattern discovery with no physics baseline underneath.', img:'img/telemetry_pca_clusters.png', pillars:[{id:'physics-ml',strength:1}] },
+    { id:'cabs', short:'DRDO L-V', label:'DRDO Lotka-Volterra Dynamics', desc:'Nonlinear predator-prey dynamics and Jacobian stability analysis around equilibrium points, co-authored into a paper.', img:'img/drdo_phase_plane.jpg', pillars:[{id:'nonlinear-dynamics',strength:1}] },
+    { id:'tcnj', short:'Cavitation', label:'Pump Cavitation Detection', desc:'Early-stage acoustic diagnostics scoping for a system stability/onset problem.', pillars:[{id:'nonlinear-dynamics',strength:0.6}] },
     { id:'tue', short:'TU/e FGM', label:'TU/e NH3/H2 Combustion (FGM)', desc:'Reduced-chemistry workflow validated against a higher-cost detailed-chemistry baseline: 86.7% runtime reduction, physically consistent fields.', img:'img/TUE1.png', pillars:[{id:'validation',strength:1}] },
     { id:'thesis', short:'Drone Thesis', label:'Drone Rotor Test & Validation', desc:'OpenFOAM CFD checked directly against a physical test rig\'s measured wake data.', img:'assets/mesh_cyclicami_prop.png', pillars:[{id:'validation',strength:1}] },
     { id:'iit', short:'IIT Bombay', label:'IIT Bombay Ventilation CFD', desc:'Ceiling-fan indoor-ventilation CFD validated against thermal-stratification and air-change-rate measurements.', img:'img/iit_room_top_view.png', pillars:[{id:'validation',strength:1}] },
     { id:'fsi', short:'FSI Wave', label:'FSI Elastic Wave Propagation', desc:'Coupled OpenFOAM + CalculiX fluid-structure interaction via preCICE.', pillars:[{id:'validation',strength:1}] },
     { id:'scramjet', short:'Scramjet', label:'Scramjet Inlet Nozzle Validation', desc:'Ramp-inlet validation study for scramjet inlet/nozzle geometry at high Mach numbers.', pillars:[{id:'validation',strength:1}] }
   ];
+
+  var territoryById = {};
+  TERRITORIES.forEach(function(t){ territoryById[t.id] = t; });
   var leavesById = {};
   LEAVES.forEach(function(l){ leavesById[l.id] = l; });
 
-  function leafWeight(l){ var w = 0; l.pillars.forEach(function(pl){ w += pl.strength; }); return w; }
-  function leafRadius(l){ return 16 + leafWeight(l) * 11; }
   function homeDomain(l){
     var best = l.pillars[0];
     for(var i = 1; i < l.pillars.length; i++){ if(l.pillars[i].strength > best.strength) best = l.pillars[i]; }
     return best;
   }
+  function leafWeight(l){ var w = 0; l.pillars.forEach(function(pl){ w += pl.strength; }); return w; }
+  function leafRadius(l){ return 16 + leafWeight(l) * 11; }
 
-  var solo = LEAVES.filter(function(l){ return leafWeight(l) <= 1; });
-  var byDomain = {};
-  DOMAINS.forEach(function(d){ byDomain[d.id] = []; });
-  solo.forEach(function(l){ byDomain[homeDomain(l).id].push(l.id); });
+  var leafRadiusById = {};
+  LEAVES.forEach(function(l){ leafRadiusById[l.id] = leafRadius(l); });
 
-  function deg2rad(x){ return x * Math.PI / 180; }
-  function capacityAtRadius(R, minChord){
-    var k = 1;
-    while(k < 40){
-      var deltaTheta = (2 * Math.PI) / (k + 1);
-      var chord = 2 * R * Math.sin(deltaTheta / 2);
-      if(chord < minChord) return k;
-      k++;
-    }
-    return k;
+  var byTerritory = {};
+  TERRITORIES.forEach(function(t){ byTerritory[t.id] = []; });
+  LEAVES.forEach(function(l){ byTerritory[homeDomain(l).id].push(l.id); });
+
+  // A "common" leaf (tied to more than one domain) is pulled toward the
+  // border of its home territory, facing the direction of its secondary
+  // tie(s) -- reads as reaching toward the domain it also belongs to, and
+  // keeps its hover-thread short.
+  function secondaryDir(l, homeAnchor){
+    var hd = homeDomain(l);
+    var sec = l.pillars.filter(function(pl){ return pl.id !== hd.id; });
+    if(sec.length === 0) return null;
+    var vx = 0, vy = 0;
+    sec.forEach(function(pl){
+      var a = territoryById[pl.id].anchor;
+      vx += (a.x - homeAnchor.x); vy += (a.y - homeAnchor.y);
+    });
+    var mag = Math.hypot(vx, vy) || 1;
+    return { x: vx / mag, y: vy / mag };
   }
 
-  var MARGIN = 10, R0 = 170, RING_STEP = 110;
-  var local3D = {};
+  var GOLDEN = 137.508 * Math.PI / 180;
 
-  DOMAINS.forEach(function(d){
-    var ids = byDomain[d.id];
-    var remaining = ids.slice();
-    var R = R0;
-    while(remaining.length){
-      var maxLeafR = Math.max.apply(null, remaining.map(function(id){ return leafRadius(leavesById[id]); }));
-      var minChord = 2 * maxLeafR + MARGIN;
-      var cap = capacityAtRadius(R, minChord);
-      var take = remaining.splice(0, Math.min(cap, remaining.length));
-      var n = take.length;
-      take.forEach(function(id, i){
-        var thetaDeg = d.phase + (i / n) * 360;
-        var th = deg2rad(thetaDeg);
-        var a = R * Math.cos(th), b = R * Math.sin(th);
-        local3D[id] = vadd(vscale(d.basis.u1, a), vscale(d.basis.u2, b));
-      });
-      R += RING_STEP;
-    }
+  TERRITORIES.forEach(function(t){
+    var ids = byTerritory[t.id];
+    var n = ids.length;
+    var maxR = Math.max.apply(null, ids.map(function(id){ return leafRadiusById[id]; }));
+    t.clusterRadius = Math.max(60 + 36 * Math.sqrt(n), maxR * 2.5);
   });
 
-  var BRIDGE_R = 260;
-  BRIDGES.forEach(function(br){ local3D[br.leaf] = vscale(br.basis.u1, BRIDGE_R); });
+  // Greedy spiral packing, collision-checked against every previously
+  // placed circle -- correct by construction for unequal circle sizes.
+  function packTerritory(t, ids){
+    var placed = [];
+    function place(x, y, r, id){ placed.push({ id:id, x:x, y:y, r:r }); }
+    function collides(x, y, r){
+      return placed.some(function(p){ return Math.hypot(p.x - x, p.y - y) < (p.r + r + 9); });
+    }
 
-  function rotate3(p, ry, rx){
-    var x1 = p[0] * Math.cos(ry) + p[2] * Math.sin(ry);
-    var z1 = -p[0] * Math.sin(ry) + p[2] * Math.cos(ry);
-    var y1 = p[1];
-    var y2 = y1 * Math.cos(rx) - z1 * Math.sin(rx);
-    var z2 = y1 * Math.sin(rx) + z1 * Math.cos(rx);
-    return { x:x1, y:y2, z:z2 };
+    var commonIds = ids.filter(function(id){ return secondaryDir(leavesById[id], t.anchor) !== null; });
+    var soloIds = ids.filter(function(id){ return secondaryDir(leavesById[id], t.anchor) === null; });
+
+    commonIds.forEach(function(id){
+      var r = leafRadiusById[id];
+      var dir = secondaryDir(leavesById[id], t.anchor);
+      var rad = t.clusterRadius * 0.9;
+      var theta = Math.atan2(dir.y, dir.x);
+      var x = rad * Math.cos(theta), y = rad * Math.sin(theta);
+      var attempts = 0;
+      while(collides(x, y, r) && attempts < 200){
+        theta += 0.12; attempts++;
+        x = rad * Math.cos(theta); y = rad * Math.sin(theta);
+      }
+      place(x, y, r, id);
+    });
+
+    soloIds.slice().sort(function(a, b){ return leafRadiusById[b] - leafRadiusById[a]; }).forEach(function(id, k){
+      var r = leafRadiusById[id];
+      var theta0 = k * GOLDEN;
+      var rad = 30, attempts = 0, x, y;
+      do {
+        var theta = theta0 + attempts * 0.14;
+        x = rad * Math.cos(theta); y = rad * Math.sin(theta);
+        if(!collides(x, y, r)) break;
+        attempts++;
+        if(attempts % 12 === 0) rad += 6;
+      } while(attempts < 600);
+      place(x, y, r, id);
+    });
+
+    return placed;
   }
 
-  var FOCAL = 1200;
-  function project(p, ry, rx, focal, cx, cy){
-    var r = rotate3(p, ry, rx);
-    var scale = focal / (focal + r.z);
-    return { sx:cx + r.x * scale, sy:cy - r.y * scale, z:r.z, scale:scale };
+  var leafHome = {};
+  TERRITORIES.forEach(function(t){
+    packTerritory(t, byTerritory[t.id]).forEach(function(p){
+      leafHome[p.id] = { x: t.anchor.x + p.x, y: t.anchor.y + p.y };
+    });
+  });
+
+  var svg = document.getElementById('pillarsSvg');
+  var NS = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs){
+    var e = document.createElementNS(NS, tag);
+    for(var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+  var defs = el('defs', {});
+  svg.appendChild(defs);
+
+  var particles = {};
+  LEAVES.forEach(function(l){
+    var hd = homeDomain(l);
+    var pos = leafHome[l.id];
+    particles[l.id] = { home: pos, x: pos.x, y: pos.y, vx:0, vy:0, r: leafRadius(l), color: territoryById[hd.id].color };
+  });
+  var allIds = Object.keys(particles);
+
+  var FORCE = reduce ? 0 : 1.3, SPRING = 0.016, REPEL_DIST = 82, REPEL_STRENGTH = 14, DAMPING = 0.965;
+
+  function stepParticles(){
+    allIds.forEach(function(id){
+      if(id === draggingId) return;
+      var p = particles[id];
+      p.vx += (Math.random() - 0.5) * FORCE;
+      p.vy += (Math.random() - 0.5) * FORCE;
+      p.vx += (p.home.x - p.x) * SPRING;
+      p.vy += (p.home.y - p.y) * SPRING;
+    });
+    for(var i = 0; i < allIds.length; i++){
+      for(var j = i + 1; j < allIds.length; j++){
+        var a = particles[allIds[i]], b = particles[allIds[j]];
+        var dx = a.x - b.x, dy = a.y - b.y;
+        var dist = Math.hypot(dx, dy) || 1;
+        if(dist < REPEL_DIST){
+          var f = (REPEL_DIST - dist) / REPEL_DIST * REPEL_STRENGTH;
+          var nx = dx / dist, ny = dy / dist;
+          if(allIds[i] !== draggingId){ a.vx += nx * f; a.vy += ny * f; }
+          if(allIds[j] !== draggingId){ b.vx -= nx * f; b.vy -= ny * f; }
+        }
+      }
+    }
+    allIds.forEach(function(id){
+      if(id === draggingId) return;
+      var p = particles[id];
+      p.vx *= DAMPING; p.vy *= DAMPING;
+      p.x += p.vx * 0.09; p.y += p.vy * 0.09;
+    });
   }
 
-  // ---- color: single-accent light theme, same rule as the rest of the
-  // page -- color marks the hovered ball, it isn't used to decorate every
-  // domain a different neon shade. Everything else is ink at a depth-cued
-  // alpha, read once from the real CSS custom properties.
-  var cs = getComputedStyle(document.body);
-  function cssVar(name, fallback){ var v = cs.getPropertyValue(name); return v ? v.trim() : fallback; }
-  var COL_INK = cssVar('--ink', '#14171A');
-  var COL_ACCENT = cssVar('--accent', '#C13A1D');
-  var COL_PANEL = cssVar('--bg-panel', '#F6F6F2');
-  var COL_FAINT = cssVar('--ink-faint', '#787F86');
-  function hexToRgb(hex){
-    hex = hex.replace('#','');
-    if(hex.length === 3) hex = hex.split('').map(function(c){ return c+c; }).join('');
-    var n = parseInt(hex, 16);
-    return [(n>>16)&255, (n>>8)&255, n&255];
+  function wrapLabel(label, maxChars){
+    var words = label.split(' ');
+    var lines = [], cur = '';
+    words.forEach(function(w){
+      var test = cur ? cur + ' ' + w : w;
+      if(test.length > maxChars && cur){ lines.push(cur); cur = w; }
+      else cur = test;
+    });
+    if(cur) lines.push(cur);
+    return lines;
   }
-  var RGB_INK = hexToRgb(COL_INK.indexOf('#') === 0 ? COL_INK : '#14171A');
-  var RGB_ACCENT = hexToRgb(COL_ACCENT.indexOf('#') === 0 ? COL_ACCENT : '#C13A1D');
-  function rgba(rgb, a){ return 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',' + a + ')'; }
 
-  var canvas = document.getElementById('pillarsCanvas');
-  var ctx = canvas.getContext('2d');
+  var territoryEls = [];
+  TERRITORIES.forEach(function(t, i){
+    var n = byTerritory[t.id].length;
+    var gid = 'territoryGlow' + i;
+    var grad = el('radialGradient', { id:gid });
+    grad.appendChild(el('stop', { offset:'0%', 'stop-color':t.color, 'stop-opacity':0.16 }));
+    grad.appendChild(el('stop', { offset:'55%', 'stop-color':t.color, 'stop-opacity':0.06 }));
+    grad.appendChild(el('stop', { offset:'100%', 'stop-color':t.color, 'stop-opacity':0 }));
+    defs.appendChild(grad);
+
+    var g = el('g', { class:'territory' + (reduce ? '' : ' pre-reveal') });
+    var glow = el('circle', { class:'territory-glow', cx:t.anchor.x, cy:t.anchor.y, r: t.clusterRadius * 1.55, fill:'url(#' + gid + ')' });
+    g.appendChild(glow);
+    var lines = wrapLabel(t.label, 22);
+    lines.forEach(function(line, li){
+      var tx = el('text', { class:'territory-label', x:t.anchor.x, y:t.headingY + li * 19, 'text-anchor':'middle' });
+      tx.setAttribute('fill', t.color);
+      tx.textContent = line;
+      g.appendChild(tx);
+    });
+    var count = el('text', { class:'territory-count', x:t.anchor.x, y:t.headingY + lines.length * 19 + 6, 'text-anchor':'middle' });
+    count.textContent = n + ' PROJECTS';
+    g.appendChild(count);
+    svg.appendChild(g);
+    territoryEls.push(g);
+  });
+
+  // Cross-domain threads: shown only on hover of the leaf itself, per the
+  // "home + thread" rule -- keeps the resting view uncluttered.
+  var threadEls = [];
+  LEAVES.forEach(function(l){
+    if(l.pillars.length < 2) return;
+    var hd = homeDomain(l);
+    l.pillars.forEach(function(pl){
+      if(pl.id === hd.id) return;
+      var line = el('line', { class:'thread', stroke: territoryById[pl.id].color, 'stroke-width':1.2, 'data-leaf':l.id, 'data-territory':pl.id });
+      svg.appendChild(line);
+      threadEls.push(line);
+    });
+  });
+
+  var centerLine1 = el('text', { class:'center-label', x:0, y:-12 });
+  centerLine1.textContent = 'I FIND TRENDS';
+  svg.appendChild(centerLine1);
+  var centerLine2 = el('text', { class:'center-label', x:0, y:18 });
+  centerLine2.textContent = 'IN CHAOS';
+  svg.appendChild(centerLine2);
+
   var tip = document.getElementById('pillarsTip');
   var tipImg = document.getElementById('pillarsTipImg');
   var tipTitle = document.getElementById('pillarsTipTitle');
   var tipBody = document.getElementById('pillarsTipBody');
   var stage = root.querySelector('.pillars-stage');
-  var dpr = window.devicePixelRatio || 1;
-  var W, H;
-  function size(){ var r = canvas.getBoundingClientRect(); W = canvas.width = r.width * dpr; H = canvas.height = r.height * dpr; }
-  size();
-  requestAnimationFrame(size);
-  window.addEventListener('resize', size);
 
-  var ry = 0.5, rx = 0.45;
-  var velY = reduce ? 0 : 0.0012;
-  var dragging = false, lastMX = 0, lastMY = 0;
-  var hoverId = null;
-  var lastProjected = [];
-
-  function showTip(clientX, clientY, l){
+  function showTip(id){
+    var l = leavesById[id];
     if(l.img){ tipImg.src = l.img; tipImg.alt = l.label; }
     else { tipImg.removeAttribute('src'); tipImg.alt = ''; }
     tipTitle.textContent = l.label;
     tipBody.textContent = l.desc;
+    var p = particles[id];
     var rect = stage.getBoundingClientRect();
-    tip.style.left = (clientX - rect.left) + 'px';
-    tip.style.top = (clientY - rect.top) + 'px';
+    var scale = rect.width / 1000;
+    tip.style.left = (rect.width/2 + p.x*scale) + 'px';
+    tip.style.top = (rect.height/2 + p.y*scale) + 'px';
     tip.classList.add('show');
   }
-  function hideTip(){ tip.classList.remove('show'); hoverId = null; }
+  function hideTip(){ tip.classList.remove('show'); }
 
-  canvas.addEventListener('pointerdown', function(e){
-    dragging = true; canvas.classList.add('dragging');
-    lastMX = e.clientX; lastMY = e.clientY;
-    canvas.setPointerCapture(e.pointerId);
-  });
-  window.addEventListener('pointerup', function(){ dragging = false; canvas.classList.remove('dragging'); });
-  window.addEventListener('pointermove', function(e){
-    if(dragging){
-      var dx = e.clientX - lastMX, dy = e.clientY - lastMY;
-      ry += dx * 0.007; rx += dy * 0.006;
-      rx = Math.max(-1.4, Math.min(1.4, rx));
-      lastMX = e.clientX; lastMY = e.clientY;
-      velY = 0;
-    } else {
-      var rect = canvas.getBoundingClientRect();
-      var mx = (e.clientX - rect.left) * dpr, my = (e.clientY - rect.top) * dpr;
-      var best = null, bestD = 30 * dpr;
-      lastProjected.forEach(function(pp){
-        var d = Math.hypot(pp.sx - mx, pp.sy - my);
-        if(d < bestD){ bestD = d; best = pp.leaf.id; }
-      });
-      if(best !== hoverId){
-        hoverId = best;
-        if(best) showTip(e.clientX, e.clientY, leavesById[best]); else hideTip();
-      } else if(best){
-        showTip(e.clientX, e.clientY, leavesById[best]);
-      }
-    }
-  });
+  var hoverId = null;
+  var draggingId = null;
+  var dragLastX = 0, dragLastY = 0, dragLastT = 0;
 
-  var maxRadiusAll = Math.max.apply(null, Object.keys(local3D).map(function(id){ return vnorm(local3D[id]) + leafRadius(leavesById[id]); }));
-
-  function frame(){
-    ctx.clearRect(0, 0, W, H);
-    var scaleV = Math.min(W, H) / 750;
-    var focal = FOCAL * scaleV;
-    var cx = W / 2, cy = H / 2;
-
-    if(!reduce) ry += velY;
-
-    DOMAINS.forEach(function(d){
-      var pts = [];
-      for(var i = 0; i <= 44; i++){
-        var th = (i / 44) * Math.PI * 2;
-        pts.push(vadd(vscale(d.basis.u1, 280 * Math.cos(th)), vscale(d.basis.u2, 280 * Math.sin(th))));
-      }
-      ctx.beginPath();
-      pts.forEach(function(p, i){
-        var scaled = [p[0] * scaleV, p[1] * scaleV, p[2] * scaleV];
-        var pp = project(scaled, ry, rx, focal, cx, cy);
-        if(i === 0) ctx.moveTo(pp.sx, pp.sy); else ctx.lineTo(pp.sx, pp.sy);
-      });
-      ctx.strokeStyle = rgba(RGB_INK, 0.09);
-      ctx.lineWidth = 1 * dpr;
-      ctx.stroke();
-
-      var labelPoint = vadd(vscale(d.basis.u1, 322 * Math.cos(deg2rad(d.phase))), vscale(d.basis.u2, 322 * Math.sin(deg2rad(d.phase))));
-      var lp = project(vscale(labelPoint, scaleV), ry, rx, focal, cx, cy);
-      var depthT = Math.max(0, Math.min(1, (lp.scale - 0.75) / 0.5));
-      ctx.font = '700 ' + (10.5 * scaleV * dpr) + 'px ' + cssVar('--mono', 'monospace');
-      ctx.textAlign = 'center';
-      ctx.fillStyle = rgba(RGB_INK, 0.25 + depthT * 0.4);
-      ctx.fillText(d.label.split(' ')[0], lp.sx, lp.sy);
-    });
-
-    BRIDGES.forEach(function(br){
-      var p0 = project([0,0,0], ry, rx, focal, cx, cy);
-      var p1 = project(vscale(local3D[br.leaf], scaleV), ry, rx, focal, cx, cy);
-      ctx.beginPath();
-      ctx.moveTo(p0.sx, p0.sy);
-      ctx.lineTo(p1.sx, p1.sy);
-      ctx.strokeStyle = rgba(RGB_INK, 0.10);
-      ctx.lineWidth = 1 * dpr;
-      ctx.stroke();
-    });
-
-    ctx.font = '800 ' + (19 * scaleV * dpr) + 'px ' + cssVar('--sans', 'sans-serif');
-    ctx.textAlign = 'center';
-    ctx.fillStyle = rgba(RGB_INK, 0.9);
-    ctx.fillText('I FIND TRENDS', cx, cy - 7 * scaleV * dpr);
-    ctx.fillText('IN CHAOS', cx, cy + 18 * scaleV * dpr);
-
-    var projected = LEAVES.map(function(l){
-      var pp = project(vscale(local3D[l.id], scaleV), ry, rx, focal, cx, cy);
-      pp.leaf = l;
-      return pp;
-    });
-    projected.sort(function(a, b){ return a.z - b.z; });
-
-    // MFG's weaker third tie (Validation, 0.6) isn't part of its bisector
-    // plane (that's built from ML + Dynamics only) -- show it as a hover
-    // thread instead, same "home + thread" rule as the flat version.
-    if(hoverId === 'mfg'){
-      var hp = projected.filter(function(pp){ return pp.leaf.id === 'mfg'; })[0];
-      var vDom = domainById['validation'];
-      var target = vadd(vscale(vDom.basis.u1, 150 * Math.cos(deg2rad(vDom.phase))), vscale(vDom.basis.u2, 150 * Math.sin(deg2rad(vDom.phase))));
-      var tp = project(vscale(target, scaleV), ry, rx, focal, cx, cy);
-      ctx.beginPath();
-      ctx.moveTo(hp.sx, hp.sy);
-      ctx.lineTo(tp.sx, tp.sy);
-      ctx.setLineDash([3 * dpr, 6 * dpr]);
-      ctx.strokeStyle = rgba(RGB_ACCENT, 0.7);
-      ctx.lineWidth = 1.4 * dpr;
-      ctx.stroke();
-      ctx.setLineDash([]);
-    }
-
-    projected.forEach(function(pp){
-      var l = pp.leaf;
-      var r = leafRadius(l) * pp.scale * scaleV * dpr;
-      var depthT = Math.max(0, Math.min(1, (pp.scale - 0.7) / 0.55));
-      var isHover = hoverId === l.id;
-      var isBridge = !!bridgeByLeaf[l.id];
-
-      ctx.beginPath();
-      ctx.arc(pp.sx, pp.sy, r, 0, Math.PI * 2);
-      ctx.fillStyle = isHover ? rgba(RGB_ACCENT, 0.10) : COL_PANEL;
-      ctx.fill();
-      ctx.lineWidth = (isHover ? 2.4 : (isBridge ? 1.8 : 1.3)) * dpr;
-      ctx.strokeStyle = isHover ? COL_ACCENT : rgba(RGB_INK, 0.28 + depthT * 0.55);
-      ctx.stroke();
-
-      // Only label near-side bubbles (or whichever one is hovered) -- with
-      // 19 items on 6 intersecting planes, labeling every bubble at every
-      // rotation angle is what turns the resting view into an illegible
-      // pile of text. Far-side items still render as plain outlined dots.
-      if(isHover || pp.scale > 1.0){
-        var fontSize = Math.max(8, 11 * pp.scale) * scaleV * dpr;
-        ctx.font = (isHover ? '700 ' : '600 ') + fontSize + 'px ' + cssVar('--mono', 'monospace');
-        ctx.textAlign = 'center';
-        ctx.fillStyle = isHover ? COL_ACCENT : rgba(RGB_INK, 0.5 + depthT * 0.4);
-        ctx.fillText(l.short, pp.sx, pp.sy + r + fontSize + 3);
-      }
-    });
-
-    lastProjected = projected;
-    if(!reduce) requestAnimationFrame(frame);
+  function clientToSvg(clientX, clientY){
+    var rect = stage.getBoundingClientRect();
+    return { x: ((clientX - rect.left) / rect.width) * 1000 - 500, y: ((clientY - rect.top) / rect.height) * 1000 - 500 };
   }
+
+  function clearHighlight(){
+    root.querySelectorAll('.bubble-node').forEach(function(n){ n.classList.remove('lit'); });
+    threadEls.forEach(function(t){ t.classList.remove('show'); });
+    hoverId = null;
+  }
+  function highlight(id){
+    clearHighlight();
+    hoverId = id;
+    var node = document.getElementById('pillarNode-' + id);
+    if(node) node.classList.add('lit');
+    threadEls.forEach(function(t){ if(t.dataset.leaf === id) t.classList.add('show'); });
+  }
+
+  var bubbleEls = [];
+
+  LEAVES.forEach(function(l){
+    var pos = particles[l.id];
+    var g = el('g', { class:'bubble-node' + (reduce ? '' : ' pre-reveal'), id:'pillarNode-' + l.id });
+    var body = el('circle', { class:'body', cx:pos.x, cy:pos.y, r:pos.r });
+    body.setAttribute('stroke', pos.color);
+    g.appendChild(body);
+    var t = el('text', { class:'bubble-label', x: pos.x, y: pos.y + pos.r + 15 });
+    t.textContent = l.short;
+    g.appendChild(t);
+    var hit = el('circle', { class:'node-hit', cx:pos.x, cy:pos.y, r:pos.r + 10 });
+    g.appendChild(hit);
+    svg.appendChild(g);
+    bubbleEls.push(g);
+
+    function activate(){ highlight(l.id); showTip(l.id); }
+    hit.addEventListener('mouseenter', activate);
+    hit.addEventListener('mouseleave', function(){ if(draggingId) return; clearHighlight(); hideTip(); });
+    hit.addEventListener('click', function(){
+      activate();
+      document.dispatchEvent(new CustomEvent('krtin:open-project', { detail:{ id:l.id } }));
+    });
+    hit.addEventListener('pointerdown', function(e){ startDrag(l.id, hit, e); });
+  });
+
+  function startDrag(id, hitEl, e){
+    draggingId = id;
+    hitEl.classList.add('dragging');
+    var pos = clientToSvg(e.clientX, e.clientY);
+    dragLastX = pos.x; dragLastY = pos.y; dragLastT = performance.now();
+    highlight(id);
+    showTip(id);
+    e.preventDefault();
+  }
+
+  window.addEventListener('pointermove', function(e){
+    if(!draggingId) return;
+    var pos = clientToSvg(e.clientX, e.clientY);
+    var p = particles[draggingId];
+    p.x = pos.x; p.y = pos.y;
+    var now = performance.now();
+    var dt = Math.max(1, now - dragLastT);
+    p.vx = (pos.x - dragLastX) / dt * 16;
+    p.vy = (pos.y - dragLastY) / dt * 16;
+    dragLastX = pos.x; dragLastY = pos.y; dragLastT = now;
+  });
+  window.addEventListener('pointerup', function(e){
+    if(!draggingId) return;
+    root.querySelectorAll('.node-hit.dragging').forEach(function(h){ h.classList.remove('dragging'); });
+    draggingId = null;
+    var under = document.elementFromPoint(e.clientX, e.clientY);
+    if(!under || !under.classList.contains('node-hit')){ clearHighlight(); hideTip(); }
+  });
+
+  function render(){
+    allIds.forEach(function(id){
+      var p = particles[id];
+      var g = document.getElementById('pillarNode-' + id);
+      if(!g) return;
+      var body = g.querySelector('.body');
+      body.setAttribute('cx', p.x); body.setAttribute('cy', p.y);
+      var hit = g.querySelector('.node-hit');
+      hit.setAttribute('cx', p.x); hit.setAttribute('cy', p.y);
+      var label = g.querySelector('.bubble-label');
+      label.setAttribute('x', p.x); label.setAttribute('y', p.y + p.r + 15);
+    });
+    threadEls.forEach(function(t){
+      var lp = particles[t.dataset.leaf];
+      var anchor = territoryById[t.dataset.territory].anchor;
+      t.setAttribute('x1', lp.x); t.setAttribute('y1', lp.y);
+      t.setAttribute('x2', anchor.x); t.setAttribute('y2', anchor.y);
+    });
+    if(hoverId){
+      var hp = particles[hoverId];
+      var rect = stage.getBoundingClientRect();
+      var scale = rect.width / 1000;
+      tip.style.left = (rect.width/2 + hp.x*scale) + 'px';
+      tip.style.top = (rect.height/2 + hp.y*scale) + 'px';
+    }
+  }
+
+  function frame(){ if(!reduce){ stepParticles(); render(); requestAnimationFrame(frame); } }
 
   function runReveal(){
-    stage.classList.add('revealed');
-    frame();
+    if(reduce){ render(); return; }
+    territoryEls.forEach(function(g, i){ setTimeout(function(){ g.classList.remove('pre-reveal'); }, i * 100); });
+    var bubbleStart = territoryEls.length * 100 + 250;
+    bubbleEls.forEach(function(g, i){ setTimeout(function(){ g.classList.remove('pre-reveal'); }, bubbleStart + i * 45); });
+    requestAnimationFrame(frame);
   }
 
-  if(reduce){
-    runReveal();
-  } else {
+  if(reduce){ runReveal(); }
+  else {
     var played = false;
     new IntersectionObserver(function(entries){
       if(entries[0].isIntersecting && !played){ played = true; runReveal(); }
     }, { threshold:0.3 }).observe(stage);
   }
+}
+
+/* ============================================================
+   PROJECT MODAL — click a highlight plate, an archive card, or a
+   bubble in the cluster diagram and see the full writeup in a
+   floating dialog, with every real image available for that
+   project (not just the one shown inline on the card). Content is
+   read directly from the card's own DOM at open time rather than
+   duplicated into a separate data structure, so the modal can
+   never drift out of sync with the plate/card copy -- the only
+   new data here is EXTRA_IMAGES, real project images that exist
+   on disk but don't fit inline on a card.
+   ============================================================ */
+function initProjectModal(){
+  var modal = document.getElementById('projectModal');
+  if(!modal) return;
+
+  var EXTRA_IMAGES = {
+    afrl: [
+      { src:'img/MDAO1.png', alt:'MDAO subsystem interaction diagram' },
+      { src:'img/MDAO4.png', alt:'Hybridization modes considered' }
+    ],
+    tue: [
+      { src:'img/Static Temperature_LES_1000.jpg', alt:'Static temperature contour, LES combustion field' },
+      { src:'img/O2 Mole fraction_LES_1000.jpg', alt:'O2 mole fraction contour, LES combustion field' }
+    ],
+    thesis: [
+      { src:'assets/drone_me_at_work.jpg', alt:'Rotor test rig bench setup' },
+      { src:'assets/raspberry_pi_3b.png', alt:'Raspberry Pi control hardware for the test rig' }
+    ],
+    boeing: [
+      { src:'img/Me-SOS.jpeg', alt:'Stakeholder-facing systems risk briefing' }
+    ],
+    hyperloop: [
+      { src:'img/lim.png', alt:'Linear induction motor thrust-slip plot' }
+    ],
+    'telemetry-ml': [
+      { src:'img/telemetry_anomaly_detection.png', alt:'Isolation-forest anomaly score against speed trace for one lap' }
+    ]
+  };
+
+  var panel = modal.querySelector('.modal-panel');
+  var backdrop = document.getElementById('modalBackdrop');
+  var closeBtn = document.getElementById('modalClose');
+  var gallery = document.getElementById('modalGallery');
+  var elPeriod = document.getElementById('modalPeriod');
+  var elTitle = document.getElementById('modalTitle');
+  var elOneliner = document.getElementById('modalOneliner');
+  var elRows = document.getElementById('modalRows');
+  var elTags = document.getElementById('modalTags');
+  var elScope = document.getElementById('modalScope');
+
+  var lastFocused = null;
+
+  function textOf(node){ return node ? node.textContent.trim() : ''; }
+
+  function openFromCard(card){
+    var isPlate = card.classList.contains('plate');
+    var titleEl = card.querySelector(isPlate ? '.plate-title' : '.arc-title');
+    var periodEl = card.querySelector(isPlate ? '.plate-period' : '.arc-date');
+    var onelinerEl = card.querySelector(isPlate ? '.plate-oneliner' : '.arc-summary');
+    if(!titleEl) return;
+
+    elTitle.textContent = textOf(titleEl);
+    elPeriod.textContent = textOf(periodEl);
+    elOneliner.textContent = textOf(onelinerEl);
+
+    elRows.innerHTML = '';
+    card.querySelectorAll('.plate-row').forEach(function(row){
+      var label = row.querySelector('b');
+      var wrap = document.createElement('div');
+      wrap.className = 'modal-row';
+      var b = document.createElement('b');
+      b.textContent = label ? label.textContent : '';
+      var span = document.createElement('span');
+      span.textContent = row.textContent.replace(label ? label.textContent : '', '').trim();
+      wrap.appendChild(b); wrap.appendChild(span);
+      elRows.appendChild(wrap);
+    });
+
+    elTags.innerHTML = '';
+    card.querySelectorAll('.plate-tags span, .arc-tags span').forEach(function(t){
+      var span = document.createElement('span');
+      span.textContent = t.textContent;
+      elTags.appendChild(span);
+    });
+
+    var scopeEl = card.querySelector('.plate-scope');
+    elScope.textContent = scopeEl ? scopeEl.textContent : '';
+    elScope.style.display = scopeEl ? '' : 'none';
+
+    var images = [];
+    var mainImg = card.querySelector('.plate-media img, .arc-media img');
+    if(mainImg) images.push({ src:mainImg.getAttribute('src'), alt:mainImg.alt });
+    var extra = EXTRA_IMAGES[card.dataset.id] || [];
+    images = images.concat(extra);
+
+    gallery.innerHTML = '';
+    if(images.length){
+      images.forEach(function(im){
+        var img = document.createElement('img');
+        img.src = im.src; img.alt = im.alt || '';
+        gallery.appendChild(img);
+      });
+      gallery.style.display = '';
+    } else {
+      gallery.style.display = 'none';
+    }
+
+    open();
+  }
+
+  function findCardById(id){
+    return document.querySelector('.plate[data-id="' + id + '"], .arc-card[data-id="' + id + '"]');
+  }
+
+  function open(){
+    lastFocused = document.activeElement;
+    modal.classList.add('show');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+    closeBtn.focus();
+  }
+  function close(){
+    modal.classList.remove('show');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+    if(lastFocused && lastFocused.focus) lastFocused.focus();
+  }
+
+  document.querySelectorAll('.plate, .arc-card').forEach(function(card){
+    if(!card.dataset.id) return;
+    // Plates are always visible, so always tabbable. Archive cards live
+    // inside a max-height:0/overflow:hidden collapsed section that stays
+    // in the tab order even while visually clipped -- only make them
+    // tabbable once the archive is actually open, tracked below.
+    card.tabIndex = card.classList.contains('plate') ? 0 : -1;
+    card.setAttribute('role', 'button');
+    card.addEventListener('click', function(){ openFromCard(card); });
+    card.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openFromCard(card); }
+    });
+  });
+
+  var archiveZone = document.getElementById('archiveZone');
+  if(archiveZone){
+    var syncArchiveTabbability = function(){
+      var isOpen = archiveZone.classList.contains('open');
+      archiveZone.querySelectorAll('.arc-card').forEach(function(card){
+        card.tabIndex = isOpen ? 0 : -1;
+      });
+    };
+    syncArchiveTabbability();
+    new MutationObserver(syncArchiveTabbability).observe(archiveZone, { attributes:true, attributeFilter:['class'] });
+  }
+
+  document.addEventListener('krtin:open-project', function(e){
+    var card = findCardById(e.detail.id);
+    if(card) openFromCard(card);
+  });
+
+  closeBtn.addEventListener('click', close);
+  backdrop.addEventListener('click', close);
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && modal.classList.contains('show')) close();
+  });
+  panel.addEventListener('click', function(e){ e.stopPropagation(); });
 }

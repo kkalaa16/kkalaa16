@@ -89,7 +89,7 @@
   <h2 class="visually-hidden">Featured projects</h2>
   <div class="plate-grid">
 
-    <article class="plate">
+    <article class="plate" data-id="doosan">
       <div class="plate-fig">FIG. 01</div>
       <div class="plate-media none"><span>Sponsor-sensitive geometry: described generically, not shown</span></div>
       <div class="plate-body">
@@ -104,7 +104,7 @@
       </div>
     </article>
 
-    <article class="plate">
+    <article class="plate" data-id="ibrido">
       <div class="plate-fig">FIG. 02</div>
       <div class="plate-media"><img src="img/ibrido_flight_envelope.png" alt="XV-15 hybrid flight envelope vs. NASA flight-test data and conventional baseline"/></div>
       <div class="plate-body">
@@ -119,7 +119,7 @@
       </div>
     </article>
 
-    <article class="plate">
+    <article class="plate" data-id="afrl">
       <div class="plate-fig">FIG. 03</div>
       <div class="plate-media"><img src="img/MDAO2.png" alt="MBSE to MDAO process diagram"/></div>
       <div class="plate-body">
@@ -134,7 +134,7 @@
       </div>
     </article>
 
-    <article class="plate">
+    <article class="plate" data-id="tue">
       <div class="plate-fig">FIG. 04</div>
       <div class="plate-media"><img src="img/TUE1.png" alt="FGM lookup-table workflow schematic"/></div>
       <div class="plate-body">
@@ -149,7 +149,7 @@
       </div>
     </article>
 
-    <article class="plate">
+    <article class="plate" data-id="thesis">
       <div class="plate-fig">FIG. 05</div>
       <div class="plate-media"><img src="assets/mesh_cyclicami_prop.png" alt="CyclicAMI rotating-mesh propeller CFD"/></div>
       <div class="plate-body">
@@ -164,7 +164,7 @@
       </div>
     </article>
 
-    <article class="plate">
+    <article class="plate" data-id="hyperloop">
       <div class="plate-fig">FIG. 06</div>
       <div class="plate-media"><img src="img/cold gas thruster.PNG" alt="Hyperloop cold gas thruster propulsion interface"/></div>
       <div class="plate-body">
@@ -179,23 +179,41 @@
       </div>
     </article>
 
+    <article class="plate" data-id="telemetry-ml">
+      <div class="plate-fig">FIG. 07</div>
+      <div class="plate-media"><img src="img/telemetry_pca_clusters.png" alt="2D PCA visualization of driver archetypes from clustering"/></div>
+      <div class="plate-body">
+        <h3 class="plate-title">Vehicle Telemetry ML Dashboard</h3>
+        <span class="plate-period">May - Aug 2025 &middot; Machine Learning Engineer</span>
+        <p class="plate-oneliner">Unsupervised ML pipeline turning raw vehicle telemetry into braking-signature, track-archetype, and anomaly diagnostics, with no hand-labeled events and no physics baseline underneath.</p>
+        <div class="plate-row"><b>Compared</b>PCA-reduced driving-style clusters against raw per-driver telemetry, to see whether a low-dimensional archetype actually held up against the full signal.</div>
+        <div class="plate-row"><b>Method</b>PCA for dimensionality reduction, unsupervised clustering for archetype discovery, and isolation forest for anomaly scoring against normalized speed traces, packaged into a multi-page review dashboard.</div>
+        <div class="plate-row"><b>Result</b>Clean separation of driving archetypes in 2D PCA space, and anomaly scoring that reliably flags braking/cornering events an engineer would want to look at, without any hand-labeled training data.</div>
+        <div class="plate-tags"><span>PCA</span><span>Clustering</span><span>Isolation Forest</span><span>Unsupervised ML</span></div>
+        <div class="plate-scope">Personal project built on public telemetry data; scope here is the full pipeline, from raw signal to the review dashboard.</div>
+      </div>
+    </article>
+
   </div>
 </section>
 
-<!-- ══ PILLARS WEB — recurring patterns across the work, in 3D ═══ -->
+<!-- ══ PROJECT CLUSTERS — 19 projects grouped by domain ═══════ -->
 <section class="pillars-web" id="pillars">
   <div class="section-label">HOW IT CONNECTS</div>
-  <p class="pillars-note">19 projects on 4 domain planes through a shared origin, plus 2 bridge planes for the projects that genuinely span two domains -- pulled directly from a 719-node knowledge graph built on the full body of work, not just the highlights. Drag to rotate, hover a ball for its real connection.</p>
+  <p class="pillars-note">19 projects grouped into 4 domains, sized by how connected each one is -- pulled directly from a 719-node knowledge graph built on the full body of work, not just the highlights. Drag a bubble to move it, click one to open the full project, hover for its real connection.</p>
 
   <div class="pillars-stage">
-    <canvas id="pillarsCanvas"></canvas>
+    <svg id="pillarsSvg" viewBox="-500 -500 1000 1000"></svg>
     <div class="pillars-tip" id="pillarsTip"><img id="pillarsTipImg" alt=""/><b id="pillarsTipTitle"></b><span id="pillarsTipBody"></span></div>
   </div>
 
-  <p class="pillars-legend">4 domain planes + 2 bridges (Ibrido, MFG) &middot; 19 projects &middot; drawn from a 719-node graph</p>
+  <p class="pillars-legend">4 domains &middot; 2 projects genuinely span two (Ibrido, MFG) &middot; 19 projects &middot; drawn from a 719-node graph</p>
   <div class="pillars-key">
     <b>How to read this</b>
-    Each plane is one recurring pattern in the work: Aerospace Systems Architecture, Applied Machine Learning, Nonlinear Dynamics &amp; Stability, Computational Validation. A ball sitting between two planes belongs to both. Bigger ball: more connected project.
+    <div class="pillars-key-row"><span class="pillars-swatch" style="background:#ff4d00"></span>Aerospace Systems Architecture</div>
+    <div class="pillars-key-row"><span class="pillars-swatch" style="background:#00ff41"></span>Applied Machine Learning</div>
+    <div class="pillars-key-row"><span class="pillars-swatch" style="background:#00bfff"></span>Nonlinear Dynamics &amp; Stability</div>
+    <div class="pillars-key-row"><span class="pillars-swatch" style="background:#ffa500"></span>Computational Validation</div>
   </div>
 </section>
 
@@ -234,12 +252,6 @@
         <span class="arc-title">GTA: AE 3330</span>
         <p class="arc-summary">Teaching assistant for aerospace vehicle performance.</p>
         <div class="arc-tags"><span>Mentorship</span><span>Georgia Tech</span></div>
-      </div>
-      <div class="arc-card" data-id="telemetry-ml">
-        <span class="arc-date">May - Aug 2025</span>
-        <span class="arc-title">Vehicle Telemetry ML Dashboard</span>
-        <p class="arc-summary">Unsupervised ML pipeline (PCA, clustering, isolation forest) converting raw vehicle telemetry into braking-signature and track-archetype diagnostics, integrated into a multi-page dashboard for engineering review without hand-labeled events.</p>
-        <div class="arc-tags"><span>PCA</span><span>Clustering</span><span>Isolation Forest</span></div>
       </div>
     </div>
 
@@ -462,6 +474,23 @@
     <a href="#hero">Top</a>
   </div>
 </footer>
+
+<!-- ══ PROJECT MODAL — full writeup + image gallery on click ══ -->
+<div class="modal" id="projectModal" aria-hidden="true">
+  <div class="modal-backdrop" id="modalBackdrop"></div>
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
+    <div class="modal-gallery" id="modalGallery"></div>
+    <div class="modal-body">
+      <span class="modal-period" id="modalPeriod"></span>
+      <h2 class="modal-title" id="modalTitle"></h2>
+      <p class="modal-oneliner" id="modalOneliner"></p>
+      <div class="modal-rows" id="modalRows"></div>
+      <div class="modal-tags" id="modalTags"></div>
+      <p class="modal-scope" id="modalScope"></p>
+    </div>
+  </div>
+</div>
 
 <script src="app.js"></script>
 </body>

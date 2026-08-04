@@ -278,8 +278,8 @@ body.lock-scroll{ overflow:hidden; }
 #spineCanvas{ position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; }
 .arc-row{ display:flex; gap:1.2rem; justify-content:center; margin-bottom:2.6rem; position:relative; z-index:1; flex-wrap:wrap; }
 .arc-card{
-  width:290px; padding:1.2rem 1.3rem; background:var(--bg-panel); border:1.5px solid var(--ink);
-  opacity:0; transform:translateY(10px); transition:opacity 500ms ease, transform 500ms ease;
+  width:290px; padding:1.2rem 1.3rem; background:var(--bg-panel); border:1.5px solid var(--ink); cursor:pointer;
+  opacity:0; transform:translateY(10px); transition:opacity 500ms ease, transform 500ms ease, box-shadow 200ms ease;
 }
 .archive.open .arc-card{ opacity:1; transform:translateY(0); }
 .arc-media{ aspect-ratio:16/10; overflow:hidden; margin:-1.2rem -1.3rem .8rem; border-bottom:1.5px solid var(--ink); background:var(--bg-panel-2); }
@@ -368,10 +368,14 @@ body.lock-scroll{ overflow:hidden; }
 }
 
 /* ============================================================
-   PILLARS WEB — recurring patterns across the work, drawn from
-   the graphify knowledge graph. Scoped under .pillars-web so
-   these fairly generic inner class names (.body, .key, .stage)
-   can never bleed into or collide with unrelated page elements.
+   PROJECT CLUSTERS — 19 projects grouped into 4 domain
+   territories, drawn from the graphify knowledge graph. Scoped
+   under .pillars-web so these fairly generic inner class names
+   (.body, .key, .stage) can never bleed into or collide with
+   unrelated page elements. Domain color is the one deliberate
+   exception to this site's single-accent rule: with 4 real
+   categories, color carries real meaning (which cluster a
+   project belongs to), not decoration.
    ============================================================ */
 .pillars-web{ max-width:var(--maxw); margin:0 auto; padding:2rem 1.6rem 3rem; }
 .pillars-web .pillars-note{
@@ -384,8 +388,27 @@ body.lock-scroll{ overflow:hidden; }
   opacity:0; transition:opacity 500ms ease;
 }
 .pillars-web .pillars-stage.revealed{ opacity:1; }
-.pillars-web .pillars-stage canvas{ width:100%; height:100%; display:block; cursor:grab; touch-action:none; }
-.pillars-web .pillars-stage canvas.dragging{ cursor:grabbing; }
+.pillars-web .pillars-stage svg{ width:100%; height:100%; display:block; }
+
+.pillars-web .territory{ opacity:1; transition:opacity 320ms ease; }
+.pillars-web .territory.pre-reveal{ opacity:0; }
+.pillars-web .territory-glow{ pointer-events:none; }
+.pillars-web .territory-label{ font-family:var(--sans); font-weight:800; font-size:15px; text-transform:uppercase; letter-spacing:.02em; pointer-events:none; }
+.pillars-web .territory-count{ font-family:var(--mono); font-size:11px; letter-spacing:.06em; fill:var(--ink-faint); pointer-events:none; }
+
+.pillars-web .thread{ fill:none; stroke-dasharray:2 5; opacity:0; transition:opacity 200ms ease; pointer-events:none; }
+.pillars-web .thread.show{ opacity:.6; }
+
+.pillars-web .bubble-node{ opacity:1; transition:opacity 320ms ease; }
+.pillars-web .bubble-node.pre-reveal{ opacity:0; }
+.pillars-web .bubble-node circle.body{ fill:var(--bg-panel); stroke-width:2; transition:stroke-width 220ms ease, fill 220ms ease; }
+.pillars-web .bubble-node.lit circle.body{ stroke-width:3; fill:var(--bg-panel-b); }
+.pillars-web .bubble-label{ font-family:var(--mono); font-size:12px; font-weight:600; fill:var(--ink-dim); text-anchor:middle; pointer-events:none; }
+.pillars-web .bubble-node.lit .bubble-label{ fill:var(--ink); }
+
+.pillars-web .node-hit{ fill:transparent; cursor:pointer; touch-action:none; }
+.pillars-web .node-hit.dragging{ cursor:grabbing; }
+.pillars-web .center-label{ font-family:var(--sans); font-weight:800; font-size:20px; letter-spacing:.02em; fill:var(--ink); text-transform:uppercase; text-anchor:middle; }
 
 .pillars-web .pillars-tip{
   position:absolute; max-width:280px; padding:10px 12px; background:var(--ink); color:var(--bg-panel);
@@ -400,10 +423,55 @@ body.lock-scroll{ overflow:hidden; }
 .pillars-web .pillars-legend{ max-width:680px; margin:1rem auto .5rem; text-align:center; font-family:var(--mono); font-size:.76rem; color:var(--ink-faint); }
 .pillars-web .pillars-key{
   max-width:520px; margin:0 auto; padding:.9rem 1.1rem; border-left:2px solid var(--accent);
-  background:var(--bg-panel-2); font-family:var(--mono); font-size:.74rem; color:var(--ink-dim); line-height:1.7;
+  background:var(--bg-panel-2); font-family:var(--mono); font-size:.74rem; color:var(--ink-dim); line-height:1.85;
 }
-.pillars-web .pillars-key b{ color:var(--ink); text-transform:uppercase; letter-spacing:.04em; font-size:.7rem; display:block; margin-bottom:.4rem; }
+.pillars-web .pillars-key b{ color:var(--ink); text-transform:uppercase; letter-spacing:.04em; font-size:.7rem; display:block; margin-bottom:.5rem; }
+.pillars-web .pillars-key-row{ display:flex; align-items:center; gap:.55rem; }
+.pillars-web .pillars-swatch{ width:9px; height:9px; border-radius:2px; display:inline-block; flex:none; }
 
 @media (prefers-reduced-motion: reduce){
   .pillars-web .pillars-stage{ transition:none; }
+  .pillars-web .territory, .pillars-web .thread, .pillars-web .bubble-node, .pillars-web .bubble-node circle{ transition:none; }
+}
+
+/* ============================================================
+   PROJECT MODAL — click a highlight plate, archive card, or
+   cluster bubble to open the full writeup with every real image
+   available for that project.
+   ============================================================ */
+.plate{ cursor:pointer; transition:box-shadow 200ms ease, transform 200ms ease; }
+.plate:hover, .archive.open .arc-card:hover{ box-shadow:4px 4px 0 var(--ink); transform:translate(-2px,-2px); }
+.plate:focus-visible, .arc-card:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+body.modal-open{ overflow:hidden; }
+.modal{ position:fixed; inset:0; z-index:100; display:none; align-items:center; justify-content:center; padding:2rem 1.2rem; }
+.modal.show{ display:flex; }
+.modal-backdrop{ position:absolute; inset:0; background:rgba(20,23,26,.66); }
+.modal-panel{
+  position:relative; max-width:760px; width:100%; max-height:88vh; overflow-y:auto;
+  background:var(--bg-panel); border:1.5px solid var(--ink); box-shadow:8px 8px 0 rgba(20,23,26,.25);
+}
+.modal-close{
+  position:absolute; top:.7rem; right:.7rem; z-index:2; width:34px; height:34px; border:1.5px solid var(--ink);
+  background:var(--bg-panel); color:var(--ink); font-size:1.3rem; line-height:1; cursor:pointer;
+}
+.modal-close:hover{ background:var(--ink); color:var(--bg-panel); }
+.modal-gallery{ display:grid; grid-template-columns:1fr; gap:2px; background:var(--line-strong); }
+.modal-gallery img{ width:100%; display:block; object-fit:cover; max-height:46vh; }
+.modal-gallery:has(img:nth-child(2)){ grid-template-columns:1fr 1fr; }
+.modal-gallery img:only-child{ max-height:52vh; }
+.modal-body{ padding:1.5rem 1.6rem 1.8rem; display:flex; flex-direction:column; gap:.7rem; }
+.modal-period{ font-family:var(--mono); font-size:.78rem; color:var(--ink-dim); text-transform:uppercase; letter-spacing:.02em; }
+.modal-title{ font-size:1.5rem; font-weight:800; text-transform:uppercase; letter-spacing:-.005em; margin:0; line-height:1.15; }
+.modal-oneliner{ font-size:1rem; color:var(--ink-dim); line-height:1.6; margin:0; }
+.modal-rows{ display:flex; flex-direction:column; gap:.6rem; }
+.modal-row{ font-size:.95rem; line-height:1.55; }
+.modal-row b{ font-family:var(--mono); font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-faint); display:block; margin-bottom:.2rem; }
+.modal-tags{ display:flex; flex-wrap:wrap; gap:.5rem; }
+.modal-tags span{ font-family:var(--mono); font-size:.78rem; text-transform:uppercase; border:1px solid var(--line-strong); padding:.3rem .6rem; color:var(--ink-dim); }
+.modal-scope{ font-family:var(--mono); font-size:.78rem; color:var(--ink-faint); line-height:1.6; border-top:1px solid var(--line); padding-top:.7rem; margin:0; }
+
+@media (max-width:640px){
+  .modal-gallery:has(img:nth-child(2)){ grid-template-columns:1fr; }
+  .modal-title{ font-size:1.25rem; }
 }
