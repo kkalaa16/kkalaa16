@@ -727,7 +727,7 @@ function initPillarsWeb(){
     { id:'ibrido', short:'Ibrido', label:'Ibrido: XV-15 Hybrid-Electric Tiltrotor', desc:'Down-selected a parallel hybrid-electric architecture across a 3-engineer, 4-topology trade study. Validated against real NASA flight-test data -- the hybrid clears a cruise speed (348 KTAS) the conventional baseline can\'t reach at all (278 KTAS).', img:'img/ibrido_flight_envelope.png', pillars:[{id:'systems-architecture',strength:1},{id:'validation',strength:0.6}] },
     { id:'doosan', short:'Doosan', label:'H2/CH4 Micromixer Reacting-Flow CFD', desc:'Mechanism-level comparison (SkeleCHy, HyChem, San Diego) and FGM-vs-finite-rate workflow validation for high-hydrogen micromixer combustion.', pillars:[{id:'validation',strength:1}] },
     { id:'boeing', short:'Ti-6Al-4V', label:'Ti-6Al-4V Supply Chain Risk', desc:'Graph-based supplier concentration metrics and TOPSIS-ranked mitigations for aerospace titanium dependencies.', img:'img/s15_mitigation_layers.png', pillars:[{id:'systems-architecture',strength:1}] },
-    { id:'bwb', short:'H2 BWB', label:'Hydrogen Blended-Wing-Body Concept', desc:'QFD + morphological matrix + TOPSIS concept downselection inside a full SysML/MBSE model.', img:'img/MBSE1.png', pillars:[{id:'systems-architecture',strength:1}] },
+    { id:'bwb', short:'H2 BWB', label:'Hydrogen Blended-Wing-Body Concept', desc:'QFD + morphological matrix + TOPSIS concept downselection inside a full SysML/MBSE model.', img:'img/bwb_final_selection.png', pillars:[{id:'systems-architecture',strength:1}] },
     { id:'afrl', short:'AFRL MDAO', label:'AFRL Tactical Mobility MDAO', desc:'OpenMDAO workflow tying propulsion, structures, and mission sizing into one coherent trade, projecting +15.7% range.', img:'img/MDAO2.png', pillars:[{id:'systems-architecture',strength:1}] },
     { id:'hyperloop', short:'Hyperloop', label:'Hyperloop Mechanical Design & Subsystem Integration', desc:'Propulsion-interface redesign (LIM vs. LSM trade study) and GD&T across 50+ high-load components; cut manufacturing defects by 22%.', img:'img/cold gas thruster.PNG', pillars:[{id:'systems-architecture',strength:1}] },
     { id:'gas-turbine', short:'Gas Turbine', label:'Gas Turbine Cycle Design Tool', desc:'1D variable-heat-capacity turbojet/turbofan cycle tool; swept 3,800+ design combinations, corrected a 46% TSFC underestimate from constant-property assumptions.', img:'img/gasturbine_comparison2D.jpg', pillars:[{id:'systems-architecture',strength:1}] },
@@ -1079,6 +1079,7 @@ function initPillarsWeb(){
   function frame(){ if(!reduce){ stepParticles(); render(); requestAnimationFrame(frame); } }
 
   function runReveal(){
+    stage.classList.add('revealed');
     if(reduce){ render(); return; }
     territoryEls.forEach(function(g, i){ setTimeout(function(){ g.classList.remove('pre-reveal'); }, i * 100); });
     var bubbleStart = territoryEls.length * 100 + 250;
@@ -1124,7 +1125,16 @@ function initProjectModal(){
       { src:'assets/raspberry_pi_3b.png', alt:'Raspberry Pi control hardware for the test rig' }
     ],
     boeing: [
-      { src:'img/Me-SOS.jpeg', alt:'Stakeholder-facing systems risk briefing' }
+      { src:'img/Me-SOS.jpeg', alt:'Stakeholder-facing systems risk briefing' },
+      { src:'img/MBSE1.png', alt:'Supply chain risk methodology: identify, collect, connect, assess, and mitigate' }
+    ],
+    bwb: [
+      { src:'img/bwb_qfd_house_of_quality.png', alt:'QFD House of Quality for the next-generation transport aircraft concept' },
+      { src:'img/bwb_morphological_matrix.png', alt:'Morphological matrix across propulsion, fuel, aerodynamics, and structural options' },
+      { src:'img/bwb_topsis_ranking.png', alt:'TOPSIS closeness ranking, hydrogen BWB configuration first' }
+    ],
+    ibrido: [
+      { src:'img/ibrido_alpha_feasibility.png', alt:'Max feasible payload vs. engine-downsize fraction, showing the narrow feasible window' }
     ],
     hyperloop: [
       { src:'img/lim.png', alt:'Linear induction motor thrust-slip plot' }
