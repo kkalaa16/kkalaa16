@@ -528,7 +528,7 @@ function initGlobe(){
     var phi = (90-lat)*Math.PI/180, th = (lon+180)*Math.PI/180;
     return { x:-r*Math.sin(phi)*Math.cos(th), y:r*Math.cos(phi), z:r*Math.sin(phi)*Math.sin(th) };
   }
-  var R = 160;
+  var R = 205;
   var pts = SKILLS.map(function(s){
     var p = toXYZ(s.lat,s.lon,R);
     p.name = s.name; p.mono = s.mono;
@@ -536,8 +536,8 @@ function initGlobe(){
     return p;
   });
 
-  var LAT_STEPS = [-60, -30, 0, 30, 60];
-  var LON_STEPS = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
+  var LAT_STEPS = [-75, -60, -30, 0, 30, 60, 75];
+  var LON_STEPS = [0, 24, 48, 72, 96, 120, 144, 168, 192, 216, 240, 264, 288, 312, 336];
   var latRings = LAT_STEPS.map(function(lat){
     var ring = [];
     for(var i = 0; i <= 48; i++) ring.push(toXYZ(lat, i * (360/48), R));
@@ -599,7 +599,7 @@ function initGlobe(){
     return { sx:cx+r.x*scale, sy:cy-r.y*scale, z:r.z, scale:scale };
   }
 
-  var FOCAL = 560;
+  var FOCAL = 700;
 
   function drawWireRing(ring, focal, cx, cy){
     var proj = ring.map(function(p){ return project(p, focal, cx, cy); });
@@ -617,7 +617,7 @@ function initGlobe(){
 
   function drawBadge(pp, isHover){
     var depth = Math.max(0.2, Math.min(1,(pp.z+R)/(2*R)));
-    var rad = (isHover?18:15)*dpr*pp.scale;
+    var rad = (isHover?23:19)*dpr*pp.scale;
     if(isHover){
       ctx.beginPath(); ctx.arc(pp.sx,pp.sy,rad+4*dpr,0,Math.PI*2);
       ctx.strokeStyle = 'rgba(193,58,29,' + (depth*0.7).toFixed(2) + ')';
@@ -633,7 +633,14 @@ function initGlobe(){
       ctx.save();
       ctx.beginPath(); ctx.arc(pp.sx, pp.sy, rad*0.78, 0, Math.PI*2); ctx.clip();
       ctx.globalAlpha = 0.55 + depth*0.45;
-      ctx.drawImage(pp.img, pp.sx-rad*0.78, pp.sy-rad*0.78, rad*1.56, rad*1.56);
+      // Aspect-fit within the clip circle's bounding box instead of
+      // stretching to a square -- ANSYS/OpenFOAM are wide wordmark logos
+      // (~2.8-3.1:1) that were visibly squashed by a forced square draw.
+      var box = rad * 1.56;
+      var ar = pp.img.naturalWidth / pp.img.naturalHeight;
+      var dw = box, dh = box;
+      if(ar > 1) dh = box / ar; else dw = box * ar;
+      ctx.drawImage(pp.img, pp.sx - dw/2, pp.sy - dh/2, dw, dh);
       ctx.globalAlpha = 1;
       ctx.restore();
     } else {
@@ -1113,34 +1120,34 @@ function initProjectModal(){
 
   var EXTRA_IMAGES = {
     afrl: [
-      { src:'img/MDAO1.png', alt:'MDAO subsystem interaction diagram' },
-      { src:'img/MDAO4.png', alt:'Hybridization modes considered' }
+      { src:'img/MDAO1.png', alt:'MDAO subsystem interaction diagram', caption:'Subsystem coupling and dependency structure.' },
+      { src:'img/MDAO4.png', alt:'Hybridization modes considered', caption:'Hybridization modes and propulsion sizing outputs.' }
     ],
     tue: [
-      { src:'img/Static Temperature_LES_1000.jpg', alt:'Static temperature contour, LES combustion field' },
-      { src:'img/O2 Mole fraction_LES_1000.jpg', alt:'O2 mole fraction contour, LES combustion field' }
+      { src:'img/Static Temperature_LES_1000.jpg', alt:'Static temperature contour, LES combustion field', caption:'Representative static-temperature field, LES.' },
+      { src:'img/O2 Mole fraction_LES_1000.jpg', alt:'O2 mole fraction contour, LES combustion field', caption:'O2 mole-fraction field showing species behavior.' }
     ],
     thesis: [
-      { src:'assets/drone_me_at_work.jpg', alt:'Rotor test rig bench setup' },
-      { src:'assets/raspberry_pi_3b.png', alt:'Raspberry Pi control hardware for the test rig' }
+      { src:'assets/drone_me_at_work.jpg', alt:'Rotor test rig bench setup', caption:'Experimental rotor test rig, RPi-actuated RPM control.' },
+      { src:'assets/raspberry_pi_3b.png', alt:'Raspberry Pi control hardware for the test rig', caption:'Low-cost control hardware for the test rig.' }
     ],
     boeing: [
-      { src:'img/Me-SOS.jpeg', alt:'Stakeholder-facing systems risk briefing' },
-      { src:'img/MBSE1.png', alt:'Supply chain risk methodology: identify, collect, connect, assess, and mitigate' }
+      { src:'img/Me-SOS.jpeg', alt:'Stakeholder-facing systems risk briefing', caption:'Stakeholder-facing systems risk briefing.' },
+      { src:'img/MBSE1.png', alt:'Supply chain risk methodology: identify, collect, connect, assess, and mitigate', caption:'Supply-chain risk methodology, step by step.' }
     ],
     bwb: [
-      { src:'img/bwb_qfd_house_of_quality.png', alt:'QFD House of Quality for the next-generation transport aircraft concept' },
-      { src:'img/bwb_morphological_matrix.png', alt:'Morphological matrix across propulsion, fuel, aerodynamics, and structural options' },
-      { src:'img/bwb_topsis_ranking.png', alt:'TOPSIS closeness ranking, hydrogen BWB configuration first' }
+      { src:'img/bwb_qfd_house_of_quality.png', alt:'QFD House of Quality for the next-generation transport aircraft concept', caption:'QFD House of Quality: customer needs to engineering targets.' },
+      { src:'img/bwb_morphological_matrix.png', alt:'Morphological matrix across propulsion, fuel, aerodynamics, and structural options', caption:'Morphological matrix across 14 functional requirements.' },
+      { src:'img/bwb_topsis_ranking.png', alt:'TOPSIS closeness ranking, hydrogen BWB configuration first', caption:'TOPSIS closeness ranking of the 5 candidates.' }
     ],
     ibrido: [
-      { src:'img/ibrido_alpha_feasibility.png', alt:'Max feasible payload vs. engine-downsize fraction, showing the narrow feasible window' }
+      { src:'img/ibrido_alpha_feasibility.png', alt:'Max feasible payload vs. engine-downsize fraction, showing the narrow feasible window', caption:'Payload vs. engine-downsize fraction: the feasible window.' }
     ],
     hyperloop: [
-      { src:'img/lim.png', alt:'Linear induction motor thrust-slip plot' }
+      { src:'img/lim.png', alt:'Linear induction motor thrust-slip plot', caption:'Propulsion operating-region reasoning (LIM thrust-slip).' }
     ],
     'telemetry-ml': [
-      { src:'img/telemetry_anomaly_detection.png', alt:'Isolation-forest anomaly score against speed trace for one lap' }
+      { src:'img/telemetry_anomaly_detection.png', alt:'Isolation-forest anomaly score against speed trace for one lap', caption:'Isolation-forest anomaly score against a normalized speed trace.' }
     ]
   };
 
@@ -1155,9 +1162,26 @@ function initProjectModal(){
   var elTags = document.getElementById('modalTags');
   var elScope = document.getElementById('modalScope');
 
+  var lightbox = document.getElementById('imageLightbox');
+  var lightboxImg = document.getElementById('lightboxImg');
+  var lightboxCaption = document.getElementById('lightboxCaption');
+  var lightboxClose = document.getElementById('lightboxClose');
+
   var lastFocused = null;
 
   function textOf(node){ return node ? node.textContent.trim() : ''; }
+
+  function openLightbox(src, alt, caption){
+    lightboxImg.src = src;
+    lightboxImg.alt = alt || '';
+    lightboxCaption.textContent = caption || '';
+    lightbox.classList.add('show');
+    lightbox.setAttribute('aria-hidden', 'false');
+  }
+  function closeLightbox(){
+    lightbox.classList.remove('show');
+    lightbox.setAttribute('aria-hidden', 'true');
+  }
 
   function openFromCard(card){
     var isPlate = card.classList.contains('plate');
@@ -1196,16 +1220,25 @@ function initProjectModal(){
 
     var images = [];
     var mainImg = card.querySelector('.plate-media img, .arc-media img');
-    if(mainImg) images.push({ src:mainImg.getAttribute('src'), alt:mainImg.alt });
+    if(mainImg) images.push({ src:mainImg.getAttribute('src'), alt:mainImg.alt, caption:mainImg.alt });
     var extra = EXTRA_IMAGES[card.dataset.id] || [];
     images = images.concat(extra);
 
     gallery.innerHTML = '';
     if(images.length){
       images.forEach(function(im){
+        var fig = document.createElement('figure');
         var img = document.createElement('img');
         img.src = im.src; img.alt = im.alt || '';
-        gallery.appendChild(img);
+        img.loading = 'lazy';
+        fig.appendChild(img);
+        if(im.caption){
+          var cap = document.createElement('figcaption');
+          cap.textContent = im.caption;
+          fig.appendChild(cap);
+        }
+        fig.addEventListener('click', function(){ openLightbox(im.src, im.alt, im.caption); });
+        gallery.appendChild(fig);
       });
       gallery.style.display = '';
     } else {
@@ -1266,8 +1299,12 @@ function initProjectModal(){
 
   closeBtn.addEventListener('click', close);
   backdrop.addEventListener('click', close);
+  lightboxClose.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', function(e){ if(e.target === lightbox) closeLightbox(); });
   document.addEventListener('keydown', function(e){
-    if(e.key === 'Escape' && modal.classList.contains('show')) close();
+    if(e.key !== 'Escape') return;
+    if(lightbox.classList.contains('show')){ closeLightbox(); return; }
+    if(modal.classList.contains('show')) close();
   });
   panel.addEventListener('click', function(e){ e.stopPropagation(); });
 }

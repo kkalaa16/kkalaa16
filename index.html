@@ -430,18 +430,8 @@
 
 <!-- ══ ACHIEVEMENTS ════════════════════════════════════════ -->
 <section class="achievements-section">
-  <div class="section-label">ACHIEVEMENTS &amp; IMPACT</div>
-  <div class="achievements-grid">
-    <div class="achievement-card">
-      <h3>Leadership &amp; Impact</h3>
-      <div class="impact-item">
-        <span class="impact-icon">&#9673;</span>
-        <div>
-          <span class="impact-label">Interactive modules for visually impaired youth</span>
-          <span class="impact-org">Blind People's Association</span>
-        </div>
-      </div>
-    </div>
+  <div class="section-label">CERTIFICATIONS</div>
+  <div class="achievements-grid achievements-grid--single">
     <div class="achievement-card">
       <h3>Certifications</h3>
       <div class="cert-grid">
@@ -490,6 +480,15 @@
       <p class="modal-scope" id="modalScope"></p>
     </div>
   </div>
+</div>
+
+<!-- ══ IMAGE LIGHTBOX — click any modal image to open it full size ══ -->
+<div class="lightbox" id="imageLightbox" aria-hidden="true">
+  <button class="lightbox-close" id="lightboxClose" aria-label="Close">&times;</button>
+  <figure>
+    <img id="lightboxImg" alt=""/>
+    <figcaption id="lightboxCaption"></figcaption>
+  </figure>
 </div>
 
 <script src="app.js"></script>
