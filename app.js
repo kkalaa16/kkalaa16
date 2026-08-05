@@ -209,18 +209,34 @@ function initEduCat(){
   new IntersectionObserver(function(entries){
     if(entries[0].isIntersecting && !played){
       played = true;
+
+      // Measure the real runway width and set a pixel target directly,
+      // instead of trusting calc(100% - 130px) in CSS -- percentage
+      // math there depends on #eduCat's own box being exactly 130px
+      // wide at rest, which is fragile (its width is shrink-to-fit,
+      // sized to whichever sprite is currently showing, 306px mid-run
+      // vs 130px idle). A measured pixel value can't be thrown off by
+      // that.
+      var w = runway.getBoundingClientRect().width;
+      cat.style.left = Math.max(0, w - 130) + 'px';
+
       cat.classList.remove('idle');
       cat.classList.add('run');
-      // Land exactly when the real left-position transition finishes,
-      // instead of guessing a timeout close to the CSS duration -- a
-      // mismatch there is what could leave the run-cycle sprite and the
-      // actual stopping point out of sync.
-      cat.addEventListener('transitionend', function onArrive(e){
-        if(e.propertyName !== 'left') return;
+
+      var landed = false;
+      function land(){
+        if(landed) return;
+        landed = true;
         cat.removeEventListener('transitionend', onArrive);
         cat.classList.remove('run');
         cat.classList.add('idle', 'idle-gt');
-      });
+      }
+      function onArrive(e){ if(e.propertyName === 'left') land(); }
+      cat.addEventListener('transitionend', onArrive);
+      // Fallback in case transitionend never fires (interrupted
+      // transition, no actual value change, browser quirk) -- without
+      // this the cat could get stuck showing the run sprite forever.
+      setTimeout(land, 3000);
     }
   }, { threshold:0.4 }).observe(runway);
 }

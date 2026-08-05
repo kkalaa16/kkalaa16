@@ -194,7 +194,11 @@ body.lock-scroll{ overflow:hidden; }
   position:absolute; top:50%; left:0; transform:translateY(-50%);
   transition:left 2.4s cubic-bezier(.4,0,.2,1);
 }
-#eduCat.run, #eduCat.idle-gt{ left:calc(100% - 130px); }
+/* The run/idle-gt resting position is set as an inline style from JS
+   (measured against the runway's real rendered width), not here --
+   see initEduCat(). A calc(100%) value depends on #eduCat's own box
+   being a known fixed width, which it isn't (shrink-to-fit, sized to
+   whichever sprite is currently showing). */
 .cat-sprite{
   width:306px; height:138px; transform:scale(-.42,.42); transform-origin:center center;
   background-image:url('assets/cat_run.png'); background-repeat:no-repeat; background-size:306px 1656px;
