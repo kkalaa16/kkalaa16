@@ -219,6 +219,8 @@ body.lock-scroll{ overflow:hidden; }
 #eduCat.idle-gt .cat-sprite{ background-image:url('assets/cat_idle_gt.png'); filter:drop-shadow(0 0 10px rgba(193,58,29,0.25)); }
 @keyframes catrun{ from{ background-position-y:0; } to{ background-position-y:-1656px; } }
 @media (prefers-reduced-motion: reduce){
+  /* JS (initEduCat) now sets the correct measured left inline and wins
+     over this calc() -- this is only a no-JS fallback. */
   #eduCat{ transition:none; left:calc(100% - 130px); }
   #eduCat .cat-sprite{ animation:none !important; background-image:url('assets/cat_idle_gt.png'); background-size:contain; width:130px; height:71px; transform:scale(-.42,.42) translateY(48px); }
 }
@@ -238,6 +240,8 @@ body.lock-scroll{ overflow:hidden; }
 .plate-media img{ width:100%; height:100%; object-fit:cover; }
 .plate-media.none{ display:flex; align-items:center; justify-content:center; }
 .plate-media.none span{ font-family:var(--mono); font-size:.78rem; color:var(--ink-faint); text-align:center; padding:1rem; }
+.plate-media--embed{ aspect-ratio:auto; display:flex; flex-direction:column; }
+.plate-media--embed iframe{ flex:1; min-height:360px; width:100%; border:none; display:block; background:var(--bg-panel); }
 .plate-body{ padding:1.3rem 1.3rem 1.5rem; display:flex; flex-direction:column; gap:.7rem; flex:1; }
 .plate-title{ font-size:1.4rem; font-weight:780; text-transform:uppercase; letter-spacing:-.005em; margin:0; line-height:1.15; }
 .plate-period{ font-family:var(--mono); font-size:.78rem; color:var(--ink-dim); text-transform:uppercase; letter-spacing:.02em; }

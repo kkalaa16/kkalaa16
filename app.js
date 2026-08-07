@@ -203,23 +203,37 @@ function initEduCat(){
   var runway = document.getElementById('eduRunway');
   if(!cat || !runway) return;
 
-  if(reduce) return;
+  // Measure the real runway width and set a pixel target directly,
+  // instead of trusting calc(100% - 130px) in CSS -- percentage math
+  // there depends on #eduCat's own box being exactly 130px wide,
+  // which is fragile (its width is shrink-to-fit, sized to whichever
+  // sprite is currently showing). Shared by both the animated path
+  // and the reduced-motion path below, so neither can drift.
+  function gtLeftPx(){
+    var w = runway.getBoundingClientRect().width;
+    return Math.max(0, w - 130) + 'px';
+  }
+
+  // prefers-reduced-motion: previously this returned here and left the
+  // static CSS fallback (also a calc(100%) value) to position the cat --
+  // which had the exact same fragility this function exists to avoid,
+  // and would explain the cat never landing correctly for any user (or
+  // any screenshot tool) with reduced motion on, no matter how the
+  // animated path below was fixed. Now it's measured and set the same
+  // way, just without the sliding transition or run-cycle sprite.
+  if(reduce){
+    cat.style.left = gtLeftPx();
+    cat.classList.remove('idle', 'run');
+    cat.classList.add('idle', 'idle-gt');
+    return;
+  }
 
   var played = false;
   new IntersectionObserver(function(entries){
     if(entries[0].isIntersecting && !played){
       played = true;
 
-      // Measure the real runway width and set a pixel target directly,
-      // instead of trusting calc(100% - 130px) in CSS -- percentage
-      // math there depends on #eduCat's own box being exactly 130px
-      // wide at rest, which is fragile (its width is shrink-to-fit,
-      // sized to whichever sprite is currently showing, 306px mid-run
-      // vs 130px idle). A measured pixel value can't be thrown off by
-      // that.
-      var w = runway.getBoundingClientRect().width;
-      cat.style.left = Math.max(0, w - 130) + 'px';
-
+      cat.style.left = gtLeftPx();
       cat.classList.remove('idle');
       cat.classList.add('run');
 
