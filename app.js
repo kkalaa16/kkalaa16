@@ -1163,7 +1163,8 @@ function initProjectModal(){
       { src:'img/bwb_topsis_ranking.png', alt:'TOPSIS closeness ranking, hydrogen BWB configuration first', caption:'TOPSIS closeness ranking of the 5 candidates.' }
     ],
     ibrido: [
-      { src:'img/ibrido_alpha_feasibility.png', alt:'Max feasible payload vs. engine-downsize fraction, showing the narrow feasible window', caption:'Payload vs. engine-downsize fraction: the feasible window.' }
+      { src:'img/ibrido_alpha_feasibility.png', alt:'Max feasible payload vs. engine-downsize fraction, showing the narrow feasible window', caption:'Payload vs. engine-downsize fraction: the feasible window.' },
+      { src:'img/ibrido_range_sweep.png', alt:'Payload vs. mission range, hybrid vs. conventional, showing the hybrid feasible only near 300-306 nm', caption:'Payload vs. mission range: the conventional baseline never closes at any tested range; the hybrid only closes near the RFP target.' }
     ],
     hyperloop: [
       { src:'img/lim.png', alt:'Linear induction motor thrust-slip plot', caption:'Propulsion operating-region reasoning (LIM thrust-slip).' }

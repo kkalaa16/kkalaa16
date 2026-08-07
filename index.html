@@ -100,7 +100,7 @@
         <div class="plate-row"><b>Method</b>MATLAB mission-analysis framework: rotor performance, gearbox circulating power, battery sizing, fuel-optimal per-segment RPM search, TEEM motor logic for nacelle-conversion transients. Validated the sizing code against real NASA XV-15 flight-test data before trusting the hybrid result.</div>
         <div class="plate-row"><b>Result</b>Converges to a narrow feasible window (engine downsizing alpha=0.83-0.84, 306 nmi, 1,203 kg payload) bounded by two different failure modes. The payoff: the hybrid clears a cruise speed (348 KTAS at 10k ft) the conventional baseline can't reach at all (278 KTAS) -- hybridization is what makes the RFP's cruise requirement achievable, not just an incremental gain.</div>
         <div class="plate-tags"><span>Rotorcraft</span><span>eVTOL</span><span>Hybrid-Electric</span><span>MATLAB</span></div>
-        <div class="plate-scope">Propulsion sub-team of three; scope here is my own sizing framework, architecture-trade contribution, and the flight-envelope/feasibility analysis, not the full team's design.</div>
+        <div class="plate-scope">Propulsion sub-team of three; scope here is my own sizing framework, architecture-trade contribution, and the flight-envelope/feasibility analysis, not the full team's design. Also checked whether optimizing transition-segment timing (not just engine size) mattered: it didn't -- a naive hand-picked schedule matches the jointly-optimized one within about 1% on payload and fuel, so alpha is the real lever here.</div>
       </div>
     </article>
 
