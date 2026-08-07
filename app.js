@@ -767,23 +767,23 @@ function initPillarsWeb(){
   ];
 
   var LEAVES = [
-    { id:'ibrido', short:'Ibrido', label:'Ibrido: XV-15 Hybrid-Electric Tiltrotor', desc:'Down-selected a parallel hybrid-electric architecture across a 3-engineer, 4-topology trade study. Validated against real NASA flight-test data -- the hybrid clears a cruise speed (348 KTAS) the conventional baseline can\'t reach at all (278 KTAS).', img:'img/ibrido_flight_envelope.png', pillars:[{id:'systems-architecture',strength:1},{id:'validation',strength:0.6}] },
+    { id:'ibrido', short:'Ibrido', label:'Ibrido: XV-15 Hybrid-Electric Tiltrotor', desc:'Down-selected a parallel hybrid-electric architecture across a 3-engineer, 4-topology trade study. Validated against real NASA flight-test data -- the hybrid clears a cruise speed (348 KTAS) the conventional baseline can\'t reach at all (278 KTAS).', img:'img/ibrido/ibrido_flight_envelope.png', pillars:[{id:'systems-architecture',strength:1},{id:'validation',strength:0.6}] },
     { id:'doosan', short:'Doosan', label:'H2/CH4 Micromixer Reacting-Flow CFD', desc:'Mechanism-level comparison (SkeleCHy, HyChem, San Diego) and FGM-vs-finite-rate workflow validation for high-hydrogen micromixer combustion.', pillars:[{id:'validation',strength:1}] },
-    { id:'boeing', short:'Ti-6Al-4V', label:'Ti-6Al-4V Supply Chain Risk', desc:'Graph-based supplier concentration metrics and TOPSIS-ranked mitigations for aerospace titanium dependencies.', img:'img/s15_mitigation_layers.png', pillars:[{id:'systems-architecture',strength:1}] },
-    { id:'bwb', short:'H2 BWB', label:'Hydrogen Blended-Wing-Body Concept', desc:'QFD + morphological matrix + TOPSIS concept downselection inside a full SysML/MBSE model.', img:'img/bwb_final_selection.png', pillars:[{id:'systems-architecture',strength:1}] },
-    { id:'afrl', short:'AFRL MDAO', label:'AFRL Tactical Mobility MDAO', desc:'OpenMDAO workflow tying propulsion, structures, and mission sizing into one coherent trade, projecting +15.7% range.', img:'img/MDAO2.png', pillars:[{id:'systems-architecture',strength:1}] },
-    { id:'hyperloop', short:'Hyperloop', label:'Hyperloop Mechanical Design & Subsystem Integration', desc:'Propulsion-interface redesign (LIM vs. LSM trade study) and GD&T across 50+ high-load components; cut manufacturing defects by 22%.', img:'img/cold gas thruster.PNG', pillars:[{id:'systems-architecture',strength:1}] },
-    { id:'gas-turbine', short:'Gas Turbine', label:'Gas Turbine Cycle Design Tool', desc:'1D variable-heat-capacity turbojet/turbofan cycle tool; swept 3,800+ design combinations, corrected a 46% TSFC underestimate from constant-property assumptions.', img:'img/gasturbine_comparison2D.jpg', pillars:[{id:'systems-architecture',strength:1}] },
-    { id:'trajectory', short:'Trajectory', label:'Minimum Time-to-Climb Trajectory Optimization', desc:'Compared direct transcription against SLSQP single shooting; analytical block-banded Jacobian cut per-iteration cost by 60%.', img:'img/trajectory_fullspace.png', pillars:[{id:'systems-architecture',strength:1}] },
-    { id:'vawt', short:'VAWT', label:'Vertical Axis Wind Turbine Design Comparison', desc:'Designed and parametrically compared multiple VAWT configurations against each other for rotor performance -- a real trade study, not a single-design study.', img:'img/1.JPG', pillars:[{id:'systems-architecture',strength:1}] },
-    { id:'mfg', short:'MFG', label:'Neural Mean-Field Game Simulator', desc:'A Neural SDE (learned drift/diffusion) layered on a known base drift, trained to match an analytic Nash equilibrium, validated by an 84-test suite.', img:'img/mfg_w2_vs_N.png', pillars:[{id:'physics-ml',strength:1},{id:'nonlinear-dynamics',strength:1},{id:'validation',strength:0.6}] },
-    { id:'option-pricing', short:'SciML ROM', label:'Scientific ML Surrogate Modeling', desc:'A physics-informed reduced-order model plus a Fourier Neural Operator residual correction.', img:'img/output2.png', pillars:[{id:'physics-ml',strength:1}] },
-    { id:'telemetry-ml', short:'Telemetry ML', label:'Vehicle Telemetry ML Dashboard', desc:'Unsupervised ML (PCA, clustering, isolation forest) surfacing braking signatures, track archetypes, and anomaly patterns straight from raw telemetry -- pattern discovery with no physics baseline underneath.', img:'img/telemetry_pca_clusters.png', pillars:[{id:'physics-ml',strength:1}] },
-    { id:'cabs', short:'DRDO L-V', label:'DRDO Lotka-Volterra Dynamics', desc:'Nonlinear predator-prey dynamics and Jacobian stability analysis around equilibrium points, co-authored into a paper.', img:'img/drdo_phase_plane.jpg', pillars:[{id:'nonlinear-dynamics',strength:1}] },
+    { id:'boeing', short:'Ti-6Al-4V', label:'Ti-6Al-4V Supply Chain Risk', desc:'Graph-based supplier concentration metrics and TOPSIS-ranked mitigations for aerospace titanium dependencies.', img:'img/boeing/s15_mitigation_layers.png', pillars:[{id:'systems-architecture',strength:1}] },
+    { id:'bwb', short:'H2 BWB', label:'Hydrogen Blended-Wing-Body Concept', desc:'QFD + morphological matrix + TOPSIS concept downselection inside a full SysML/MBSE model.', img:'img/bwb/bwb_final_selection.png', pillars:[{id:'systems-architecture',strength:1}] },
+    { id:'afrl', short:'AFRL MDAO', label:'AFRL Tactical Mobility MDAO', desc:'OpenMDAO workflow tying propulsion, structures, and mission sizing into one coherent trade, projecting +15.7% range.', img:'img/afrl/MDAO2.png', pillars:[{id:'systems-architecture',strength:1}] },
+    { id:'hyperloop', short:'Hyperloop', label:'Hyperloop Mechanical Design & Subsystem Integration', desc:'Propulsion-interface redesign (LIM vs. LSM trade study) and GD&T across 50+ high-load components; cut manufacturing defects by 22%.', img:'img/hyperloop/cold gas thruster.PNG', pillars:[{id:'systems-architecture',strength:1}] },
+    { id:'gas-turbine', short:'Gas Turbine', label:'Gas Turbine Cycle Design Tool', desc:'1D variable-heat-capacity turbojet/turbofan cycle tool; swept 3,800+ design combinations, corrected a 46% TSFC underestimate from constant-property assumptions.', img:'img/gas-turbine/gasturbine_comparison2D.jpg', pillars:[{id:'systems-architecture',strength:1}] },
+    { id:'trajectory', short:'Trajectory', label:'Minimum Time-to-Climb Trajectory Optimization', desc:'Compared direct transcription against SLSQP single shooting; analytical block-banded Jacobian cut per-iteration cost by 60%.', img:'img/trajectory/trajectory_fullspace.png', pillars:[{id:'systems-architecture',strength:1}] },
+    { id:'vawt', short:'VAWT', label:'Vertical Axis Wind Turbine Design Comparison', desc:'Designed and parametrically compared multiple VAWT configurations against each other for rotor performance -- a real trade study, not a single-design study.', img:'img/vawt/1.JPG', pillars:[{id:'systems-architecture',strength:1}] },
+    { id:'mfg', short:'MFG', label:'Neural Mean-Field Game Simulator', desc:'A Neural SDE (learned drift/diffusion) layered on a known base drift, trained to match an analytic Nash equilibrium, validated by an 84-test suite.', img:'img/mfg/mfg_w2_vs_N.png', pillars:[{id:'physics-ml',strength:1},{id:'nonlinear-dynamics',strength:1},{id:'validation',strength:0.6}] },
+    { id:'option-pricing', short:'SciML ROM', label:'Scientific ML Surrogate Modeling', desc:'A physics-informed reduced-order model plus a Fourier Neural Operator residual correction.', img:'img/option-pricing/output2.png', pillars:[{id:'physics-ml',strength:1}] },
+    { id:'telemetry-ml', short:'Telemetry ML', label:'Vehicle Telemetry ML Dashboard', desc:'Unsupervised ML (PCA, clustering, isolation forest) surfacing braking signatures, track archetypes, and anomaly patterns straight from raw telemetry -- pattern discovery with no physics baseline underneath.', img:'img/telemetry-ml/telemetry_pca_clusters.png', pillars:[{id:'physics-ml',strength:1}] },
+    { id:'cabs', short:'DRDO L-V', label:'DRDO Lotka-Volterra Dynamics', desc:'Nonlinear predator-prey dynamics and Jacobian stability analysis around equilibrium points, co-authored into a paper.', img:'img/cabs/drdo_phase_plane.jpg', pillars:[{id:'nonlinear-dynamics',strength:1}] },
     { id:'tcnj', short:'Cavitation', label:'Pump Cavitation Detection', desc:'Early-stage acoustic diagnostics scoping for a system stability/onset problem.', pillars:[{id:'nonlinear-dynamics',strength:0.6}] },
-    { id:'tue', short:'TU/e FGM', label:'TU/e NH3/H2 Combustion (FGM)', desc:'Reduced-chemistry workflow validated against a higher-cost detailed-chemistry baseline: 86.7% runtime reduction, physically consistent fields.', img:'img/TUE1.png', pillars:[{id:'validation',strength:1}] },
-    { id:'thesis', short:'Drone Thesis', label:'Drone Rotor Test & Validation', desc:'OpenFOAM CFD checked directly against a physical test rig\'s measured wake data.', img:'assets/mesh_cyclicami_prop.png', pillars:[{id:'validation',strength:1}] },
-    { id:'iit', short:'IIT Bombay', label:'IIT Bombay Ventilation CFD', desc:'Ceiling-fan indoor-ventilation CFD validated against thermal-stratification and air-change-rate measurements.', img:'img/iit_room_top_view.png', pillars:[{id:'validation',strength:1}] },
+    { id:'tue', short:'TU/e FGM', label:'TU/e NH3/H2 Combustion (FGM)', desc:'Reduced-chemistry workflow validated against a higher-cost detailed-chemistry baseline: 86.7% runtime reduction, physically consistent fields.', img:'img/tue/TUE1.png', pillars:[{id:'validation',strength:1}] },
+    { id:'thesis', short:'Drone Thesis', label:'Drone Rotor Test & Validation', desc:'OpenFOAM CFD checked directly against a physical test rig\'s measured wake data.', img:'img/thesis/mesh_cyclicami_prop.png', pillars:[{id:'validation',strength:1}] },
+    { id:'iit', short:'IIT Bombay', label:'IIT Bombay Ventilation CFD', desc:'Ceiling-fan indoor-ventilation CFD validated against thermal-stratification and air-change-rate measurements.', img:'img/iit/iit_room_top_view.png', pillars:[{id:'validation',strength:1}] },
     { id:'fsi', short:'FSI Wave', label:'FSI Elastic Wave Propagation', desc:'Coupled OpenFOAM + CalculiX fluid-structure interaction via preCICE.', pillars:[{id:'validation',strength:1}] },
     { id:'scramjet', short:'Scramjet', label:'Scramjet Inlet Nozzle Validation', desc:'Ramp-inlet validation study for scramjet inlet/nozzle geometry at high Mach numbers.', pillars:[{id:'validation',strength:1}] }
   ];
@@ -1156,36 +1156,36 @@ function initProjectModal(){
 
   var EXTRA_IMAGES = {
     afrl: [
-      { src:'img/MDAO1.png', alt:'MDAO subsystem interaction diagram', caption:'Subsystem coupling and dependency structure.' },
-      { src:'img/MDAO4.png', alt:'Hybridization modes considered', caption:'Hybridization modes and propulsion sizing outputs.' }
+      { src:'img/afrl/MDAO1.png', alt:'MDAO subsystem interaction diagram', caption:'Subsystem coupling and dependency structure.' },
+      { src:'img/afrl/MDAO4.png', alt:'Hybridization modes considered', caption:'Hybridization modes and propulsion sizing outputs.' }
     ],
     tue: [
-      { src:'img/Static Temperature_LES_1000.jpg', alt:'Static temperature contour, LES combustion field', caption:'Representative static-temperature field, LES.' },
-      { src:'img/O2 Mole fraction_LES_1000.jpg', alt:'O2 mole fraction contour, LES combustion field', caption:'O2 mole-fraction field showing species behavior.' }
+      { src:'img/tue/Static Temperature_LES_1000.jpg', alt:'Static temperature contour, LES combustion field', caption:'Representative static-temperature field, LES.' },
+      { src:'img/tue/O2 Mole fraction_LES_1000.jpg', alt:'O2 mole fraction contour, LES combustion field', caption:'O2 mole-fraction field showing species behavior.' }
     ],
     thesis: [
-      { src:'assets/drone_me_at_work.jpg', alt:'Rotor test rig bench setup', caption:'Experimental rotor test rig, RPi-actuated RPM control.' },
-      { src:'assets/raspberry_pi_3b.png', alt:'Raspberry Pi control hardware for the test rig', caption:'Low-cost control hardware for the test rig.' }
+      { src:'img/thesis/drone_me_at_work.jpg', alt:'Rotor test rig bench setup', caption:'Experimental rotor test rig, RPi-actuated RPM control.' },
+      { src:'img/thesis/raspberry_pi_3b.png', alt:'Raspberry Pi control hardware for the test rig', caption:'Low-cost control hardware for the test rig.' }
     ],
     boeing: [
-      { src:'img/Me-SOS.jpeg', alt:'Stakeholder-facing systems risk briefing', caption:'Stakeholder-facing systems risk briefing.' },
-      { src:'img/MBSE1.png', alt:'Supply chain risk methodology: identify, collect, connect, assess, and mitigate', caption:'Supply-chain risk methodology, step by step.' }
+      { src:'img/boeing/Me-SOS.jpeg', alt:'Stakeholder-facing systems risk briefing', caption:'Stakeholder-facing systems risk briefing.' },
+      { src:'img/boeing/MBSE1.png', alt:'Supply chain risk methodology: identify, collect, connect, assess, and mitigate', caption:'Supply-chain risk methodology, step by step.' }
     ],
     bwb: [
-      { src:'img/bwb_qfd_house_of_quality.png', alt:'QFD House of Quality for the next-generation transport aircraft concept', caption:'QFD House of Quality: customer needs to engineering targets.' },
-      { src:'img/bwb_morphological_matrix.png', alt:'Morphological matrix across propulsion, fuel, aerodynamics, and structural options', caption:'Morphological matrix across 14 functional requirements.' },
-      { src:'img/bwb_topsis_ranking.png', alt:'TOPSIS closeness ranking, hydrogen BWB configuration first', caption:'TOPSIS closeness ranking of the 5 candidates.' }
+      { src:'img/bwb/bwb_qfd_house_of_quality.png', alt:'QFD House of Quality for the next-generation transport aircraft concept', caption:'QFD House of Quality: customer needs to engineering targets.' },
+      { src:'img/bwb/bwb_morphological_matrix.png', alt:'Morphological matrix across propulsion, fuel, aerodynamics, and structural options', caption:'Morphological matrix across 14 functional requirements.' },
+      { src:'img/bwb/bwb_topsis_ranking.png', alt:'TOPSIS closeness ranking, hydrogen BWB configuration first', caption:'TOPSIS closeness ranking of the 5 candidates.' }
     ],
     ibrido: [
-      { src:'img/ibrido_alpha_feasibility.png', alt:'Max feasible payload vs. engine-downsize fraction, showing the narrow feasible window', caption:'Payload vs. engine-downsize fraction: the feasible window.' },
-      { src:'img/ibrido_range_sweep.png', alt:'Payload vs. mission range, hybrid vs. conventional, showing the hybrid feasible only near 300-306 nm', caption:'Payload vs. mission range: the conventional baseline never closes at any tested range; the hybrid only closes near the RFP target.' },
-      { src:'img/ibrido_timing_comparison.png', alt:'Jointly-optimized vs. naive transition-segment timing schedule, showing near-identical payload and fuel outcomes', caption:'Optimized vs. naive transition timing: within about 1% on payload and fuel -- alpha is the real lever.' }
+      { src:'img/ibrido/ibrido_alpha_feasibility.png', alt:'Max feasible payload vs. engine-downsize fraction, showing the narrow feasible window', caption:'Payload vs. engine-downsize fraction: the feasible window.' },
+      { src:'img/ibrido/ibrido_range_sweep.png', alt:'Payload vs. mission range, hybrid vs. conventional, showing the hybrid feasible only near 300-306 nm', caption:'Payload vs. mission range: the conventional baseline never closes at any tested range; the hybrid only closes near the RFP target.' },
+      { src:'img/ibrido/ibrido_timing_comparison.png', alt:'Jointly-optimized vs. naive transition-segment timing schedule, showing near-identical payload and fuel outcomes', caption:'Optimized vs. naive transition timing: within about 1% on payload and fuel -- alpha is the real lever.' }
     ],
     hyperloop: [
-      { src:'img/lim.png', alt:'Linear induction motor thrust-slip plot', caption:'Propulsion operating-region reasoning (LIM thrust-slip).' }
+      { src:'img/hyperloop/lim.png', alt:'Linear induction motor thrust-slip plot', caption:'Propulsion operating-region reasoning (LIM thrust-slip).' }
     ],
     'telemetry-ml': [
-      { src:'img/telemetry_anomaly_detection.png', alt:'Isolation-forest anomaly score against speed trace for one lap', caption:'Isolation-forest anomaly score against a normalized speed trace.' }
+      { src:'img/telemetry-ml/telemetry_anomaly_detection.png', alt:'Isolation-forest anomaly score against speed trace for one lap', caption:'Isolation-forest anomaly score against a normalized speed trace.' }
     ]
   };
 
